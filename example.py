@@ -13,6 +13,7 @@ from multiprocessing import Pool
 import os.path
 from os import path
 from itertools import product
+import copy
 
 
 def runParallelFunction(runFunction, arguments):
@@ -37,7 +38,7 @@ def runParallelFunction(runFunction, arguments):
 
             
 def run_de(func, seed, parameters, budget=None, dim=5, penalty_factor=4,
-                      fixed_budget=False, target_precision=0, verbose=True):
+                      fixed_budget=False, target_precision=0, verbose=True, fid=1, iid=1):
     """
     Function to automatically tune a ccmaes version for a specific optimization problem
 
@@ -78,9 +79,12 @@ def run_de(func, seed, parameters, budget=None, dim=5, penalty_factor=4,
         c.run()
         if verbose:
             print(f"At target: {func.state.evaluations} used, target_hit={func.state.current_best.y})")
+        auc = auc_func(fid, dimension=dim, instance=iid, budget=int(budget))
+        return [fid, iid, seed, parameters['F'][0], parameters['CR'][0], auc(func.state.current_best.x)]
     except Exception as e:
         if verbose:
             print(f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed")
+        return []
 
 
 class auc_func():
@@ -122,23 +126,27 @@ def run_verification(args):
         #'Gamperle2' : {'F' : np.array([0.6]), 'CR' : np.array([0.9]), 'mutation_base' : 'best', 'mutation_n_comps' : 2, 'lambda_' : 2*dim},
         #'jDE' : {'lambda_' : 10*dim, 'adaptation_method_F' :'jDE', 'adaptation_method_CR' : 'jDE',  'lambda_' : 100},
     }
+    results = []
     for F in range(1,20):
         for CR in range(1,20):
    
             key = f"DAS-F{F}-CR{CR}"
             item = {'F' : np.array([F*0.05]), 'CR' : np.array([CR*0.05]),  'lambda_' : 10*dim}
             
-                
-            logger = ioh.logger.Analyzer(root=folder, folder_name=f"F{fid}_{dim}D_{key}", algorithm_name=f"{key}")
+            #lets not use a logger for now, only capture AUC    
+            #logger = ioh.logger.Analyzer(root=folder, folder_name=f"F{fid}_{dim}D_{key}", algorithm_name=f"{key}")
 
             for iid in range(10):
                 func = ioh.get_problem(fid, dimension=dim, instance=iid)
-                func.attach_logger(logger)
+                #func.attach_logger(logger)
                 for seed in range(5):
                     fb = True
-                    run_de(func, seed, item, fixed_budget = fb,
-                                    budget=500, dim=dim, verbose=False)
-                    func.reset()        
+                    res = run_de(func, seed, item, fixed_budget = fb,
+                                    budget=500, dim=dim, verbose=True, fid=fid, iid=iid)
+                    results.append(copy.deepcopy(res))
+                    func.reset()
+    results = np.array(results)
+    np.save("de-results500.npy", results)
         
 if __name__=='__main__':
     warnings.filterwarnings("ignore", category=RuntimeWarning) 
