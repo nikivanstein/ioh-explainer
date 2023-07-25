@@ -103,7 +103,7 @@ class auc_func():
         self.auc = self.budget
         self.f.reset()  
                 
-def run_verification(args, idx_nr):
+def run_verification(args):
     
     fid, dim = args
     
