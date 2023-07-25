@@ -122,10 +122,10 @@ def run_verification(args):
         #'Gamperle2' : {'F' : np.array([0.6]), 'CR' : np.array([0.9]), 'mutation_base' : 'best', 'mutation_n_comps' : 2, 'lambda_' : 2*dim},
         #'jDE' : {'lambda_' : 10*dim, 'adaptation_method_F' :'jDE', 'adaptation_method_CR' : 'jDE',  'lambda_' : 100},
     }
-    for F in range(20):
-        for CR in range(20):
+    for F in range(1,20):
+        for CR in range(1,20):
    
-            key = f"DAS-F{F*0.05}-CR{CR*0.05}"
+            key = f"DAS-F{F}-CR{CR}"
             item = {'F' : np.array([F*0.05]), 'CR' : np.array([CR*0.05]),  'lambda_' : 10*dim}
             
                 
