@@ -124,34 +124,29 @@ def run_verification(args, idx_nr):
     }
     for F in range(20):
         for CR in range(20):
-            items[f"DAS-F{F*0.05}-CR{CR*0.05}"] = {'F' : np.array([F*0.05]), 'CR' : np.array([CR*0.05]),  'lambda_' : 10*dim}
+   
+            key = f"DAS-F{F*0.05}-CR{CR*0.05}"
+            item = {'F' : np.array([F*0.05]), 'CR' : np.array([CR*0.05]),  'lambda_' : 10*dim}
+            
+                
+            logger = ioh.logger.Analyzer(root=folder, folder_name=f"F{fid}_{dim}D_{key}", algorithm_name=f"{key}")
 
-    
-    key = list(items.keys())[idx_nr]
-    item = items[key]
-    
-        
-    logger = ioh.logger.Analyzer(root=folder, folder_name=f"F{fid}_{dim}D_{key}", algorithm_name=f"{key}")
-
-    for iid in range(10):
-        func = ioh.get_problem(fid, dimension=dim, instance=iid)
-        func.attach_logger(logger)
-        for seed in range(5):
-            fb = True
-            run_de(func, seed, item, fixed_budget = fb,
-                            budget=50000, dim=dim, verbose=False)
-            func.reset()        
+            for iid in range(10):
+                func = ioh.get_problem(fid, dimension=dim, instance=iid)
+                func.attach_logger(logger)
+                for seed in range(5):
+                    fb = True
+                    run_de(func, seed, item, fixed_budget = fb,
+                                    budget=500, dim=dim, verbose=False)
+                    func.reset()        
         
 if __name__=='__main__':
     warnings.filterwarnings("ignore", category=RuntimeWarning) 
     warnings.filterwarnings("ignore", category=FutureWarning)
     
-    idx_nr = int(sys.argv[1])
-    
     folder_loc = "data/"
 
-    partial_run = partial(run_verification, 
-                          idx_nr = idx_nr)
-    args = product([5], [5,20,40])
+    partial_run = partial(run_verification)
+    args = product([1,5], [5,20,40])
     runParallelFunction(partial_run, args)
 
