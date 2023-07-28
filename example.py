@@ -142,7 +142,7 @@ def run_verification(args):
                     fb = True
                     run_de(func.f, seed, item, fixed_budget = fb,
                                     budget=budget, dim=dim, verbose=True, fid=fid, iid=iid)
-                    results.append([fid, iid, seed, item['F'][0], item['CR'][0], func.auc])
+                    results.append([fid, iid, seed, dim, item['F'][0], item['CR'][0], func.auc])
                     func.reset()
     results = np.array(results)
     np.save("de-results500.npy", results)
