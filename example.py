@@ -79,8 +79,8 @@ def run_de(func, seed, parameters, budget=None, dim=5, penalty_factor=4,
         c.run()
         if verbose:
             print(f"At target: {func.state.evaluations} used, target_hit={func.state.current_best.y})")
-        auc = auc_func(fid, dimension=dim, instance=iid, budget=int(budget))
-        return [fid, iid, seed, parameters['F'][0], parameters['CR'][0], auc(func.state.current_best.x)]
+        auc = func.auc
+        return [fid, iid, seed, parameters['F'][0], parameters['CR'][0], auc]
     except Exception as e:
         if verbose:
             print(f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed")
@@ -135,14 +135,14 @@ def run_verification(args):
             
             #lets not use a logger for now, only capture AUC    
             #logger = ioh.logger.Analyzer(root=folder, folder_name=f"F{fid}_{dim}D_{key}", algorithm_name=f"{key}")
-
+            budget = 10000
             for iid in range(10):
-                func = ioh.get_problem(fid, dimension=dim, instance=iid)
+                func = auc_func(fid, dimension=dim, instance=iid, budget=budget)
                 #func.attach_logger(logger)
                 for seed in range(5):
                     fb = True
                     res = run_de(func, seed, item, fixed_budget = fb,
-                                    budget=500, dim=dim, verbose=True, fid=fid, iid=iid)
+                                    budget=budget, dim=dim, verbose=True, fid=fid, iid=iid)
                     results.append(copy.deepcopy(res))
                     func.reset()
     results = np.array(results)
