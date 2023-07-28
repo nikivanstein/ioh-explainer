@@ -1,3 +1,11 @@
+from multiprocessing import cpu_count
+from multiprocessing import Pool
+import ioh
+import numpy as np
+import pandas as pd
+import progressbar
+from itertools import product
+
 """
 Utility functions
 """
@@ -22,6 +30,8 @@ class auc_func():
     def __init__(self, *args, **kwargs):
         budget = kwargs.pop('budget')
         self.f = ioh.get_problem(*args, **kwargs)
+        self.meta_data = self.f.meta_data
+        self.state = self.f.state
         self.auc = budget
         self.budget = budget
         powers = np.round(np.linspace(8, -8, 81), decimals=1)
@@ -31,6 +41,7 @@ class auc_func():
         if self.f.state.evaluations >= self.budget:
             return np.infty
         y = self.f(x)
+        self.state = self.f.state
         self.auc -= sum(self.f.state.current_best_internal.y > self.target_values) / 81
         return y
 

@@ -73,7 +73,7 @@ def run_de(func, seed, parameters, budget=None, dim=5, penalty_factor=4,
     parameters['budget'] = int(budget)
 
     c = ModularDE(func, **parameters)
-    # c.parameters.target = func.f.objective.y
+    c.parameters.target = func.f.objective.y
 
     try:
         c.run()
@@ -140,7 +140,7 @@ def run_verification(args):
                 #func.attach_logger(logger)
                 for seed in range(5):
                     fb = True
-                    run_de(func.f, seed, item, fixed_budget = fb,
+                    run_de(func, seed, item, fixed_budget = fb,
                                     budget=budget, dim=dim, verbose=True, fid=fid, iid=iid)
                     results.append([fid, iid, seed, dim, item['F'][0], item['CR'][0], func.auc])
                     func.reset()

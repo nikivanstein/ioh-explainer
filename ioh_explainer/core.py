@@ -8,6 +8,7 @@ import ioh
 import numpy as np
 import pandas as pd
 import progressbar
+from itertools import product
 from .utils import runParallelFunction, auc_func
 
 
@@ -39,30 +40,39 @@ class explainer(object):
         self.verbose = verbose
         self.budget = budget
         self.df = pd.DataFrame(columns = ['fid', 'iid', 'dim', 'seed', *config_space.keys() , 'auc'])
-        print(self.df)
         np.random.seed(seed)
 
-
-    
-
-    def run(self):
-        #execute all runs
- 
-        ConfigurationGrid = generate_grid(self.config_space, self.grid_steps_dict)
+    def _create_grid(self):
+        self.configuration_grid = generate_grid(self.config_space, self.grid_steps_dict)
         if self.verbose:
-            print(len(ConfigurationGrid))
+            print(f"Evaluating {len(self.configuration_grid)} configurations.")
 
+    def _run_verification(self, args):
+        dim, fid, iid, config_i = args
+        config = self.configuration_grid[config_i]
+        #func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
+        func = ioh.get_problem(fid, dimension=dim, instance=iid)
+        #func.attach_logger(logger)
+        for seed in range(self.reps):
+            self.optimizer(func, config, budget=self.budget, dim=dim)
+            self.df.loc[len(self.df)] = {'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **config, 'auc':func.state.current_best_internal.y} #func.auc
+            func.reset()
+
+    def run(self, paralell=False):
+        self._create_grid()
+        #execute all runs
         #run all the optimizations
-        for cs in ConfigurationGrid:
-            for dim in self.dims:
-                for fid in self.fids:
-                    for iid in range(self.iids):
-                        func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
-                        #func.attach_logger(logger)
-                        for seed in range(self.reps):
-                            self.optimizer(func.f, cs, budget=self.budget, dim=dim)
-                            auc = func.auc
-                            self.df.loc[len(self.df)] = {'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **cs, 'auc':auc}
-                            func.reset()
+        for i in progressbar.progressbar(range(len(self.configuration_grid))):
+            if paralell:
+                partial_run = partial(self._run_verification)
+                args = product(self.dims, self.fids, np.arange(self.iids), [i])
+                runParallelFunction(partial_run, args)
+            else:
+                for dim in self.dims:
+                    for fid in self.fids:
+                        for iid in range(self.iids):
+                            self._run_verification([dim,fid,iid,i])
+            
         self.df.to_pickle("df.pkl")  
-        print(self.df)
+        if self.verbose:
+            print(self.df)
