@@ -79,8 +79,7 @@ def run_de(func, seed, parameters, budget=None, dim=5, penalty_factor=4,
         c.run()
         if verbose:
             print(f"At target: {func.state.evaluations} used, target_hit={func.state.current_best.y})")
-        auc = func.auc
-        return [fid, iid, seed, parameters['F'][0], parameters['CR'][0], auc]
+        return []
     except Exception as e:
         if verbose:
             print(f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed")
@@ -141,9 +140,9 @@ def run_verification(args):
                 #func.attach_logger(logger)
                 for seed in range(5):
                     fb = True
-                    res = run_de(func, seed, item, fixed_budget = fb,
+                    run_de(func.f, seed, item, fixed_budget = fb,
                                     budget=budget, dim=dim, verbose=True, fid=fid, iid=iid)
-                    results.append(copy.deepcopy(res))
+                    results.append([fid, iid, seed, item['F'][0], item['CR'][0], func.auc])
                     func.reset()
     results = np.array(results)
     np.save("de-results500.npy", results)
