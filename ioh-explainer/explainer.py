@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import progressbar
 
-def runParallelFunction(self, runFunction, arguments):
+def runParallelFunction(runFunction, arguments):
         """
             Return the output of runFunction for each set of arguments,
             making use of as much parallelization as possible on this system
@@ -54,8 +54,9 @@ class explainer(object):
                  fids = [1,5], 
                  iids=20, 
                  reps=5, 
-                 sampling_method = "grid", 
+                 sampling_method = "grid",  #or random
                  grid_steps = 20,
+                 sample_size = None,  #only used with random method
                  budget = 10000,
                  seed = 1,
                  verbose = False):
@@ -69,7 +70,8 @@ class explainer(object):
         self.grid_steps = grid_steps
         self.verbose = verbose
         self.budget = budget
-        self.df = pd.DataFrame(names=[])
+        self.df = pd.DataFrame(columns = ['fid', 'iid', 'dim', 'seed', *config_space.keys , 'auc'])
+        print(self.df)
         np.random.seed(seed)
 
 
@@ -77,13 +79,6 @@ class explainer(object):
 
     def run(self):
         #execute all runs
-
-        widgets = [' [',
-        progressbar.Timer(format= 'elapsed time: %(elapsed)s'),
-            '] ',
-            progressbar.Bar('*'),' (',
-            progressbar.ETA(), ') ',
-            ]
  
         ConfigurationGrid = generate_grid(cs, self.grid_steps)
         if self.verbose:
@@ -97,11 +92,9 @@ class explainer(object):
                         func = auc_func(fid, dimension=dim, instance=iid)
                         #func.attach_logger(logger)
                         for seed in range(self.reps):
-                            self.optimizer(func, cs, budget=self.budget, dim=dim)
+                            self.optimizer(func.f, cs, budget=self.budget, dim=dim)
                             auc = func.auc
-                            new_data = np.array([fid, iid, dim, seed, cs.values, auc])
-                            self.data = np.vstack((self.data, new_data))
+                            self.df.append({'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **cs, 'auc':auc}, ignore_index = True)
                             func.reset()
-
-    results = np.array(results)
-    np.save("de-results500.npy", results)
+        self.df.to_pickle("df.pkl")  
+        print(self.df)
