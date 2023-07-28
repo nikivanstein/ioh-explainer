@@ -7,10 +7,11 @@ from multiprocessing import Pool
 import ioh
 import numpy as np
 import pandas as pd
-import progressbar
+import tqdm
 from itertools import product
 from .utils import runParallelFunction, auc_func
-
+import xgboost
+import shap
 
 class explainer(object):
 
@@ -55,24 +56,45 @@ class explainer(object):
         #func.attach_logger(logger)
         for seed in range(self.reps):
             self.optimizer(func, config, budget=self.budget, dim=dim)
-            self.df.loc[len(self.df)] = {'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **config, 'auc':func.state.current_best_internal.y} #func.auc
+            y = func.state.current_best_internal.y
             func.reset()
+            return {'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **config, 'auc':y} #func.auc
+            
 
     def run(self, paralell=False):
         self._create_grid()
         #execute all runs
         #run all the optimizations
-        for i in progressbar.progressbar(range(len(self.configuration_grid))):
+        for i in tqdm.tqdm(range(len(self.configuration_grid))):
             if paralell:
                 partial_run = partial(self._run_verification)
                 args = product(self.dims, self.fids, np.arange(self.iids), [i])
-                runParallelFunction(partial_run, args)
+                res = runParallelFunction(partial_run, args)
+                for row in res:
+                    self.df.loc[len(self.df)] = row
             else:
                 for dim in self.dims:
                     for fid in self.fids:
                         for iid in range(self.iids):
-                            self._run_verification([dim,fid,iid,i])
+                            row = self._run_verification([dim,fid,iid,i])
+                            self.df.loc[len(self.df)] = row
             
         self.df.to_pickle("df.pkl")  
         if self.verbose:
             print(self.df)
+
+    def plot(self):
+        df = self.df
+        df = df.rename(columns={"iid": "Instance variance", "seed": "Stochastic variance"})
+        for fid in self.fids:
+            for dim in self.dims:
+                subdf = df[(df['fid'] == fid) & (df['dim'] == dim)]
+                X = subdf[[*self.config_space.keys(), 'Instance variance', 'Stochastic variance']]
+                y = subdf['auc'].values
+                    
+                # train xgboost model on diabetes data:
+                bst = xgboost.train({"learning_rate": 0.01}, xgboost.DMatrix(X, label=y), 100)
+
+                # explain the model's prediction using SHAP values on the first 1000 training data samples
+                shap_values = shap.TreeExplainer(bst).shap_values(X)
+                shap.summary_plot(shap_values, X)
