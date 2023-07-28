@@ -4,6 +4,7 @@ from ConfigSpace.util import generate_grid
 from functools import partial
 from multiprocessing import cpu_count
 from multiprocessing import Pool
+import matplotlib.pyplot as plt
 import ioh
 import numpy as np
 import pandas as pd
@@ -97,4 +98,6 @@ class explainer(object):
 
                 # explain the model's prediction using SHAP values on the first 1000 training data samples
                 shap_values = shap.TreeExplainer(bst).shap_values(X)
-                shap.summary_plot(shap_values, X)
+                shap.summary_plot(shap_values, X, show=False)
+                plt.xlabel(f'Hyper-parameter contributions on $f_{fid}$ in $d={dim}$')
+                plt.show()
