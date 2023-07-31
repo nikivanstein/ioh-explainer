@@ -55,7 +55,7 @@ class explainer(object):
         config = self.configuration_grid[config_i]
         #func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
         func = ioh.get_problem(fid, dimension=dim, instance=iid)
-        myLogger = AUC_logger(triggers=[ioh.logger.trigger.ALWAYS])
+        myLogger = auc_logger(self.budget, func, triggers=[ioh.logger.trigger.ALWAYS])
         func.attach_logger(myLogger)
         for seed in range(self.reps):
             self.optimizer(func, config, budget=self.budget, dim=dim)

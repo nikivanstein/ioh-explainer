@@ -3,7 +3,6 @@ from multiprocessing import Pool
 import ioh
 import numpy as np
 import pandas as pd
-import progressbar
 from itertools import product
 
 """
@@ -27,17 +26,16 @@ def runParallelFunction(runFunction, arguments):
         return results
 
 class auc_logger(ioh.logger.AbstractLogger):
-    def __init__(self, budget, problem, *args, **kwargs):
+    def __init__(self, budget, func, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.problem = problem
         self.auc = budget
         self.budget = budget
+        self.func = func
+        powers = np.round(np.linspace(8, -8, 81), decimals=1)
+        self.target_values = np.power([10] * 81, powers)
 
     def __call__(self, log_info: ioh.LogInfo):
-        print(f"triggered! y: {log_info.y}")
-        self.auc -= sum(self.problem.f.state.current_best_internal.y > self.problem.target_values) / 81
-        print(self.auc)
-        print(log_info)
+        self.auc -= sum(self.func.state.current_best_internal.y > self.target_values) / 81
     
     def reset(self):
         self.auc = self.budget
