@@ -10,9 +10,10 @@ import numpy as np
 import pandas as pd
 import tqdm
 from itertools import product
-from .utils import runParallelFunction, auc_func
+from .utils import runParallelFunction, auc_logger
 import xgboost
 import shap
+
 
 class explainer(object):
 
@@ -54,12 +55,14 @@ class explainer(object):
         config = self.configuration_grid[config_i]
         #func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
         func = ioh.get_problem(fid, dimension=dim, instance=iid)
-        #func.attach_logger(logger)
+        myLogger = AUC_logger(triggers=[ioh.logger.trigger.ALWAYS])
+        func.attach_logger(myLogger)
         for seed in range(self.reps):
             self.optimizer(func, config, budget=self.budget, dim=dim)
-            y = func.state.current_best_internal.y
+            auc = myLogger.auc
+            myLogger.reset()
             func.reset()
-            return {'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **config, 'auc':y} #func.auc
+            return {'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **config, 'auc': auc} #func.auc
             
 
     def run(self, paralell=False):
