@@ -35,7 +35,10 @@ class auc_logger(ioh.logger.AbstractLogger):
         self.target_values = np.power([10] * 81, powers)
 
     def __call__(self, log_info: ioh.LogInfo):
+        if self.func.state.evaluations >= self.budget:
+            return
         self.auc -= sum(self.func.state.current_best_internal.y > self.target_values) / 81
     
-    def reset(self):
+    def reset(self, func):
         self.auc = self.budget
+        self.func = func

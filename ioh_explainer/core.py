@@ -22,7 +22,7 @@ class explainer(object):
                  optimizer_args = None,
                  dims = [5, 10, 20, 40], 
                  fids = [1,5], 
-                 iids=20, 
+                 iids=5, 
                  reps=5, 
                  sampling_method = "grid",  #or random
                  grid_steps_dict = None, #if none uses 10 steps for each
@@ -57,12 +57,15 @@ class explainer(object):
         func = ioh.get_problem(fid, dimension=dim, instance=iid)
         myLogger = auc_logger(self.budget, func, triggers=[ioh.logger.trigger.ALWAYS])
         func.attach_logger(myLogger)
+        return_list = []
         for seed in range(self.reps):
-            self.optimizer(func, config, budget=self.budget, dim=dim)
+            np.random.seed(seed)
+            self.optimizer(func, config, budget=self.budget, dim=dim, seed=seed)
             auc = myLogger.auc
-            myLogger.reset()
             func.reset()
-            return {'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **config, 'auc': auc} #func.auc
+            myLogger.reset(func)
+            return_list.append({'fid' : fid, 'iid': iid, 'dim' : dim, 'seed' : seed, **config, 'auc': auc})
+        return return_list
             
 
     def run(self, paralell=False):
@@ -74,20 +77,26 @@ class explainer(object):
                 partial_run = partial(self._run_verification)
                 args = product(self.dims, self.fids, np.arange(self.iids), [i])
                 res = runParallelFunction(partial_run, args)
-                for row in res:
-                    self.df.loc[len(self.df)] = row
+                for tab in res:
+                    for row in tab: 
+                        self.df.loc[len(self.df)] = row
             else:
                 for dim in self.dims:
                     for fid in self.fids:
                         for iid in range(self.iids):
-                            row = self._run_verification([dim,fid,iid,i])
-                            self.df.loc[len(self.df)] = row
-            
-        self.df.to_pickle("df.pkl")  
+                            tab = self._run_verification([dim,fid,iid,i])
+                            for row in tab: 
+                                self.df.loc[len(self.df)] = row
         if self.verbose:
             print(self.df)
+    
+    def save_results(self, filename="results.pkl"):
+        self.df.to_pickle(filename)  
 
-    def plot(self):
+    def load_results(self, filename="results.pkl"):
+        self.df = pd.read_pickle(filename)
+
+    def plot(self, partial_dependence=True, best_config=True):
         df = self.df
         df = df.rename(columns={"iid": "Instance variance", "seed": "Stochastic variance"})
         for fid in self.fids:
@@ -95,12 +104,29 @@ class explainer(object):
                 subdf = df[(df['fid'] == fid) & (df['dim'] == dim)]
                 X = subdf[[*self.config_space.keys(), 'Instance variance', 'Stochastic variance']]
                 y = subdf['auc'].values
-                    
-                # train xgboost model on diabetes data:
+                
+                # train xgboost model on experiments data (TODO show accuracy with 5-fold or something similar)
                 bst = xgboost.train({"learning_rate": 0.01}, xgboost.DMatrix(X, label=y), 100)
 
                 # explain the model's prediction using SHAP values on the first 1000 training data samples
-                shap_values = shap.TreeExplainer(bst).shap_values(X)
-                shap.summary_plot(shap_values, X, show=False)
+                explainer = shap.TreeExplainer(bst)
+                shap_values = explainer.shap_values(X)
+                
+                shap.summary_plot(shap_values, X, show=False) #plot_type='layered_violin'
+                plt.invert_xaxis()
                 plt.xlabel(f'Hyper-parameter contributions on $f_{fid}$ in $d={dim}$')
                 plt.show()
+
+                if partial_dependence:
+                    #show dependency plots for all features
+                    for hyper_parameter in range(len(self.config_space.keys())):
+                        shap.dependence_plot(hyper_parameter, shap_values, X)
+                
+                if best_config:
+                    #show force plot of best configuration
+                    #get best configuration from subdf
+                    best_config = np.argmin(y)
+                    print("best config ", X.iloc[best_config], "with auc ", y[best_config])
+                    shap.force_plot(explainer.expected_value, shap_values[best_config,:], X.iloc[best_config], matplotlib=True)
+                    #plt.title(f'Best configuration {X.iloc[best_config][self.config_space.keys()]}')
+                    plt.show()
