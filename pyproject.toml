@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ioh_explainer"
+version = "0.1.0"
+authors = [
+  { name="Niki van Stein", email="n.van.stein@liacs.leidenuniv.nl" },
+]
+description = "Explainable Benchmarking for Iterative Optimization Heuristics"
+keywords = ["IOH", "XAI", "Benchmarking", "BBOB"]
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Basvanstein/ioh-explainer"
+"Bug Tracker" = "https://github.com/Basvanstein/ioh-explainer/issues"
