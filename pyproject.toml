@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ioh_explainer"
+name = "ioh_xplainer"
 version = "0.1.0"
 authors = [
   { name="Niki van Stein", email="n.van.stein@liacs.leidenuniv.nl" },

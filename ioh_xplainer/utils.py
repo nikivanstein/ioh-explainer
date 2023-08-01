@@ -4,7 +4,6 @@ from multiprocessing import Pool, cpu_count
 import ioh
 import numpy as np
 import pandas as pd
-from BIAS import f0
 
 """
 Utility functions
@@ -37,6 +36,7 @@ def ioh_f0():
     Returns:
         function: ioh problem class
     """
+    from BIAS import f0
     return ioh.wrap_problem(f0, name="f0", lb=0.0, ub=1.0)
 
 

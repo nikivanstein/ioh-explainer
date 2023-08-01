@@ -198,6 +198,43 @@ class explainer(object):
                 )
             test.explain(samples, preds, filename=filename)
         return y
+    
+    def avg_stats(self):
+        self.stats = {}
+        
+        for dim in self.dims:
+            dim_df = self.df[self.df['dim'] == dim]
+            stat_index = f"d={dim}"
+            self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best", "avg-best", "avg"])
+            #split df per function
+            #get avg best config
+            name_list = [*self.config_space.keys()]
+            best_mean = dim_df.groupby(name_list)['auc'].mean().idxmin()
+            df_best_mean = dim_df
+            for i in range(len(name_list)):
+                df_best_mean = df_best_mean[df_best_mean[name_list[i]] == best_mean[i]]
+            
+            for fid in self.fids:
+                func = ioh.get_problem(fid, dimension=dim, instance=1)
+                fid_df = dim_df[dim_df['fid'] == fid]
+                single_best = fid_df.groupby(name_list)['auc'].mean().idxmin()
+                df_single_best = fid_df
+                for i in range(len(name_list)):
+                    df_single_best = df_single_best[df_single_best[name_list[i]] == single_best[i]]
+                
+                # Define the new row to be added
+                avg_best_avg = df_best_mean[df_best_mean['fid'] == fid]['auc'].mean()
+                avg_best_var = df_best_mean[df_best_mean['fid'] == fid]['auc'].var()
+                avg_avg = fid_df['auc'].mean()
+                avg_var = fid_df['auc'].var()
+                new_row = {'Function': func.meta_data.name, 
+                            "single-best": f"{df_single_best['auc'].mean():.2f} ({df_single_best['auc'].var():.2f})", 
+                            "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
+                            "avg": f"{avg_avg:.2f} ({avg_var:.2f})"}
+                
+                # Use the loc method to add the new row to the DataFrame
+                self.stats[stat_index].loc[len(self.stats[stat_index])] = new_row
+        return pd.concat(self.stats, axis=1)
 
     def plot(
         self,
