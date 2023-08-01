@@ -31,7 +31,6 @@ def run_de(func, config, budget, dim, *args, **kwargs):
 
 de_explainer = explainer(run_de, 
                  cs , 
-                 optimizer_args = None,
                  dims = [5,10],#,10,40],#, 10, 20, 40 
                  fids = [1,5],#,5,7,13,18,20,23], #,5
                  iids = 5, #20 
