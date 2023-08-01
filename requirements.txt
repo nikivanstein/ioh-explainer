@@ -21,3 +21,4 @@ zipp==3.16.2
 shap==0.42.1
 tqdm==4.65.0
 xgboost==1.7.6
+struct-bias==1.3.0

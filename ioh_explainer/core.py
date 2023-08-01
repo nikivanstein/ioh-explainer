@@ -1,3 +1,4 @@
+import sys
 from functools import partial
 from itertools import product
 from multiprocessing import Pool, cpu_count
@@ -9,10 +10,16 @@ import pandas as pd
 import shap
 import tqdm
 import xgboost
+from BIAS import BIAS
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 
-from .utils import auc_logger, runParallelFunction
+from .utils import auc_logger, ioh_f0, runParallelFunction
+
+if not sys.warnoptions:
+    import warnings
+
+    warnings.simplefilter("ignore")
 
 
 class explainer(object):
@@ -50,7 +57,7 @@ class explainer(object):
         """Initialize the optimizer .
 
         Args:
-            optimizer (function): The ioh to be explained.
+            optimizer (function): The algorithm to be evaluated and explained, should handle the ioh problem as objective function.
             config_space (ConfigurationSpace): Configuration space listing all hyper-parameters to vary.
             dims (list, optional): List of dimensions to evaluate. Defaults to [5, 10, 20].
             fids (list, optional): List of function ids to evaluate from the BBOB suite. Defaults to [1,5,7,13,18,20,23].
@@ -164,41 +171,46 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
-    def train_model(self, df, fid, dim):
-        """Train a model on the dataset for a given function id and dimension.
+    def check_bias(self, config, dim, num_runs=100, file_prefix=None):
+        """Runs the bias result on the given configuration .
 
         Args:
-            df (pd.DataFrame): Dataframe with all results.
-            fid (int): function id.
-            dim (int): dimensionality.
-
-        Returns:
-            dict: Dictionary including the model, the explainer, shap values and dataset.
+            config (dict): Configuration of an optimzer.
+            dim (int): Dimensionality
+            num_runs (int): number of runs on f0, should be either 30,50,100,200,500 or 600 (600 gives highest precision)
+            file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
-        if f"{fid}-{dim}" in self.models.keys():
-            return self.models[f"{fid}-{dim}"]
-        subdf = df[(df["fid"] == fid) & (df["dim"] == dim)]
-        X = subdf[
-            [*self.config_space.keys(), "Instance variance", "Stochastic variance"]
-        ]
-        y = subdf["auc"].values
+        samples = []
+        f0 = ioh_f0()
+        if self.verbose:
+            print("Running 100 evaluations on f0 for bias detection..")
+        for i in np.arange(100):
+            self.optimizer(f0, config, budget=self.budget, dim=dim, seed=i)
+            scaled_x = (f0.state.current_best.x + 5) / 10.0
+            samples.append(scaled_x)
+            f0.reset()
 
-        # train xgboost model on experiments data (TODO show accuracy with 5-fold or something similar)
-        bst = xgboost.train({"learning_rate": 0.01}, xgboost.DMatrix(X, label=y), 100)
-        # explain the model's prediction using SHAP values on the first 1000 training data samples
-        explainer = shap.TreeExplainer(bst)
-        shap_values = explainer.shap_values(X)
-
-        self.models[f"{fid}-{dim}"] = {
-            "model": bst,
-            "explainer": explainer,
-            "shap": shap_values,
-            "X": X,
-        }
-        return self.models[f"{fid}-{dim}"]
+        samples = np.array(samples)
+        test = BIAS()
+        y, preds = test.predict_deep(samples)
+        filename = None
+        if file_prefix != None:
+            filename = f"{file_prefix}_bias_{config}-{dim}.png"
+        if y != "unif":
+            if self.verbose:
+                print(
+                    f"Warning! Single best configuration shows structural bias of type {y}."
+                )
+            test.explain(samples, preds, filename=filename)
+        return y
 
     def plot(
-        self, partial_dependence=True, best_config=True, save_figs=False, prefix="res_"
+        self,
+        partial_dependence=True,
+        best_config=True,
+        save_figs=False,
+        prefix="res_",
+        check_bias=True,
     ):
         """Plots the explainations for the evaluated algorithm and set of hyper-parameters.
 
@@ -214,11 +226,27 @@ class explainer(object):
         )
         for fid in self.fids:
             for dim in self.dims:
-                model_dict = self.train_model(df, fid, dim)
+                subdf = df[(df["fid"] == fid) & (df["dim"] == dim)]
+                X = subdf[
+                    [
+                        *self.config_space.keys(),
+                        "Instance variance",
+                        "Stochastic variance",
+                    ]
+                ]
+                y = subdf["auc"].values
+
+                # train xgboost model on experiments data (TODO show accuracy with 5-fold or something similar)
+                bst = xgboost.train(
+                    {"learning_rate": 0.01}, xgboost.DMatrix(X, label=y), 100
+                )
+                # explain the model's prediction using SHAP values on the first 1000 training data samples
+                explainer = shap.TreeExplainer(bst)
+                shap_values = explainer.shap_values(X)
 
                 shap.summary_plot(
-                    model_dict["shap"],
-                    model_dict["X"],
+                    shap_values,
+                    X,
                     show=False,
                     plot_type="dot",
                     cmap=plt.get_cmap("viridis"),
@@ -236,8 +264,8 @@ class explainer(object):
                     for hyper_parameter in range(len(self.config_space.keys())):
                         shap.dependence_plot(
                             hyper_parameter,
-                            model_dict["shap"],
-                            model_dict["X"],
+                            shap_values,
+                            X,
                             show=False,
                             cmap=plt.get_cmap("viridis"),
                         )
@@ -252,22 +280,27 @@ class explainer(object):
                     # show force plot of best configuration
                     # get best configuration from subdf
                     best_config = np.argmin(y)
-                    print(
-                        "best config ",
-                        model_dict["X"].iloc[best_config],
-                        "with auc ",
-                        y[best_config],
-                    )
+                    if self.verbose:
+                        print(
+                            "best config ",
+                            X.iloc[best_config],
+                            "with auc ",
+                            y[best_config],
+                        )
                     shap.force_plot(
                         explainer.expected_value,
-                        model_dict["shap"][best_config, :],
-                        model_dict["X"].iloc[best_config],
+                        shap_values[best_config, :],
+                        X.iloc[best_config],
                         matplotlib=True,
                         show=False,
                         plot_cmap="PkYg",
                     )
+                    if check_bias:
+                        self.check_bias(
+                            X.iloc[best_config][self.config_space.keys()], dim=dim
+                        )
                     plt.title(
-                        f'Best configuration {model_dict["X"].iloc[best_config][self.config_space.keys()]}'
+                        f"Best configuration {X.iloc[best_config][self.config_space.keys()]}"
                     )
                     if save_figs:
                         plt.savefig(f"{prefix}bestconfig_f{fid}_d{dim}.png")

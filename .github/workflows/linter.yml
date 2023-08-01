@@ -11,6 +11,6 @@ jobs:
         with:
           python-version: 3.8.12
       - name: Install black
-        run: pip install black==32.7.0
+        run: pip install black==23.7.0
       - name: Run black
         run: black --check --verbose ./src/

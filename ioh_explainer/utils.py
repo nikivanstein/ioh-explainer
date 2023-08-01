@@ -4,6 +4,7 @@ from multiprocessing import Pool, cpu_count
 import ioh
 import numpy as np
 import pandas as pd
+from BIAS import f0
 
 """
 Utility functions
@@ -25,6 +26,18 @@ def runParallelFunction(runFunction, arguments):
     results = p.map(runFunction, arguments)
     p.close()
     return results
+
+
+def ioh_f0():
+    """Wrapped version of the f0 objective function.
+
+    Args:
+        dim (integer): dimensionality
+
+    Returns:
+        function: ioh problem class
+    """
+    return ioh.wrap_problem(f0, name="f0", lb=0.0, ub=1.0)
 
 
 class auc_logger(ioh.logger.AbstractLogger):
