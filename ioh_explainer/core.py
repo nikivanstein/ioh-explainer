@@ -10,16 +10,10 @@ import pandas as pd
 import shap
 import tqdm
 import xgboost
-from BIAS import BIAS
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 
 from .utils import auc_logger, ioh_f0, runParallelFunction
-
-if not sys.warnoptions:
-    import warnings
-
-    warnings.simplefilter("ignore")
 
 
 class explainer(object):
@@ -180,6 +174,7 @@ class explainer(object):
             num_runs (int): number of runs on f0, should be either 30,50,100,200,500 or 600 (600 gives highest precision)
             file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
+        from BIAS import BIAS
         samples = []
         f0 = ioh_f0()
         if self.verbose:
@@ -208,8 +203,7 @@ class explainer(object):
         self,
         partial_dependence=True,
         best_config=True,
-        save_figs=False,
-        prefix="res_",
+        file_prefix=None,
         check_bias=True,
     ):
         """Plots the explainations for the evaluated algorithm and set of hyper-parameters.
@@ -217,8 +211,8 @@ class explainer(object):
         Args:
             partial_dependence (bool, optional): Show partial dependence plots. Defaults to True.
             best_config (bool, optional): Show force plot of the best single optimizer. Defaults to True.
-            save_figs (bool, optional): To save the figs instead of showing them. Defaults to False.
-            prefix (str, optional): Prefix for the file-name when saving figures. Defaults to "res_".
+            file_prefix (str, optional): Prefix for the file-name when saving figures. Defaults to None, meaning figures are not saved.
+            check_bias (bool, optional): Check the best configuration for structural bias. Defaults to False.
         """
         df = self.df
         df = df.rename(
@@ -254,8 +248,8 @@ class explainer(object):
                 axes = plt.gcf().axes
                 axes[0].invert_xaxis()
                 plt.xlabel(f"Hyper-parameter contributions on $f_{fid}$ in $d={dim}$")
-                if save_figs:
-                    plt.savefig(f"{prefix}summary_f{fid}_d{dim}.png")
+                if file_prefix != None:
+                    plt.savefig(f"{file_prefix}summary_f{fid}_d{dim}.png")
                 else:
                     plt.show()
 
@@ -269,9 +263,9 @@ class explainer(object):
                             show=False,
                             cmap=plt.get_cmap("viridis"),
                         )
-                        if save_figs:
+                        if file_prefix != None:
                             plt.savefig(
-                                f"{prefix}pdp_{hyper_parameter}_f{fid}_d{dim}.png"
+                                f"{file_prefix}pdp_{hyper_parameter}_f{fid}_d{dim}.png"
                             )
                         else:
                             plt.show()
@@ -283,9 +277,15 @@ class explainer(object):
                     if self.verbose:
                         print(
                             "best config ",
-                            X.iloc[best_config],
+                            X.iloc[best_config][self.config_space.keys()],
                             "with auc ",
                             y[best_config],
+                        )
+                    if check_bias:
+                        self.check_bias(
+                            X.iloc[best_config][self.config_space.keys()],
+                            dim=dim,
+                            file_prefix=file_prefix,
                         )
                     shap.force_plot(
                         explainer.expected_value,
@@ -295,14 +295,8 @@ class explainer(object):
                         show=False,
                         plot_cmap="PkYg",
                     )
-                    if check_bias:
-                        self.check_bias(
-                            X.iloc[best_config][self.config_space.keys()], dim=dim
-                        )
-                    plt.title(
-                        f"Best configuration {X.iloc[best_config][self.config_space.keys()]}"
-                    )
-                    if save_figs:
-                        plt.savefig(f"{prefix}bestconfig_f{fid}_d{dim}.png")
+
+                    if file_prefix != None:
+                        plt.savefig(f"{file_prefix}bestconfig_f{fid}_d{dim}.png")
                     else:
                         plt.show()
