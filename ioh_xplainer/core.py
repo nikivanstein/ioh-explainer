@@ -12,6 +12,7 @@ import tqdm
 import xgboost
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
+import scipy.stats as stats
 
 from .utils import auc_logger, ioh_f0, runParallelFunction
 
@@ -199,7 +200,7 @@ class explainer(object):
             test.explain(samples, preds, filename=filename)
         return y
     
-    def avg_stats(self):
+    def performance_stats(self):
         self.stats = {}
         
         for dim in self.dims:
@@ -228,13 +229,41 @@ class explainer(object):
                 avg_avg = fid_df['auc'].mean()
                 avg_var = fid_df['auc'].var()
                 new_row = {'Function': func.meta_data.name, 
-                            "single-best": f"{df_single_best['auc'].mean():.2f} ({df_single_best['auc'].var():.2f})", 
+                            "single-best":f"{df_single_best['auc'].mean():.2f} ({df_single_best['auc'].var():.2f})", 
                             "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
                             "avg": f"{avg_avg:.2f} ({avg_var:.2f})"}
                 
                 # Use the loc method to add the new row to the DataFrame
                 self.stats[stat_index].loc[len(self.stats[stat_index])] = new_row
+
+                #check if the single best is significantly better than the avg best
+                res = stats.ttest_rel(df_single_best['auc'], df_best_mean[df_best_mean['fid'] == fid]['auc'].values)
+                if res.pvalue < 0.05:
+                    self.stats[stat_index].style.format(lambda x: "\\textbf{" + f'{x}' + "}", subset=(len(self.stats[stat_index])-1, "single-best"))
+
         return pd.concat(self.stats, axis=1)
+
+    def to_latex_report(self, concat_dims = True, filename=None):
+        if len(self.stats) == 0:
+            self.performance_stats()
+        if concat_dims:
+            concat_df = pd.concat(self.stats, axis=1)
+            if filename != None:
+                with open(f'{filename}.tex', "w") as fh:
+                    concat_df.to_latex(buf=fh,
+                        index=False)
+            else:
+                print(concat_df.to_latex(
+                        index=False))
+        else:
+            for dim in self.dims:
+                df = self.stats[dim]
+                if filename != None:
+                    with open(f'{filename}-{dim}.tex', "w") as fh:
+                        df.to_latex(buf=fh, index=False)
+                else:
+                    print(df.to_latex(
+                            index=False))
 
     def plot(
         self,
