@@ -251,19 +251,19 @@ class explainer(object):
             if filename != None:
                 with open(f'{filename}.tex', "w") as fh:
                     concat_df.to_latex(buf=fh,
-                        index=False)
+                        index=False, multicolumn_format = "c")
             else:
                 print(concat_df.to_latex(
-                        index=False))
+                        index=False, multicolumn_format = "c"))
         else:
             for dim in self.dims:
                 df = self.stats[dim]
                 if filename != None:
                     with open(f'{filename}-{dim}.tex', "w") as fh:
-                        df.to_latex(buf=fh, index=False)
+                        df.to_latex(buf=fh, index=False, multicolumn_format = "c")
                 else:
                     print(df.to_latex(
-                            index=False))
+                            index=False, multicolumn_format = "c"))
 
     def plot(
         self,
