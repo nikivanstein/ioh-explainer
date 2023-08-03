@@ -200,49 +200,53 @@ class explainer(object):
             test.explain(samples, preds, filename=filename)
         return y
     
-    def behaviour_stats(self):
+    def behaviour_stats(self, fids = None):
         self.behaviour = {}
         #Random Robustness single best = var / (a – b)**2/12
         #instance robustness single best
         #Global robustness avg best
+        if fids == None:
+            fids = self.fids
         for dim in self.dims:
             uniform_var = (self.budget)**2 / 12
 
-            dim_df = self.df[self.df['dim'] == dim]
+            dim_df = self.df[(self.df['dim'] == dim) & (self.df['fid'].isin(fids))]
             stat_index = f"d={dim}"
             df = pd.DataFrame(columns=["Measure", "value"])
             #calculate statistics for all parameters
-            var_all = df['auc'].var()
-            mean_performance = df['auc'].mean()
-            df.loc[len(df)] = {"Measure": "Algorithm robustness", "value": var_all / uniform_var}
+            var_all = dim_df['auc'].var()
+            mean_performance = dim_df['auc'].mean()
+            df.loc[len(df)] = {"Measure": "Algorithm robustness", "value": 1 - (var_all / uniform_var)}
 
             #calculate statistics for avg best
             _, df_best_mean = self.get_average_best(dim)
             var_avg_best = df_best_mean['auc'].var()
             avg_best_performance = df_best_mean['auc'].mean()
-            df.loc[len(df)] = {"Measure": "Robustness avg. best", "value": var_avg_best / uniform_var}
+            df.loc[len(df)] = {"Measure": "Robustness avg. best", "value": 1 - (var_avg_best / uniform_var)}
 
             iid_vars_avg_best = []
             for iid in range(self.iids):
                 #calculate variance per iid
                 iid_vars_avg_best.append(df_best_mean[df_best_mean['iid'] == iid]['auc'].var())
             iid_var_avg_best = np.mean(iid_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "S-robust. avg. best", "value": iid_var_avg_best / uniform_var}
+            df.loc[len(df)] = {"Measure": "S-robust. avg. best", "value": 1 - (iid_var_avg_best / uniform_var)}
 
             seed_vars_avg_best = []
             for seed in range(self.reps):
                 #calculate variance per iid
                 seed_vars_avg_best.append(df_best_mean[df_best_mean['seed'] == seed]['auc'].var())
             seed_var_avg_best = np.mean(seed_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "I-robust. avg. best", "value": seed_var_avg_best / uniform_var}
+            df.loc[len(df)] = {"Measure": "I-robust. avg. best", "value": 1 - (seed_var_avg_best / uniform_var)}
 
             #calculate statistics for single best per function
             vars_single_best = []
             single_best_performances = []
-            for fid in self.fids:
+            all_single_best_auc = []
+            for fid in fids:
                 _, df_single_best = self.get_single_best(fid, dim)
                 vars_single_best.append(df_single_best['auc'].var())
                 single_best_performances.append(df_single_best['auc'].mean())
+                all_single_best_auc.extend(df_single_best['auc'].values)
                 seed_vars_single_best = []
                 for seed in range(self.reps):
                     #calculate variance per iid
@@ -251,27 +255,43 @@ class explainer(object):
                 for iid in range(self.iids):
                     #calculate variance per iid
                     iid_vars_single_best.append(df_single_best[df_single_best['iid'] == iid]['auc'].var())
-            
+            all_single_best_auc = np.array(all_single_best_auc)
             single_best_performance = np.mean(single_best_performances)
 
             mean_var_single_best = np.mean(vars_single_best)
-            df.loc[len(df)] = {"Measure": "Robustness single best", "value": mean_var_single_best / uniform_var}
+            df.loc[len(df)] = {"Measure": "Robustness single best", "value": 1 - (mean_var_single_best / uniform_var)}
             
             iid_var_single_best = np.mean(iid_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "S-robust. avg. best", "value": iid_var_single_best / uniform_var}
+            df.loc[len(df)] = {"Measure": "S-robust. single best", "value": 1 - (iid_var_single_best / uniform_var)}
 
             seed_var_single_best = np.mean(seed_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "I-robust. single best", "value": seed_var_single_best / uniform_var}
+            df.loc[len(df)] = {"Measure": "I-robust. single best", "value": 1 - (seed_var_single_best / uniform_var)}
             self.behaviour[stat_index] = df
 
             #gains for avg best and single best
-            df.loc[len(df)] = {"Measure": "Average performance", "value": mean_performance}
+            df.loc[len(df)] = {"Measure": "Average norm. perf.", "value": 1 - (mean_performance) / self.budget}
             self.behaviour[stat_index] = df
 
-            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": mean_performance - avg_best_performance}
+            sig = 0
+            res = stats.ttest_ind(dim_df['auc'].values, df_best_mean['auc'].values)
+            if res.pvalue < 0.05:
+                sig = 1
+                
+            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": (mean_performance - avg_best_performance) / self.budget}
             self.behaviour[stat_index] = df
 
-            df.loc[len(df)] = {"Measure": "Gain single best", "value": mean_performance - single_best_performance}
+            df.loc[len(df)] = {"Measure": "sig. impr. avg best", "value": sig}
+            self.behaviour[stat_index] = df
+
+            df.loc[len(df)] = {"Measure": "Gain single best", "value": (mean_performance - single_best_performance) / self.budget}
+            self.behaviour[stat_index] = df
+
+            sig = 0
+            res = stats.ttest_ind(df_best_mean['auc'].values.flatten(), all_single_best_auc.flatten())
+            if res.pvalue < 0.05:
+                sig = 1
+
+            df.loc[len(df)] = {"Measure": "sig. impr. single best vs avg", "value": sig}
             self.behaviour[stat_index] = df
 
             #df.loc[len(df)] = {"Measure": "Exp. Max Gain of ELA", "value": single_best_performance - avg_best_performance}
