@@ -3,6 +3,7 @@ from functools import partial
 from itertools import product
 from multiprocessing import Pool, cpu_count
 
+import math
 import ioh
 import matplotlib.pyplot as plt
 import numpy as np
@@ -200,124 +201,132 @@ class explainer(object):
             test.explain(samples, preds, filename=filename)
         return y
     
-    def behaviour_stats(self, fids = None):
-        self.behaviour = {}
+    def behaviour_stats(self, fids = None, per_fid = False):
+        behaviour = {}
         #Random Robustness single best = var / (a – b)**2/12
         #instance robustness single best
         #Global robustness avg best
         if fids == None:
             fids = self.fids
+        if per_fid:
+            fid_behaviour = {}
+            for fid in fids:
+                fid_behaviour[f'f{fid}'] = self.behaviour_stats(fids = [fid])
+            
+            return pd.concat(fid_behaviour, axis=0)
         for dim in self.dims:
-            uniform_var = (self.budget)**2 / 12
+            uniform_std = math.sqrt((self.budget)**2 / 12)
 
-            dim_df = self.df[(self.df['dim'] == dim) & (self.df['fid'].isin(fids))]
+            dim_df = self.df[(self.df['dim'] == dim)]
             stat_index = f"d={dim}"
             df = pd.DataFrame(columns=["Measure", "value"])
             #calculate statistics for all parameters
-            var_all = dim_df['auc'].var()
+            var_all = dim_df['auc'].std()
             mean_performance = dim_df['auc'].mean()
-            df.loc[len(df)] = {"Measure": "Algorithm robustness", "value": 1 - (var_all / uniform_var)}
+            df.loc[len(df)] = {"Measure": "Algorithm robustness", "value": 1 - (var_all / uniform_std)}
 
             #calculate statistics for avg best
-            _, df_best_mean = self.get_average_best(dim)
-            var_avg_best = df_best_mean['auc'].var()
+            _, df_best_mean = self._get_average_best(dim_df)
+            df_best_mean = df_best_mean[df_best_mean['fid'].isin(fids)] #filter on fids for auc
+            var_avg_best = df_best_mean['auc'].std()
             avg_best_performance = df_best_mean['auc'].mean()
-            df.loc[len(df)] = {"Measure": "Robustness avg. best", "value": 1 - (var_avg_best / uniform_var)}
+            df.loc[len(df)] = {"Measure": "Robustness avg. best", "value": 1 - (var_avg_best / uniform_std)}
 
             iid_vars_avg_best = []
             for iid in range(self.iids):
                 #calculate variance per iid
-                iid_vars_avg_best.append(df_best_mean[df_best_mean['iid'] == iid]['auc'].var())
+                iid_vars_avg_best.append(df_best_mean[df_best_mean['iid'] == iid]['auc'].std())
             iid_var_avg_best = np.mean(iid_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "S-robust. avg. best", "value": 1 - (iid_var_avg_best / uniform_var)}
+            df.loc[len(df)] = {"Measure": "S-robust. avg. best", "value": 1 - (iid_var_avg_best / uniform_std)}
 
             seed_vars_avg_best = []
             for seed in range(self.reps):
                 #calculate variance per iid
-                seed_vars_avg_best.append(df_best_mean[df_best_mean['seed'] == seed]['auc'].var())
+                seed_vars_avg_best.append(df_best_mean[df_best_mean['seed'] == seed]['auc'].std())
             seed_var_avg_best = np.mean(seed_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "I-robust. avg. best", "value": 1 - (seed_var_avg_best / uniform_var)}
+            df.loc[len(df)] = {"Measure": "I-robust. avg. best", "value": 1 - (seed_var_avg_best / uniform_std)}
 
             #calculate statistics for single best per function
             vars_single_best = []
             single_best_performances = []
             all_single_best_auc = []
             for fid in fids:
-                _, df_single_best = self.get_single_best(fid, dim)
-                vars_single_best.append(df_single_best['auc'].var())
+                fid_df = dim_df[dim_df['fid']==fid]
+                _, df_single_best = self._get_single_best(fid_df)
+                vars_single_best.append(df_single_best['auc'].std())
                 single_best_performances.append(df_single_best['auc'].mean())
                 all_single_best_auc.extend(df_single_best['auc'].values)
                 seed_vars_single_best = []
                 for seed in range(self.reps):
                     #calculate variance per iid
-                    seed_vars_single_best.append(df_single_best[df_single_best['seed'] == seed]['auc'].var())
+                    seed_vars_single_best.append(df_single_best[df_single_best['seed'] == seed]['auc'].std())
                 iid_vars_single_best = []
                 for iid in range(self.iids):
                     #calculate variance per iid
-                    iid_vars_single_best.append(df_single_best[df_single_best['iid'] == iid]['auc'].var())
+                    iid_vars_single_best.append(df_single_best[df_single_best['iid'] == iid]['auc'].std())
             all_single_best_auc = np.array(all_single_best_auc)
             single_best_performance = np.mean(single_best_performances)
 
             mean_var_single_best = np.mean(vars_single_best)
-            df.loc[len(df)] = {"Measure": "Robustness single best", "value": 1 - (mean_var_single_best / uniform_var)}
+            df.loc[len(df)] = {"Measure": "Robustness single best", "value": 1 - (mean_var_single_best / uniform_std)}
             
             iid_var_single_best = np.mean(iid_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "S-robust. single best", "value": 1 - (iid_var_single_best / uniform_var)}
+            df.loc[len(df)] = {"Measure": "S-robust. single best", "value": 1 - (iid_var_single_best / uniform_std)}
 
             seed_var_single_best = np.mean(seed_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "I-robust. single best", "value": 1 - (seed_var_single_best / uniform_var)}
-            self.behaviour[stat_index] = df
+            df.loc[len(df)] = {"Measure": "I-robust. single best", "value": 1 - (seed_var_single_best / uniform_std)}
 
             #gains for avg best and single best
             df.loc[len(df)] = {"Measure": "Average norm. perf.", "value": 1 - (mean_performance) / self.budget}
-            self.behaviour[stat_index] = df
-
-            sig = 0
+            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": (mean_performance - avg_best_performance) / self.budget}
+            df.loc[len(df)] = {"Measure": "Gain single best", "value": (mean_performance - single_best_performance) / self.budget}
+            sig_avg = 0
             res = stats.ttest_ind(dim_df['auc'].values, df_best_mean['auc'].values)
             if res.pvalue < 0.05:
-                sig = 1
-                
-            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": (mean_performance - avg_best_performance) / self.budget}
-            self.behaviour[stat_index] = df
+                sig_avg = 1
 
-            df.loc[len(df)] = {"Measure": "sig. impr. avg best", "value": sig}
-            self.behaviour[stat_index] = df
-
-            df.loc[len(df)] = {"Measure": "Gain single best", "value": (mean_performance - single_best_performance) / self.budget}
-            self.behaviour[stat_index] = df
-
-            sig = 0
+            df.loc[len(df)] = {"Measure": "sig. impr. avg best", "value": sig_avg}
+            sig_single = 0
             res = stats.ttest_ind(df_best_mean['auc'].values.flatten(), all_single_best_auc.flatten())
             if res.pvalue < 0.05:
-                sig = 1
+                sig_single = 1
 
-            df.loc[len(df)] = {"Measure": "sig. impr. single best vs avg", "value": sig}
-            self.behaviour[stat_index] = df
+            df.loc[len(df)] = {"Measure": "sig. impr. single best vs avg", "value": sig_single}
+            behaviour[stat_index] = df
 
             #df.loc[len(df)] = {"Measure": "Exp. Max Gain of ELA", "value": single_best_performance - avg_best_performance}
             #self.behaviour[stat_index] = df
 
-        return pd.concat(self.behaviour, axis=1)
+        return pd.concat(behaviour, axis=1)
     
-    def get_single_best(self, fid, dim):
+    def _get_single_best(self, fid_df):
         name_list = [*self.config_space.keys()]
-        dim_df = self.df[self.df['dim'] == dim]
-        fid_df = dim_df[dim_df['fid'] == fid]
         single_best = fid_df.groupby(name_list)['auc'].mean().idxmin()
         df_single_best = fid_df
         for i in range(len(name_list)):
             df_single_best = df_single_best[df_single_best[name_list[i]] == single_best[i]]
         return single_best, df_single_best
-
-    def get_average_best(self, dim):
-        """Returns average best configuration for given dimensionality and the data belonging to it."""
-        dim_df = self.df[self.df['dim'] == dim]
+    
+    def get_single_best(self, fid, dim):
+        subdf = self.df
+        dim_df = subdf[subdf['dim'] == dim]
+        fid_df = dim_df[dim_df['fid'] == fid]
+        return self._get_single_best(fid_df)
+        
+    
+    def _get_average_best(self, dim_df):
         name_list = [*self.config_space.keys()]
         best_mean = dim_df.groupby(name_list)['auc'].mean().idxmin()
         df_best_mean = dim_df
         for i in range(len(name_list)):
             df_best_mean = df_best_mean[df_best_mean[name_list[i]] == best_mean[i]]
         return best_mean, df_best_mean
+
+    def get_average_best(self, dim):
+        """Returns average best configuration for given dimensionality and the data belonging to it."""
+        dim_df = self.df[self.df['dim'] == dim]
+        return self._get_average_best(dim_df)
+        
 
     def performance_stats(self):
         self.stats = {}
@@ -328,7 +337,7 @@ class explainer(object):
             self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best", "avg-best", "avg"])
             #split df per function
             #get avg best config
-            _, df_best_mean = self.get_average_best(dim)
+            _, df_best_mean = self._get_average_best(dim_df)
             for fid in self.fids:
                 func = ioh.get_problem(fid, dimension=dim, instance=1)
                 fid_df = dim_df[dim_df['fid'] == fid]
@@ -336,11 +345,11 @@ class explainer(object):
                 
                 # Define the new row to be added
                 avg_best_avg = df_best_mean[df_best_mean['fid'] == fid]['auc'].mean()
-                avg_best_var = df_best_mean[df_best_mean['fid'] == fid]['auc'].var()
+                avg_best_var = df_best_mean[df_best_mean['fid'] == fid]['auc'].std()
                 avg_avg = fid_df['auc'].mean()
-                avg_var = fid_df['auc'].var()
+                avg_var = fid_df['auc'].std()
                 new_row = {'Function': func.meta_data.name, 
-                            "single-best":f"{df_single_best['auc'].mean():.2f} ({df_single_best['auc'].var():.2f})", 
+                            "single-best":f"{df_single_best['auc'].mean():.2f} ({df_single_best['auc'].std():.2f})", 
                             "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
                             "avg": f"{avg_avg:.2f} ({avg_var:.2f})"}
                 

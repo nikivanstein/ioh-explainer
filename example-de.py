@@ -1,6 +1,6 @@
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
-from ioh_explainer import explainer
+from ioh_xplainer import explainer
 from modde import ModularDE, Parameters
 import numpy as np
 
@@ -13,8 +13,8 @@ cs = ConfigurationSpace({
 
 steps_dict = {
     "F": 20, 
-    "CR" : 10,
-    "lambda_": 5
+    "CR" : 20,
+    "lambda_": 10
 }
 
 
@@ -31,8 +31,8 @@ def run_de(func, config, budget, dim, *args, **kwargs):
 
 de_explainer = explainer(run_de, 
                  cs , 
-                 dims = [5,10],#,10,40],#, 10, 20, 40 
-                 fids = [1,5],#,5,7,13,18,20,23], #,5
+                 dims = [5,10,20],#,10,40],#, 10, 20, 40 
+                 fids = [1,5,7,13,18,20,23], #,5
                  iids = 5, #20 
                  reps = 5, 
                  sampling_method = "grid",  #or random
@@ -48,10 +48,10 @@ de_explainer.save_results("de_results.pkl")
 
 
 de_explainer.load_results("de_results.pkl")
-x = de_explainer.df[(de_explainer.df['fid'] == 1) & (de_explainer.df['dim'] == 5)][["F","CR","lambda_"]].to_numpy()
+#x = de_explainer.df[(de_explainer.df['fid'] == 1) & (de_explainer.df['dim'] == 5)][["F","CR","lambda_"]].to_numpy()
 
-y = de_explainer.df[(de_explainer.df['fid'] == 1) & (de_explainer.df['dim'] == 5)]["auc"].to_numpy()
-np.savetxt("sobol/x.csv", x)
-np.savetxt("sobol/y.csv", y)
+#y = de_explainer.df[(de_explainer.df['fid'] == 1) & (de_explainer.df['dim'] == 5)]["auc"].to_numpy()
+#np.savetxt("sobol/x.csv", x)
+#np.savetxt("sobol/y.csv", y)
 
-de_explainer.plot(save_figs = True, prefix = "de_")
+de_explainer.plot(save_figs = True, prefix = "img/de_")
