@@ -40,6 +40,7 @@ class explainer(object):
         self,
         optimizer,
         config_space,
+        algname = "optimizer",
         dims=[5, 10, 20],
         fids=[1, 5, 7, 13, 18, 20, 23],
         iids=5,
@@ -56,6 +57,7 @@ class explainer(object):
         Args:
             optimizer (function): The algorithm to be evaluated and explained, should handle the ioh problem as objective function.
             config_space (ConfigurationSpace): Configuration space listing all hyper-parameters to vary.
+            algname (string, optional): Name of the algorithm. Defaults to "optimizer".
             dims (list, optional): List of dimensions to evaluate. Defaults to [5, 10, 20].
             fids (list, optional): List of function ids to evaluate from the BBOB suite. Defaults to [1,5,7,13,18,20,23].
             iids (int, optional): Number of instances to evaluate. Defaults to 5.
@@ -69,6 +71,7 @@ class explainer(object):
         """
 
         self.optimizer = optimizer
+        self.algname = algname
         self.config_space = config_space
         self.dims = dims
         self.fids = fids
@@ -224,28 +227,30 @@ class explainer(object):
             #calculate statistics for all parameters
             var_all = dim_df['auc'].std()
             mean_performance = dim_df['auc'].mean()
-            df.loc[len(df)] = {"Measure": "Algorithm robustness", "value": 1 - (var_all / uniform_std)}
+            df.loc[len(df)] = {"Measure": "Algorithm stability", "value": 1 - (var_all / uniform_std)}
 
             #calculate statistics for avg best
             _, df_best_mean = self._get_average_best(dim_df)
             df_best_mean = df_best_mean[df_best_mean['fid'].isin(fids)] #filter on fids for auc
             var_avg_best = df_best_mean['auc'].std()
             avg_best_performance = df_best_mean['auc'].mean()
-            df.loc[len(df)] = {"Measure": "Robustness avg. best", "value": 1 - (var_avg_best / uniform_std)}
+            df.loc[len(df)] = {"Measure": "Invar. avg. best", "value": 1 - (var_avg_best / uniform_std)}
 
-            iid_vars_avg_best = []
-            for iid in list(self.df['iid'].unique()):
-                #calculate variance per iid
-                iid_vars_avg_best.append(df_best_mean[df_best_mean['iid'] == iid]['auc'].std())
-            iid_var_avg_best = np.mean(iid_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "S-robust. avg. best", "value": 1 - (iid_var_avg_best / uniform_std)}
+            if (len(self.df['iid'].unique()) > 1):
+                iid_vars_avg_best = []
+                for iid in list(self.df['iid'].unique()):
+                    #calculate variance per iid
+                    iid_vars_avg_best.append(df_best_mean[df_best_mean['iid'] == iid]['auc'].std())
+                iid_var_avg_best = np.mean(iid_vars_avg_best)
+                df.loc[len(df)] = {"Measure": "S-inv. avg. best", "value": 1 - (iid_var_avg_best / uniform_std)}
 
-            seed_vars_avg_best = []
-            for seed in list(self.df['seed'].unique()):
-                #calculate variance per iid
-                seed_vars_avg_best.append(df_best_mean[df_best_mean['seed'] == seed]['auc'].std())
-            seed_var_avg_best = np.mean(seed_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "I-robust. avg. best", "value": 1 - (seed_var_avg_best / uniform_std)}
+            if (len(self.df['seed'].unique()) > 1):
+                seed_vars_avg_best = []
+                for seed in list(self.df['seed'].unique()):
+                    #calculate variance per iid
+                    seed_vars_avg_best.append(df_best_mean[df_best_mean['seed'] == seed]['auc'].std())
+                seed_var_avg_best = np.mean(seed_vars_avg_best)
+                df.loc[len(df)] = {"Measure": "I-inv. avg. best", "value": 1 - (seed_var_avg_best / uniform_std)}
 
             #calculate statistics for single best per function
             vars_single_best = []
@@ -269,13 +274,15 @@ class explainer(object):
             single_best_performance = np.mean(single_best_performances)
 
             mean_var_single_best = np.mean(vars_single_best)
-            df.loc[len(df)] = {"Measure": "Robustness single best", "value": 1 - (mean_var_single_best / uniform_std)}
+            df.loc[len(df)] = {"Measure": "Invar. single best", "value": 1 - (mean_var_single_best / uniform_std)}
             
-            iid_var_single_best = np.mean(iid_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "S-robust. single best", "value": 1 - (iid_var_single_best / uniform_std)}
+            if (len(self.df['iid'].unique()) > 1):
+                iid_var_single_best = np.mean(iid_vars_avg_best)
+                df.loc[len(df)] = {"Measure": "S-inv. single best", "value": 1 - (iid_var_single_best / uniform_std)}
 
-            seed_var_single_best = np.mean(seed_vars_avg_best)
-            df.loc[len(df)] = {"Measure": "I-robust. single best", "value": 1 - (seed_var_single_best / uniform_std)}
+            if (len(self.df['seed'].unique()) > 1):
+                seed_var_single_best = np.mean(seed_vars_avg_best)
+                df.loc[len(df)] = {"Measure": "I-inv. single best", "value": 1 - (seed_var_single_best / uniform_std)}
 
             #gains for avg best and single best
             df.loc[len(df)] = {"Measure": "Average norm. perf.", "value": 1 - (mean_performance) / self.budget}
@@ -292,7 +299,7 @@ class explainer(object):
             if res.pvalue < 0.05:
                 sig_single = 1
 
-            df.loc[len(df)] = {"Measure": "sig. impr. single best vs avg", "value": sig_single}
+            df.loc[len(df)] = {"Measure": "sig. impr. s. best vs avg best", "value": sig_single}
             behaviour[stat_index] = df
 
             #df.loc[len(df)] = {"Measure": "Exp. Max Gain of ELA", "value": single_best_performance - avg_best_performance}
@@ -329,7 +336,7 @@ class explainer(object):
         return self._get_average_best(dim_df)
         
 
-    def performance_stats(self):
+    def performance_stats(self, normalize = True):
         self.stats = {}
         
         for dim in self.dims:
@@ -349,8 +356,17 @@ class explainer(object):
                 avg_best_var = df_best_mean[df_best_mean['fid'] == fid]['auc'].std()
                 avg_avg = fid_df['auc'].mean()
                 avg_var = fid_df['auc'].std()
-                new_row = {'Function': func.meta_data.name, 
-                            "single-best":f"{df_single_best['auc'].mean():.2f} ({df_single_best['auc'].std():.2f})", 
+                avg_single = df_single_best['auc'].mean()
+                var_single = df_single_best['auc'].std()
+                if (normalize):
+                    avg_single = avg_single / self.budget
+                    var_single = var_single / self.budget
+                    avg_best_avg = avg_best_avg / self.budget
+                    avg_best_var = avg_best_var / self.budget
+                    avg_avg = avg_avg / self.budget
+                    avg_var = avg_var / self.budget
+                new_row = {'Function': f"f{fid} {func.meta_data.name}", 
+                            "single-best":f"{avg_single:.2f} ({var_single:.2f})", 
                             "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
                             "avg": f"{avg_avg:.2f} ({avg_var:.2f})"}
                 
@@ -364,27 +380,28 @@ class explainer(object):
 
         return pd.concat(self.stats, axis=1)
 
-    def to_latex_report(self, concat_dims = True, filename=None):
+    def to_latex_report(self, include_behaviour=True, filename=None):
         if len(self.stats) == 0:
             self.performance_stats()
-        if concat_dims:
-            concat_df = pd.concat(self.stats, axis=1)
-            if filename != None:
-                with open(f'{filename}.tex', "w") as fh:
-                    concat_df.to_latex(buf=fh,
-                        index=False, multicolumn_format = "c")
-            else:
-                print(concat_df.to_latex(
-                        index=False, multicolumn_format = "c"))
+        file_content = f"% Performance stats per dimension and function for {self.algname}\n"
+
+        concat_df = pd.concat(self.stats, axis=1)
+        file_content = file_content + concat_df.to_latex(index=False, multicolumn_format = "c", caption = "Performance of single-best, average best and average algorithm performance over all configurations per function and dimension.")
+
+        if include_behaviour:
+            file_content += f"% Behaviour stats per dimension and function for {self.algname}\n"
+            behaviour_df = self.behaviour_stats(per_fid=False)
+            file_content = file_content + behaviour_df.to_latex(index=False, 
+                                                                multicolumn_format = "c", 
+                                                                float_format="%.2f",
+                                                                caption = f"Algorithm stability of {self.algname}")
+
+        if filename != None:
+            with open(f'{filename}.tex', "w") as fh:
+                fh.write(file_content)
         else:
-            for dim in self.dims:
-                df = self.stats[dim]
-                if filename != None:
-                    with open(f'{filename}-{dim}.tex', "w") as fh:
-                        df.to_latex(buf=fh, index=False, multicolumn_format = "c")
-                else:
-                    print(df.to_latex(
-                            index=False, multicolumn_format = "c"))
+            print(file_content)
+       
 
     def plot(
         self,
