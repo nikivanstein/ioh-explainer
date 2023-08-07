@@ -11,6 +11,7 @@ import pandas as pd
 import shap
 import tqdm
 import xgboost
+import catboost as cb
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 import scipy.stats as stats
@@ -233,14 +234,14 @@ class explainer(object):
             df.loc[len(df)] = {"Measure": "Robustness avg. best", "value": 1 - (var_avg_best / uniform_std)}
 
             iid_vars_avg_best = []
-            for iid in range(self.iids):
+            for iid in list(self.df['iid'].unique()):
                 #calculate variance per iid
                 iid_vars_avg_best.append(df_best_mean[df_best_mean['iid'] == iid]['auc'].std())
             iid_var_avg_best = np.mean(iid_vars_avg_best)
             df.loc[len(df)] = {"Measure": "S-robust. avg. best", "value": 1 - (iid_var_avg_best / uniform_std)}
 
             seed_vars_avg_best = []
-            for seed in range(self.reps):
+            for seed in list(self.df['seed'].unique()):
                 #calculate variance per iid
                 seed_vars_avg_best.append(df_best_mean[df_best_mean['seed'] == seed]['auc'].std())
             seed_var_avg_best = np.mean(seed_vars_avg_best)
@@ -257,11 +258,11 @@ class explainer(object):
                 single_best_performances.append(df_single_best['auc'].mean())
                 all_single_best_auc.extend(df_single_best['auc'].values)
                 seed_vars_single_best = []
-                for seed in range(self.reps):
+                for seed in list(self.df['seed'].unique()):
                     #calculate variance per iid
                     seed_vars_single_best.append(df_single_best[df_single_best['seed'] == seed]['auc'].std())
                 iid_vars_single_best = []
-                for iid in range(self.iids):
+                for iid in list(self.df['iid'].unique()):
                     #calculate variance per iid
                     iid_vars_single_best.append(df_single_best[df_single_best['iid'] == iid]['auc'].std())
             all_single_best_auc = np.array(all_single_best_auc)
@@ -404,6 +405,13 @@ class explainer(object):
         df = df.rename(
             columns={"iid": "Instance variance", "seed": "Stochastic variance"}
         )
+        categorical_columns = df.dtypes[df.dtypes == 'object'].index.to_list()
+        for c in categorical_columns:
+            df[c] = df[c].astype('str')
+            df[c] = df[c].astype("category")
+
+        categorical_columns = df.dtypes[df.dtypes == 'category'].index.to_list()
+
         for fid in self.fids:
             for dim in self.dims:
                 subdf = df[(df["fid"] == fid) & (df["dim"] == dim)]
@@ -415,11 +423,10 @@ class explainer(object):
                     ]
                 ]
                 y = subdf["auc"].values
-
-                # train xgboost model on experiments data (TODO show accuracy with 5-fold or something similar)
-                bst = xgboost.train(
-                    {"learning_rate": 0.01}, xgboost.DMatrix(X, label=y), 100
-                )
+                bst = cb.CatBoostRegressor(iterations=100)
+                
+                bst.fit(X, y,
+                    cat_features=categorical_columns, verbose=False)
                 # explain the model's prediction using SHAP values on the first 1000 training data samples
                 explainer = shap.TreeExplainer(bst)
                 shap_values = explainer.shap_values(X)
@@ -474,7 +481,7 @@ class explainer(object):
                             file_prefix=file_prefix,
                         )
                     shap.force_plot(
-                        explainer.expected_value,
+                        y,
                         shap_values[best_config, :],
                         X.iloc[best_config],
                         matplotlib=True,
