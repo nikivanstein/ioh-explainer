@@ -395,12 +395,25 @@ class explainer(object):
                                                                 multicolumn_format = "c", 
                                                                 float_format="%.2f",
                                                                 caption = f"Algorithm stability of {self.algname}")
+        #generate files and latex code for the shap summary plots
+        figures_text = "\\begin{figure}*[t]\n"
+
+        self.plot(partial_dependence=False,
+            best_config=False,
+            file_prefix="images/img_",
+            check_bias=False)
+
+        for dim in self.dims:
+            for fid in self.fids:
+                figures_text += " \\begin{subfigure}{0.3\\textwidth}\n\\includegraphics[width=\\linewidth]{"+f"images/img_summary_f{fid}_d{dim}.png"+"}\n\\end{subfigure}%"
+        figures_text += "\\end{figure}\n"
 
         if filename != None:
             with open(f'{filename}.tex', "w") as fh:
+                fh.write(figures_text)
                 fh.write(file_content)
         else:
-            print(file_content)
+            return figures_text + file_content
        
 
     def plot(
