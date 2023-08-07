@@ -285,9 +285,9 @@ class explainer(object):
                 df.loc[len(df)] = {"Measure": "I-inv. single best", "value": 1 - (seed_var_single_best / uniform_std)}
 
             #gains for avg best and single best
-            df.loc[len(df)] = {"Measure": "Average norm. perf.", "value": 1 - (mean_performance) / self.budget}
-            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": (mean_performance - avg_best_performance) / self.budget}
-            df.loc[len(df)] = {"Measure": "Gain single best", "value": (mean_performance - single_best_performance) / self.budget}
+            df.loc[len(df)] = {"Measure": "Average norm. perf.", "value": mean_performance / self.budget}
+            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": (avg_best_performance - mean_performance) / self.budget}
+            df.loc[len(df)] = {"Measure": "Gain single best", "value": (single_best_performance - mean_performance) / self.budget}
             sig_avg = 0
             res = stats.ttest_ind(dim_df['auc'].values, df_best_mean['auc'].values)
             if res.pvalue < 0.05:
@@ -309,7 +309,7 @@ class explainer(object):
     
     def _get_single_best(self, fid_df):
         name_list = [*self.config_space.keys()]
-        single_best = fid_df.groupby(name_list)['auc'].mean().idxmin()
+        single_best = fid_df.groupby(name_list)['auc'].mean().idxmax()
         df_single_best = fid_df
         for i in range(len(name_list)):
             df_single_best = df_single_best[df_single_best[name_list[i]] == single_best[i]]
@@ -324,7 +324,7 @@ class explainer(object):
     
     def _get_average_best(self, dim_df):
         name_list = [*self.config_space.keys()]
-        best_mean = dim_df.groupby(name_list)['auc'].mean().idxmin()
+        best_mean = dim_df.groupby(name_list)['auc'].mean().idxmax()
         df_best_mean = dim_df
         for i in range(len(name_list)):
             df_best_mean = df_best_mean[df_best_mean[name_list[i]] == best_mean[i]]
@@ -336,13 +336,25 @@ class explainer(object):
         return self._get_average_best(dim_df)
         
 
-    def performance_stats(self, normalize = True):
+    def performance_stats(self, normalize = True, latex = False):
+        """Show the performance of the algorithm, average best per dimension and single-best per fid.
+
+        Args:
+            normalize (bool, optional): Normalize the auc by using the budget. Defaults to True.
+            latex (bool, optional): Formats the table for latex output. Defaults to False.
+
+        Returns:
+            [type]: [description]
+        """
         self.stats = {}
         
         for dim in self.dims:
             dim_df = self.df[self.df['dim'] == dim]
             stat_index = f"d={dim}"
-            self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best", "avg-best", "avg"])
+            if latex:
+                self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best", "avg-best", "all"])
+            else:
+                self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best mean", "single-best std", "avg-best mean", "avg-best std", "all mean", "all std"])
             #split df per function
             #get avg best config
             _, df_best_mean = self._get_average_best(dim_df)
@@ -365,25 +377,52 @@ class explainer(object):
                     avg_best_var = avg_best_var / self.budget
                     avg_avg = avg_avg / self.budget
                     avg_var = avg_var / self.budget
-                new_row = {'Function': f"f{fid} {func.meta_data.name}", 
-                            "single-best":f"{avg_single:.2f} ({var_single:.2f})", 
-                            "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
-                            "avg": f"{avg_avg:.2f} ({avg_var:.2f})"}
+
+                #single best significance
+                single_sig = False
+                avg_sig = False
+                res = stats.ttest_ind(df_single_best['auc'].values, df_best_mean[df_best_mean['fid'] == fid]['auc'].values)
+                if res.pvalue < 0.05:
+                    single_sig = True
+                #avg best significance
+                res = stats.ttest_ind(df_best_mean[df_best_mean['fid'] == fid]['auc'].values, fid_df['auc'].values)
+                if res.pvalue < 0.05:
+                    avg_sig = True
+
+
+                if latex:
+                    new_row = {'Function': f"f{fid} {func.meta_data.name}", 
+                                "single-best": f"{avg_single:.2f} ({var_single:.2f})", 
+                                "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
+                                "all": f"{avg_avg:.2f} ({avg_var:.2f})"}
+                    if single_sig:
+                        new_row["single-best"] = "\\textbf{"+f"{avg_single:.2f} ({var_single:.2f})"+"}"
+                    if avg_sig:
+                        new_row["avg-best"] = "\\textbf{"+f"{avg_best_avg:.2f} ({avg_best_var:.2f})"+"}"
+                else:
+                    new_row = {'Function': f"f{fid} {func.meta_data.name}", 
+                               "single-best mean": avg_single, "single-best std": var_single, 
+                               "avg-best mean": avg_best_avg, "avg-best std": avg_best_var, 
+                               "all mean": avg_avg, "all std": avg_var}
                 
                 # Use the loc method to add the new row to the DataFrame
                 self.stats[stat_index].loc[len(self.stats[stat_index])] = new_row
-
                 #check if the single best is significantly better than the avg best
-                res = stats.ttest_rel(df_single_best['auc'], df_best_mean[df_best_mean['fid'] == fid]['auc'].values)
-                if res.pvalue < 0.05:
-                    self.stats[stat_index].style.format(lambda x: "\\textbf{" + f'{x}' + "}", subset=(len(self.stats[stat_index])-1, "single-best"))
-
+                
         return pd.concat(self.stats, axis=1)
 
     def to_latex_report(self, include_behaviour=True, filename=None):
-        if len(self.stats) == 0:
-            self.performance_stats()
-        file_content = f"% Performance stats per dimension and function for {self.algname}\n"
+        """Generate a latex report including tables and figures
+
+        Args:
+            include_behaviour (bool, optional): Include alg stability stats or not. Defaults to True.
+            filename ([type], optional): To store to file, when None returns string. Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
+        self.performance_stats(latex=True)
+        file_content = f"% Performance stats per dimension and function for {self.algname}. Boldface for the single-best configuration indicates a significant improvement over the average best configuration (for that dimension), Boldface for the average best configuration indicates a significant improvement over the average AUC of all configurations.\n"
 
         concat_df = pd.concat(self.stats, axis=1)
         file_content = file_content + concat_df.to_latex(index=False, multicolumn_format = "c", caption = "Performance of single-best, average best and average algorithm performance over all configurations per function and dimension.")
@@ -396,17 +435,37 @@ class explainer(object):
                                                                 float_format="%.2f",
                                                                 caption = f"Algorithm stability of {self.algname}")
         #generate files and latex code for the shap summary plots
-        figures_text = "\\begin{figure}*[t]\n"
+        figures_text = ""
 
         self.plot(partial_dependence=False,
             best_config=False,
             file_prefix="images/img_",
-            check_bias=False)
+            check_bias=False,
+            keep_order=True)
 
+        num_cols = 4
+        if (len(self.fids) % 4 == 0):
+            num_cols = 4
+        else:
+            num_cols = 1
         for dim in self.dims:
-            for fid in self.fids:
-                figures_text += " \\begin{subfigure}{0.3\\textwidth}\n\\includegraphics[width=\\linewidth]{"+f"images/img_summary_f{fid}_d{dim}.png"+"}\n\\end{subfigure}%"
-        figures_text += "\\end{figure}\n"
+            figures_text += "\\begin{figure}[t]\n\\centering\n"
+            for fid_i in range(0,len(self.fids),num_cols):
+                if num_cols == 4:
+                    figures_text += "\t\\includegraphics[height=0.15\\textheight,trim=0mm 0mm 30mm 0mm,clip]{" \
+                        + f"images/img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n" \
+                        + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
+                        + f"images/img_summary_f{self.fids[fid_i+1]}_d{dim}.png"+ "}\n" \
+                        + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
+                        + f"images/img_summary_f{self.fids[fid_i+2]}_d{dim}.png"+ "}\n" \
+                        + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 0mm 0mm,clip]{" \
+                        + f"images/img_summary_f{self.fids[fid_i+3]}_d{dim}.png"+ "}\n"
+                else:
+                    figures_text += "\t\\includegraphics[width=0.3\\textwidth,trim=0mm 0mm 0mm 0mm,clip]{" \
+                        + f"images/img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n"
+            #caption
+            figures_text += "\\caption{Hyper-parameter contributions per benchmark function for d="+str(dim)+". \\label{fig:shapxplaind"+str(dim)+"}}\n\n"
+            figures_text += "\\end{figure}\n\n"
 
         if filename != None:
             with open(f'{filename}.tex', "w") as fh:
@@ -422,6 +481,7 @@ class explainer(object):
         best_config=True,
         file_prefix=None,
         check_bias=True,
+        keep_order=False
     ):
         """Plots the explainations for the evaluated algorithm and set of hyper-parameters.
 
@@ -430,6 +490,7 @@ class explainer(object):
             best_config (bool, optional): Show force plot of the best single optimizer. Defaults to True.
             file_prefix (str, optional): Prefix for the file-name when saving figures. Defaults to None, meaning figures are not saved.
             check_bias (bool, optional): Check the best configuration for structural bias. Defaults to False.
+            keep_order (bool, optional): Uses a fixed order for the features, handy if you want to plot multiple next to each other.
         """
         df = self.df
         df = df.rename(
@@ -461,20 +522,33 @@ class explainer(object):
                 explainer = shap.TreeExplainer(bst)
                 shap_values = explainer.shap_values(X)
 
-                shap.summary_plot(
-                    shap_values,
-                    X,
-                    show=False,
-                    plot_type="dot",
-                    cmap=plt.get_cmap("viridis"),
-                )  # layered_violin
+                if keep_order:
+                    order = list(X.columns.values)
+                    col2num = {col: i for i, col in enumerate(X.columns)}
+                    order = list(map(col2num.get, order))
+
+                    shap.plots.beeswarm(
+                        explainer(X),
+                        show=False,
+                        order=order,
+                        max_display=20,
+                        color=plt.get_cmap("viridis"),
+                    )
+                else:
+                    shap.plots.beeswarm(
+                        explainer(X),
+                        show=False,
+                        color=plt.get_cmap("viridis"),
+                    )
                 axes = plt.gcf().axes
-                axes[0].invert_xaxis()
-                plt.xlabel(f"Hyper-parameter contributions on $f_{fid}$ in $d={dim}$")
+                plt.tight_layout()
+                plt.xlabel(f"Hyper-parameter contributions on $f_{{{fid}}}$ in $d={dim}$")
                 if file_prefix != None:
                     plt.savefig(f"{file_prefix}summary_f{fid}_d{dim}.png")
                 else:
                     plt.show()
+                
+                plt.clf()
 
                 if partial_dependence:
                     # show dependency plots for all features
@@ -486,17 +560,19 @@ class explainer(object):
                             show=False,
                             cmap=plt.get_cmap("viridis"),
                         )
+                        plt.tight_layout()
                         if file_prefix != None:
                             plt.savefig(
                                 f"{file_prefix}pdp_{hyper_parameter}_f{fid}_d{dim}.png"
                             )
                         else:
                             plt.show()
+                        plt.clf()
 
                 if best_config:
                     # show force plot of best configuration
                     # get best configuration from subdf
-                    best_config = np.argmin(y)
+                    best_config = np.argmax(y)
                     if self.verbose:
                         print(
                             "best config ",
@@ -523,3 +599,4 @@ class explainer(object):
                         plt.savefig(f"{file_prefix}bestconfig_f{fid}_d{dim}.png")
                     else:
                         plt.show()
+                    plt.clf()
