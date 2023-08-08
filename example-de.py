@@ -6,9 +6,9 @@ import numpy as np
 
 
 cs = ConfigurationSpace({
-    "F": (0.1, 2.0),              # Uniform float
-    "CR" : (0.1, 1.0),            # Uniform float
-    "lambda_": (1, 20),             # Uniform int
+    "F": (0., 2.0),              # Uniform float
+    "CR" : (0., 1.0),            # Uniform float
+    "lambda_": [None, 1, 10],    # 1 or 10xdim
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
     "mutation_n_comps" : [1,2], 
@@ -19,13 +19,19 @@ cs = ConfigurationSpace({
 })
 
 steps_dict = {
-    "F": 19, 
-    "CR" : 9,
-    "lambda_": 5
+    "F": 10, 
+    "CR" : 5,
 }
 
 
 def run_de(func, config, budget, dim, *args, **kwargs):
+
+    lam = config.get('lambda_')
+    if config.get('lambda_') == 'None' or config.get('lambda_') == None:
+        lam = None
+    else:
+        lam = int(config.get('lambda_')) * dim
+        
     mut = config.get('mutation_reference')
     if config.get('mutation_reference') == 'nan':
         mut = None
@@ -52,7 +58,7 @@ def run_de(func, config, budget, dim, *args, **kwargs):
     
     item = {'F': np.array([float(config.get('F'))]), 
         'CR':np.array([float(config.get('CR'))]),  
-        'lambda_' : int(config.get('lambda_'))*dim,
+        'lambda_' : lam,
         "mutation_base": config.get('mutation_base'), 
         "mutation_reference" : mut, 
         "mutation_n_comps" : int(config.get('mutation_n_comps')), 
