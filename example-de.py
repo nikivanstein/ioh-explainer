@@ -80,7 +80,7 @@ def run_de(func, config, budget, dim, *args, **kwargs):
 de_explainer = explainer(run_de, 
                  cs , 
                  algname="mod-de",
-                 dims = [5,15,30],#,10,40],#, 10, 20, 40 
+                 dims = [5],#,10,40],#, 10, 20, 40  ,15,30
                  fids = np.arange(1,25), #,5
                  iids = 3, #20 
                  reps = 3, 
@@ -93,7 +93,7 @@ de_explainer = explainer(run_de,
 
 
 de_explainer.run(paralell=True)
-#de_explainer.save_results("de_results_huge.pkl")
+de_explainer.save_results("de_results_huge5d.pkl")
 
 
 #de_explainer.load_results("de_results.pkl")
