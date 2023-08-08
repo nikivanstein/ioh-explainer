@@ -16,8 +16,7 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 import scipy.stats as stats
 
-from .utils import auc_logger, ioh_f0, runParallelFunction
-
+from .utils import auc_logger, ioh_f0, runParallelFunction, intersection
 
 class explainer(object):
     """Explain an iterative optimization heuristic by evaluating a large set of hyper-parameter configurations and exploring
@@ -604,3 +603,129 @@ class explainer(object):
                     else:
                         plt.show()
                     plt.clf()
+
+
+def compare(alg1, al2, normalize=True):
+    #assuming both alg1 and alg2 are explainer objects
+    if not isinstance(alg1,explainer):
+        raise "instance alg1 should be an explainer object"
+    df1 = alg1.df
+    df2 = alg2.df
+
+    comparison_stats = {}
+        
+    for dim in intersection(alg1.dims, alg2.dims):
+        dim_df1 = df1[df1['dim'] == dim]
+        dim_df2 = df2[df2['dim'] == dim]
+        stat_index = f"d={dim}"
+
+        comparison_stats[stat_index] = pd.DataFrame(columns=["Function", 
+            f"single-best {alg1.algname}", 
+            f"single-best {alg2.algname}", 
+            f"avg-best {alg1.algname}", 
+            f"avg-best {alg2.algname}", 
+            f"{alg1.algname}", 
+            f"{alg2.algname}"])
+
+        #split df per function
+        #get avg best config
+        _, df_best_mean1 = alg1._get_average_best(dim_df1)
+        _, df_best_mean2 = alg2._get_average_best(dim_df2)
+
+        for fid in intersection(alg1.fids, alg2.fids):
+            func = ioh.get_problem(fid, dimension=dim, instance=1)
+            fid_df1 = dim_df1[dim_df1['fid'] == fid]
+            fid_df2 = dim_df2[dim_df2['fid'] == fid]
+
+            _, df_single_best1 = alg1.get_single_best(fid, dim)
+            _, df_single_best2 = alg2.get_single_best(fid, dim)
+            
+            # Define the new row to be added
+            avg_best_avg1 = df_best_mean1[df_best_mean1['fid'] == fid]['auc'].mean()
+            avg_best_var1 = df_best_mean1[df_best_mean1['fid'] == fid]['auc'].std()
+
+            avg_best_avg2 = df_best_mean2[df_best_mean2['fid'] == fid]['auc'].mean()
+            avg_best_var2 = df_best_mean2[df_best_mean2['fid'] == fid]['auc'].std()
+
+            avg_avg1 = fid_df1['auc'].mean()
+            avg_var1 = fid_df1['auc'].std()
+
+            avg_avg2 = fid_df2['auc'].mean()
+            avg_var2 = fid_df2['auc'].std()
+
+            avg_single1 = df_single_best1['auc'].mean()
+            var_single1 = df_single_best1['auc'].std()
+
+            avg_single2 = df_single_best2['auc'].mean()
+            var_single2 = df_single_best2['auc'].std()
+            if (normalize):
+                avg_single1 = avg_single1 / alg1.budget
+                var_single1 = var_single1 / alg1.budget
+                avg_best_avg1 = avg_best_avg1 / alg1.budget
+                avg_best_var1 = avg_best_var1 / alg1.budget
+                avg_avg1 = avg_avg1 / alg1.budget
+                avg_var1 = avg_var1 / alg1.budget
+
+                avg_single2 = avg_single2 / alg2.budget
+                var_single2 = var_single2 / alg2.budget
+                avg_best_avg2 = avg_best_avg2 / alg2.budget
+                avg_best_var2 = avg_best_var2 / alg2.budget
+                avg_avg2 = avg_avg2 / alg2.budget
+                avg_var2 = avg_var2 / alg2.budget
+
+
+            single_best1 = f"{avg_single1:.2f} ({var_single1:.2f})"
+            single_best2 = f"{avg_single2:.2f} ({var_single2:.2f})"
+
+            avg_best1 = f"{avg_best_avg1:.2f} ({avg_best_var1:.2f})"
+            avg_best2 =f"{avg_best_avg2:.2f} ({avg_best_var2:.2f})"
+
+            avg1 = f"{avg_avg1:.2f} ({avg_var1:.2f})"
+            avg2 = f"{avg_avg2:.2f} ({avg_var2:.2f})"
+
+            #single best significance
+            single_sig = False
+            avg_sig = False
+            res = stats.ttest_ind(df_single_best1['auc'].values, df_single_best2['auc'].values)
+
+            if res.pvalue < 0.05:
+                single_sig = True
+                if (avg_single1 > avg_single2):
+                    single_best1 = "\\textbf{"+single_best1+"}"
+                else:
+                    single_best2 = "\\textbf{"+single_best2+"}"
+            
+            #avg best significance
+            res = stats.ttest_ind(fid_df1['auc'].values, fid_df2['auc'].values)
+            if res.pvalue < 0.05:
+                avg_sig = True
+                if (avg_best1 > avg_best2):
+                    avg_best1 = "\\textbf{"+avg_best1+"}"
+                else:
+                    avg_best2 = "\\textbf{"+avg_best2+"}"
+
+            #avg significance
+            res = stats.ttest_ind(dim_df1['auc'].values, dim_df2['auc'].values)
+            if res.pvalue < 0.05:
+                avg_sig = True
+                if (avg1 > avg2):
+                    avg1 = "\\textbf{"+avg1+"}"
+                else:
+                    avg2 = "\\textbf{"+avg2+"}"
+
+
+            new_row = {"Function": f"f{fid} {func.meta_data.name}", 
+                    f"single-best {alg1.algname}": single_best1, 
+                    f"single-best {alg2.algname}": single_best2, 
+                    f"avg-best {alg1.algname}": avg_best1, 
+                    f"avg-best {alg2.algname}": avg_best2, 
+                    f"{alg1.algname}": avg1, 
+                    f"{alg2.algname}": avg2
+                }
+            
+            # Use the loc method to add the new row to the DataFrame
+            comparison_stats[stat_index].loc[len(comparison_stats[stat_index])] = new_row
+            #check if the single best is significantly better than the avg best
+            
+    return pd.concat(comparison_stats, axis=1)
+
