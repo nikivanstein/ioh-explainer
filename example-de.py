@@ -9,6 +9,13 @@ cs = ConfigurationSpace({
     "F": (0.05, 2.0),              # Uniform float
     "CR" : (0.05, 1.0),            # Uniform float
     "lambda_": (1, 20)             # Uniform int
+    "mutation_base": ['target', 'best', 'rand'], 
+    "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
+    "mutation_n_comps" : [1,2], 
+    "use_archive" : [False, True], 
+    "crossover" : ['exp', 'bin'], 
+    "adaptation_method" : ['nan', 'jDE', 'shade'],
+    "lpsr" : [False, True]
 })
 
 steps_dict = {
@@ -19,7 +26,32 @@ steps_dict = {
 
 
 def run_de(func, config, budget, dim, *args, **kwargs):
-    item = {'F': np.array([float(config.get('F'))]), 'CR':np.array([float(config.get('CR'))]),  'lambda_' : int(config.get('lambda_'))*dim }
+    if config.get('mutation_reference') == 'nan':
+        config.get('mutation_reference') = None
+
+    if config.get('use_archive') == "False":
+        config.get('use_archive') = False
+    elif config.get('use_archive') == "True":
+        config.get('use_archive') = True
+
+    if config.get('lpsr') == "False":
+        config.get('lpsr') = False
+    elif config.get('lpsr') == "True":
+        config.get('lpsr') = True
+
+    if config.get('crossover') == 'nan':
+        config.get('crossover') = None
+    item = {'F': np.array([float(config.get('F'))]), 
+        'CR':np.array([float(config.get('CR'))]),  
+        'lambda_' : int(config.get('lambda_'))*dim,
+        "mutation_base": config.get('mutation_base'), 
+        "mutation_reference" : config.get('mutation_reference'), 
+        "mutation_n_comps" : int(config.get('mutation_n_comps')), 
+        "use_archive" : config.get('use_archive'), 
+        "crossover" : config.get('crossover'), 
+        "adaptation_method" : config.get('crossover'),
+        "lpsr" : config.get('lpsr')
+         }
     item['budget'] = int(budget)
     c = ModularDE(func, **item)
     try:
@@ -31,8 +63,9 @@ def run_de(func, config, budget, dim, *args, **kwargs):
 
 de_explainer = explainer(run_de, 
                  cs , 
-                 dims = [5,10,20],#,10,40],#, 10, 20, 40 
-                 fids = [1,5,7,13,18,20,23], #,5
+                 algname="mod-de"
+                 dims = [5,15,30],#,10,40],#, 10, 20, 40 
+                 fids = np.arange(1,25), #,5
                  iids = 5, #20 
                  reps = 5, 
                  sampling_method = "grid",  #or random
@@ -43,15 +76,15 @@ de_explainer = explainer(run_de,
                  verbose = False)
 
 
-de_explainer.run(paralell=True)
-de_explainer.save_results("de_results.pkl")
+de_explainer.run(paralell=False)
+#de_explainer.save_results("de_results_huge.pkl")
 
 
-de_explainer.load_results("de_results.pkl")
+#de_explainer.load_results("de_results.pkl")
 #x = de_explainer.df[(de_explainer.df['fid'] == 1) & (de_explainer.df['dim'] == 5)][["F","CR","lambda_"]].to_numpy()
 
 #y = de_explainer.df[(de_explainer.df['fid'] == 1) & (de_explainer.df['dim'] == 5)]["auc"].to_numpy()
 #np.savetxt("sobol/x.csv", x)
 #np.savetxt("sobol/y.csv", y)
 
-de_explainer.plot(save_figs = True, prefix = "img/de_")
+#de_explainer.plot(save_figs = True, prefix = "img/de_")
