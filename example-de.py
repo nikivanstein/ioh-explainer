@@ -8,7 +8,7 @@ import numpy as np
 cs = ConfigurationSpace({
     "F": (0., 2.0),              # Uniform float
     "CR" : (0., 1.0),            # Uniform float
-    "lambda_": [None, 1, 10],    # 1 or 10xdim
+    "lambda_": ['nan', '1', '10'],    # 1 or 10xdim
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
     "mutation_n_comps" : [1,2], 
@@ -27,7 +27,7 @@ steps_dict = {
 def run_de(func, config, budget, dim, *args, **kwargs):
 
     lam = config.get('lambda_')
-    if config.get('lambda_') == 'None' or config.get('lambda_') == None:
+    if config.get('lambda_') == 'nan':
         lam = None
     else:
         lam = int(config.get('lambda_')) * dim
