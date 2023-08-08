@@ -8,7 +8,7 @@ import numpy as np
 cs = ConfigurationSpace({
     "F": (0.05, 2.0),              # Uniform float
     "CR" : (0.05, 1.0),            # Uniform float
-    "lambda_": (1, 20)             # Uniform int
+    "lambda_": (1, 20),             # Uniform int
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
     "mutation_n_comps" : [1,2], 
@@ -26,31 +26,35 @@ steps_dict = {
 
 
 def run_de(func, config, budget, dim, *args, **kwargs):
+    mut = config.get('mutation_reference')
     if config.get('mutation_reference') == 'nan':
-        config.get('mutation_reference') = None
+        mut = None
 
+    archive = config.get('use_archive')
     if config.get('use_archive') == "False":
-        config.get('use_archive') = False
+        archive = False
     elif config.get('use_archive') == "True":
-        config.get('use_archive') = True
+        archive = True
 
+    lpsr = config.get('lpsr')
     if config.get('lpsr') == "False":
-        config.get('lpsr') = False
+        lpsr = False
     elif config.get('lpsr') == "True":
-        config.get('lpsr') = True
-
+        lpsr = True
+    
+    cross = config.get('crossover')
     if config.get('crossover') == 'nan':
-        config.get('crossover') = None
+        cross = None
     item = {'F': np.array([float(config.get('F'))]), 
         'CR':np.array([float(config.get('CR'))]),  
         'lambda_' : int(config.get('lambda_'))*dim,
         "mutation_base": config.get('mutation_base'), 
-        "mutation_reference" : config.get('mutation_reference'), 
+        "mutation_reference" : mut, 
         "mutation_n_comps" : int(config.get('mutation_n_comps')), 
-        "use_archive" : config.get('use_archive'), 
-        "crossover" : config.get('crossover'), 
-        "adaptation_method" : config.get('crossover'),
-        "lpsr" : config.get('lpsr')
+        "use_archive" : archive, 
+        "crossover" : cross, 
+        "adaptation_method" : config.get('adaptation_method'),
+        "lpsr" : lpsr
          }
     item['budget'] = int(budget)
     c = ModularDE(func, **item)
@@ -63,7 +67,7 @@ def run_de(func, config, budget, dim, *args, **kwargs):
 
 de_explainer = explainer(run_de, 
                  cs , 
-                 algname="mod-de"
+                 algname="mod-de",
                  dims = [5,15,30],#,10,40],#, 10, 20, 40 
                  fids = np.arange(1,25), #,5
                  iids = 5, #20 
