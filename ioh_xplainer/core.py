@@ -411,15 +411,16 @@ class explainer(object):
                 
         return pd.concat(self.stats, axis=1)
 
-    def to_latex_report(self, include_behaviour=True, filename=None):
+    def to_latex_report(self, include_behaviour=True, filename=None, img_dir=None):
         """Generate a latex report including tables and figures
 
         Args:
             include_behaviour (bool, optional): Include alg stability stats or not. Defaults to True.
-            filename ([type], optional): To store to file, when None returns string. Defaults to None.
+            filename (string, optional): To store to file, when None returns string. Defaults to None.
+            img_dir (string, optional): Where to store the images, if None it will store in the base directory. Defaults to None.
 
         Returns:
-            [type]: [description]
+            string: Latex string or none when writing to a file.
         """
         self.performance_stats(latex=True)
         file_content = f"% Performance stats per dimension and function for {self.algname}. Boldface for the single-best configuration indicates a significant improvement over the average best configuration (for that dimension), Boldface for the average best configuration indicates a significant improvement over the average AUC of all configurations.\n"
@@ -436,10 +437,12 @@ class explainer(object):
                                                                 caption = f"Algorithm stability of {self.algname}")
         #generate files and latex code for the shap summary plots
         figures_text = ""
+        if img_dir == None:
+            img_dir = ""
 
         self.plot(partial_dependence=False,
             best_config=False,
-            file_prefix="images/img_",
+            file_prefix=f"{img_dir}/img_",
             check_bias=False,
             keep_order=True)
 
@@ -453,16 +456,16 @@ class explainer(object):
             for fid_i in range(0,len(self.fids),num_cols):
                 if num_cols == 4:
                     figures_text += "\t\\includegraphics[height=0.15\\textheight,trim=0mm 0mm 30mm 0mm,clip]{" \
-                        + f"images/img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n" \
+                        + f"{img_dir}img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n" \
                         + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
-                        + f"images/img_summary_f{self.fids[fid_i+1]}_d{dim}.png"+ "}\n" \
+                        + f"{img_dir}img_summary_f{self.fids[fid_i+1]}_d{dim}.png"+ "}\n" \
                         + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
-                        + f"images/img_summary_f{self.fids[fid_i+2]}_d{dim}.png"+ "}\n" \
+                        + f"{img_dir}img_summary_f{self.fids[fid_i+2]}_d{dim}.png"+ "}\n" \
                         + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 0mm 0mm,clip]{" \
-                        + f"images/img_summary_f{self.fids[fid_i+3]}_d{dim}.png"+ "}\n"
+                        + f"{img_dir}img_summary_f{self.fids[fid_i+3]}_d{dim}.png"+ "}\n"
                 else:
                     figures_text += "\t\\includegraphics[width=0.3\\textwidth,trim=0mm 0mm 0mm 0mm,clip]{" \
-                        + f"images/img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n"
+                        + f"{img_dir}img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n"
             #caption
             figures_text += "\\caption{Hyper-parameter contributions per benchmark function for d="+str(dim)+". \\label{fig:shapxplaind"+str(dim)+"}}\n\n"
             figures_text += "\\end{figure}\n\n"
@@ -497,9 +500,10 @@ class explainer(object):
             columns={"iid": "Instance variance", "seed": "Stochastic variance"}
         )
         categorical_columns = df.dtypes[df.dtypes == 'object'].index.to_list()
-        for c in categorical_columns:
-            df[c] = df[c].astype('str')
-            df[c] = df[c].astype("category")
+        df[categorical_columns] = df[categorical_columns].apply(lambda col:pd.Categorical(col).codes)
+        #for c in categorical_columns:
+        #df[c] = df[c].astype('str')
+        #df[c] = df[c].astype("category")
 
         categorical_columns = df.dtypes[df.dtypes == 'category'].index.to_list()
 
