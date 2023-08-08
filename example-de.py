@@ -53,7 +53,8 @@ def run_de(func, config, budget, dim, *args, **kwargs):
         "mutation_n_comps" : int(config.get('mutation_n_comps')), 
         "use_archive" : archive, 
         "crossover" : cross, 
-        "adaptation_method" : config.get('adaptation_method'),
+        "adaptation_method_F" : config.get('adaptation_method'),
+        "adaptation_method_CR" : config.get('adaptation_method'),
         "lpsr" : lpsr
          }
     item['budget'] = int(budget)
