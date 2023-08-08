@@ -90,15 +90,16 @@ class explainer(object):
     def _create_grid(self):
         """Generate the configurations to evaluate."""
         if self.sampling_method == "grid":
-            self.configuration_grid = generate_grid(
+            grid = generate_grid(
                 self.config_space, self.grid_steps_dict
             )
         else:
-            self.configuration_grid = self.config_space.sample_configuration(
+            grid = self.config_space.sample_configuration(
                 self.sample_size
             )
         if self.verbose:
-            print(f"Evaluating {len(self.configuration_grid)} configurations.")
+            print(f"Evaluating {len(grid)} configurations.")
+        return grid
 
     def _run_verification(self, args):
         """Run validation on the given configurations for multiple random seeds.
@@ -109,8 +110,7 @@ class explainer(object):
         Returns:
             list: A list of dictionaries containing the auc scores of each random repetition.
         """
-        dim, fid, iid, config_i = args
-        config = self.configuration_grid[config_i]
+        dim, fid, iid, config = args
         # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
         func = ioh.get_problem(fid, dimension=dim, instance=iid)
         myLogger = auc_logger(self.budget, triggers=[ioh.logger.trigger.ALWAYS])
@@ -135,12 +135,12 @@ class explainer(object):
             checkpoint_file (string, optional): used for storing intermediate results.
         """
         # create the configuration grid
-        self._create_grid()
+        grid = self._create_grid()
         # run all the optimizations
-        for i in tqdm.tqdm(range(len(self.configuration_grid))):
+        for i in tqdm.tqdm(range(len(grid))):
             if paralell:
                 partial_run = partial(self._run_verification)
-                args = product(self.dims, self.fids, np.arange(self.iids), [i])
+                args = product(self.dims, self.fids, np.arange(self.iids), [grid[i]])
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
                     for row in tab:
