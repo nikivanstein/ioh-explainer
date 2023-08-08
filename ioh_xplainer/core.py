@@ -16,7 +16,7 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 import scipy.stats as stats
 
-from .utils import auc_logger, ioh_f0, runParallelFunction, intersection
+from .utils import auc_logger, ioh_f0, runParallelFunction, intersection, run_verification
 
 class explainer(object):
     """Explain an iterative optimization heuristic by evaluating a large set of hyper-parameter configurations and exploring
@@ -101,32 +101,6 @@ class explainer(object):
             print(f"Evaluating {len(grid)} configurations.")
         return grid
 
-    def _run_verification(self, args):
-        """Run validation on the given configurations for multiple random seeds.
-
-        Args:
-            args (list): List of [dim, fid, iid, config_id], including all information to run one configuration.
-
-        Returns:
-            list: A list of dictionaries containing the auc scores of each random repetition.
-        """
-        dim, fid, iid, config = args
-        # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
-        func = ioh.get_problem(fid, dimension=dim, instance=iid)
-        myLogger = auc_logger(self.budget, triggers=[ioh.logger.trigger.ALWAYS])
-        func.attach_logger(myLogger)
-        return_list = []
-        for seed in range(self.reps):
-            np.random.seed(seed)
-            self.optimizer(func, config, budget=self.budget, dim=dim, seed=seed)
-            auc = myLogger.auc
-            func.reset()
-            myLogger.reset(func)
-            return_list.append(
-                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config, "auc": auc}
-            )
-        return return_list
-
     def run(self, paralell=True, checkpoint_file="intermediate.pkl"):
         """Run the evaluation of all configurations.
 
@@ -139,8 +113,8 @@ class explainer(object):
         # run all the optimizations
         for i in tqdm.tqdm(range(len(grid))):
             if paralell:
-                partial_run = partial(self._run_verification)
-                args = product(self.dims, self.fids, np.arange(self.iids), [grid[i]])
+                partial_run = partial(run_verification)
+                args = product(self.dims, self.fids, np.arange(self.iids), [grid[i]], [self.budget], [self.reps], [self.optimizer])
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
                     for row in tab:
@@ -149,7 +123,7 @@ class explainer(object):
                 for dim in self.dims:
                     for fid in self.fids:
                         for iid in range(self.iids):
-                            tab = self._run_verification([dim, fid, iid, i])
+                            tab = run_verification([dim, fid, iid, i, self.budget, self.reps, self.optimizer])
                             for row in tab:
                                 self.df.loc[len(self.df)] = row
             if checkpoint_file != None:

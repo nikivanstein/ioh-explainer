@@ -71,3 +71,29 @@ class auc_logger(ioh.logger.AbstractLogger):
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
+
+def run_verification(args):
+        """Run validation on the given configurations for multiple random seeds.
+
+        Args:
+            args (list): List of [dim, fid, iid, config, budget, reps, optimizer], including all information to run one configuration.
+
+        Returns:
+            list: A list of dictionaries containing the auc scores of each random repetition.
+        """
+        dim, fid, iid, config, budget, reps, optimizer = args
+        # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
+        func = ioh.get_problem(fid, dimension=dim, instance=iid)
+        myLogger = auc_logger(budget, triggers=[ioh.logger.trigger.ALWAYS])
+        func.attach_logger(myLogger)
+        return_list = []
+        for seed in range(reps):
+            np.random.seed(seed)
+            optimizer(func, config, budget=budget, dim=dim, seed=seed)
+            auc = myLogger.auc
+            func.reset()
+            myLogger.reset(func)
+            return_list.append(
+                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config, "auc": auc}
+            )
+        return return_list
