@@ -127,11 +127,12 @@ class explainer(object):
             )
         return return_list
 
-    def run(self, paralell=True):
+    def run(self, paralell=True, checkpoint_file="intermediate.pkl"):
         """Run the evaluation of all configurations.
 
         Args:
             paralell (bool, optional): Use multiple threads or not. Defaults to True.
+            checkpoint_file (string, optional): used for storing intermediate results.
         """
         # create the configuration grid
         self._create_grid()
@@ -151,6 +152,8 @@ class explainer(object):
                             tab = self._run_verification([dim, fid, iid, i])
                             for row in tab:
                                 self.df.loc[len(self.df)] = row
+            if checkpoint_file != None:
+                self.df.to_pickle(checkpoint_file)
         if self.verbose:
             print(self.df)
 

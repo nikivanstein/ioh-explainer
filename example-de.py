@@ -6,8 +6,8 @@ import numpy as np
 
 
 cs = ConfigurationSpace({
-    "F": (0.05, 2.0),              # Uniform float
-    "CR" : (0.05, 1.0),            # Uniform float
+    "F": (0.1, 2.0),              # Uniform float
+    "CR" : (0.1, 1.0),            # Uniform float
     "lambda_": (1, 20),             # Uniform int
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
@@ -19,9 +19,9 @@ cs = ConfigurationSpace({
 })
 
 steps_dict = {
-    "F": 20, 
-    "CR" : 20,
-    "lambda_": 10
+    "F": 19, 
+    "CR" : 9,
+    "lambda_": 5
 }
 
 
@@ -45,6 +45,11 @@ def run_de(func, config, budget, dim, *args, **kwargs):
     cross = config.get('crossover')
     if config.get('crossover') == 'nan':
         cross = None
+
+    adaptation_method = config.get('adaptation_method')
+    if config.get('adaptation_method') == 'nan':
+        adaptation_method = None
+    
     item = {'F': np.array([float(config.get('F'))]), 
         'CR':np.array([float(config.get('CR'))]),  
         'lambda_' : int(config.get('lambda_'))*dim,
@@ -53,8 +58,8 @@ def run_de(func, config, budget, dim, *args, **kwargs):
         "mutation_n_comps" : int(config.get('mutation_n_comps')), 
         "use_archive" : archive, 
         "crossover" : cross, 
-        "adaptation_method_F" : config.get('adaptation_method'),
-        "adaptation_method_CR" : config.get('adaptation_method'),
+        "adaptation_method_F" : adaptation_method,
+        "adaptation_method_CR" : adaptation_method,
         "lpsr" : lpsr
          }
     item['budget'] = int(budget)
@@ -71,8 +76,8 @@ de_explainer = explainer(run_de,
                  algname="mod-de",
                  dims = [5,15,30],#,10,40],#, 10, 20, 40 
                  fids = np.arange(1,25), #,5
-                 iids = 5, #20 
-                 reps = 5, 
+                 iids = 3, #20 
+                 reps = 3, 
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,
                  sample_size = None,  #only used with random method
@@ -81,7 +86,7 @@ de_explainer = explainer(run_de,
                  verbose = False)
 
 
-de_explainer.run(paralell=False)
+de_explainer.run(paralell=True)
 #de_explainer.save_results("de_results_huge.pkl")
 
 
