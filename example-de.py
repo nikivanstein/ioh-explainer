@@ -6,8 +6,8 @@ import numpy as np
 
 
 cs = ConfigurationSpace({
-    "F": (0., 2.0),              # Uniform float
-    "CR" : (0., 1.0),            # Uniform float
+    "F": (0.0, 2.0),              # Uniform float
+    "CR" : (0.2, 1.0),            # Uniform float
     "lambda_": ['nan', '1', '10'],    # 1 or 10xdim
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
@@ -19,7 +19,7 @@ cs = ConfigurationSpace({
 })
 
 steps_dict = {
-    "F": 10, 
+    "F": 5, 
     "CR" : 5,
 }
 

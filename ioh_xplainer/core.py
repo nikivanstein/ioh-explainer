@@ -14,6 +14,7 @@ import catboost as cb
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 import scipy.stats as stats
+from sklearn.neighbors import KNeighborsRegressor
 
 from .utils import auc_logger, ioh_f0, runParallelFunction, intersection, run_verification, get_query_string_from_dict
 
@@ -482,8 +483,8 @@ class explainer(object):
             shap.initjs()
 
         if catboost_params == None:
-            catboost_params = {'iterations':100, 'depth':12} #probably a bit overkill.. this will take time.
-
+            catboost_params = {'iterations':100, 'depth':14} #probably a bit overkill.. this will take time.
+        
         df = self.df.copy(True)
         df = df.rename(
             columns={"iid": "Instance variance", "seed": "Stochastic variance"}
@@ -516,13 +517,19 @@ class explainer(object):
                 ]
                 
                 y = subdf["auc"].values
-                bst = cb.CatBoostRegressor(**catboost_params)
-                
-                bst.fit(X, y,
-                    cat_features=categorical_columns, verbose=False)
-                print("fitted model R2:",bst.score(X,y)) #when using a grid, we don't care for overfitting.
-                # explain the model's prediction using SHAP values on all training data samples
-                explainer = shap.TreeExplainer(bst)
+                if (False and self.sampling_method == "grid"): #this takes waay to long to calculate all shap values. 
+                    #we can use a knn regressor with k=1
+                    bst = KNeighborsRegressor(n_neighbors=1)
+                    bst.fit(X, y)
+                    print("fitted model R2 train:",bst.score(X,y)) #when using a grid, we don't care for overfitting.
+                    explainer = shap.KernelExplainer(bst.predict, shap.sample(X,10))
+                else:
+                    bst = cb.CatBoostRegressor(**catboost_params)
+                    bst.fit(X, y,
+                        cat_features=categorical_columns, verbose=False)
+                    print("fitted model R2 train:",bst.score(X,y))
+                    explainer = shap.TreeExplainer(bst)
+
                 shap_values = explainer.shap_values(X)
 
                 if keep_order:
