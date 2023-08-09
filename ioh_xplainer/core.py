@@ -457,12 +457,6 @@ class explainer(object):
             return figures_text + file_content
        
 
-    def calc_shap_values(self, catboost_params=None):
-        if catboost_params == None:
-            catboost_params = {'iterations':100, 'depth':12}
-        
-
-
     def explain(
         self,
         partial_dependence=False,
