@@ -457,13 +457,20 @@ class explainer(object):
             return figures_text + file_content
        
 
-    def plot(
+    def calc_shap_values(self, catboost_params=None):
+        if catboost_params == None:
+            catboost_params = {'iterations':100, 'depth':12}
+        
+
+
+    def explain(
         self,
         partial_dependence=False,
         best_config=True,
         file_prefix=None,
         check_bias=False,
         keep_order=False,
+        catboost_params=None
     ):
         """Plots the explainations for the evaluated algorithm and set of hyper-parameters.
 
@@ -480,6 +487,9 @@ class explainer(object):
             use_matplotlib = False
             shap.initjs()
 
+        if catboost_params == None:
+            catboost_params = {'iterations':100, 'depth':12} #probably a bit overkill.. this will take time.
+
         df = self.df.copy(True)
         df = df.rename(
             columns={"iid": "Instance variance", "seed": "Stochastic variance"}
@@ -495,6 +505,7 @@ class explainer(object):
         categorical_columns = df.dtypes[df.dtypes == 'category'].index.to_list()
         for dim in self.dims:
             for fid in self.fids:
+                print(f"Processing d{dim} f{fid}..")
                 subdf_display = df_display[(df_display["fid"] == fid) & (df_display["dim"] == dim)]
                 subdf_display = subdf_display.reset_index()
                 subdf_display = subdf_display[
@@ -511,11 +522,12 @@ class explainer(object):
                 ]
                 
                 y = subdf["auc"].values
-                bst = cb.CatBoostRegressor(iterations=100)
+                bst = cb.CatBoostRegressor(**catboost_params)
                 
                 bst.fit(X, y,
                     cat_features=categorical_columns, verbose=False)
-                # explain the model's prediction using SHAP values on the first 1000 training data samples
+                print("fitted model R2:",bst.score(X,y)) #when using a grid, we don't care for overfitting.
+                # explain the model's prediction using SHAP values on all training data samples
                 explainer = shap.TreeExplainer(bst)
                 shap_values = explainer.shap_values(X)
 
@@ -572,6 +584,7 @@ class explainer(object):
                     best_config, aucs = self._get_single_best(subdf)
                     all_confs = X.query(get_query_string_from_dict(best_config))
                     best_config_index = all_confs.index[0]
+                    all_indexes = all_confs.index.to_numpy()
                     if self.verbose:
                         print(
                             "single best config ",
@@ -591,7 +604,7 @@ class explainer(object):
                         subdf_display.loc[best_config_index],
                         matplotlib=use_matplotlib,
                         show=(not use_matplotlib),
-                        plot_cmap="PkYg",
+                        plot_cmap="viridis",
                     )
                     if use_matplotlib:
                         plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
@@ -602,9 +615,9 @@ class explainer(object):
                             plt.show()
                         plt.clf()
 
-                    shap.decision_plot(explainer.expected_value, shap_values[best_config_index,:], 
-                                       subdf_display.loc[best_config_index], show=False)
-                    plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
+                    shap.decision_plot(explainer.expected_value, shap_values[all_indexes,:], 
+                                       subdf_display.loc[all_indexes], show=False)
+                    plt.xlabel(f"Single best configuration with all random seeds and on all instances of $f_{{{fid}}}$ in $d={dim}$")
                     plt.tight_layout()
                     if file_prefix != None:
                         plt.savefig(f"{file_prefix}singlebest_dec_f{fid}_d{dim}.png")

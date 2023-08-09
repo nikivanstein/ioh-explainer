@@ -101,4 +101,4 @@ de_explainer.load_results("mod_de_all.pkl")
 #np.savetxt("sobol/x.csv", x)
 #np.savetxt("sobol/y.csv", y)
 
-de_explainer.plot(file_prefix = "img/de_")
+de_explainer.explain(file_prefix = "img/img_", keep_order=True)
