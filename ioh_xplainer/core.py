@@ -456,8 +456,6 @@ class explainer(object):
         else:
             return figures_text + file_content
        
-    def plot_best_configs(self, dim, fids, include_best_avg=True):
-        pass
 
     def plot(
         self,
@@ -465,7 +463,7 @@ class explainer(object):
         best_config=True,
         file_prefix=None,
         check_bias=False,
-        keep_order=False
+        keep_order=False,
     ):
         """Plots the explainations for the evaluated algorithm and set of hyper-parameters.
 
@@ -476,6 +474,12 @@ class explainer(object):
             check_bias (bool, optional): Check the best configuration for structural bias. Defaults to False.
             keep_order (bool, optional): Uses a fixed order for the features, handy if you want to plot multiple next to each other.
         """
+        use_matplotlib = True
+        if file_prefix == None and hasattr(sys, 'ps1'):
+            #interactive mode
+            use_matplotlib = False
+            shap.initjs()
+
         df = self.df.copy(True)
         df = df.rename(
             columns={"iid": "Instance variance", "seed": "Stochastic variance"}
@@ -585,22 +589,23 @@ class explainer(object):
                         explainer.expected_value,
                         shap_values[best_config_index, :],
                         subdf_display.loc[best_config_index],
-                        matplotlib=True,
-                        show=False,
+                        matplotlib=use_matplotlib,
+                        show=(not use_matplotlib),
                         plot_cmap="PkYg",
                     )
-                    plt.tight_layout()
-                    plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
-                    if file_prefix != None:
-                        plt.savefig(f"{file_prefix}singlebest_f{fid}_d{dim}.png")
-                    else:
-                        plt.show()
-                    plt.clf()
+                    if use_matplotlib:
+                        plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
+                        plt.tight_layout()
+                        if file_prefix != None:
+                            plt.savefig(f"{file_prefix}singlebest_f{fid}_d{dim}.png")
+                        else:
+                            plt.show()
+                        plt.clf()
 
                     shap.decision_plot(explainer.expected_value, shap_values[best_config_index,:], 
-                                       subdf_display.loc[best_config_index], show=False,)
-                    plt.tight_layout()
+                                       subdf_display.loc[best_config_index], show=False)
                     plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
+                    plt.tight_layout()
                     if file_prefix != None:
                         plt.savefig(f"{file_prefix}singlebest_dec_f{fid}_d{dim}.png")
                     else:
