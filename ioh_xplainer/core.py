@@ -10,13 +10,12 @@ import numpy as np
 import pandas as pd
 import shap
 import tqdm
-import xgboost
 import catboost as cb
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 import scipy.stats as stats
 
-from .utils import auc_logger, ioh_f0, runParallelFunction, intersection, run_verification
+from .utils import auc_logger, ioh_f0, runParallelFunction, intersection, run_verification, get_query_string_from_dict
 
 class explainer(object):
     """Explain an iterative optimization heuristic by evaluating a large set of hyper-parameter configurations and exploring
@@ -286,10 +285,12 @@ class explainer(object):
     def _get_single_best(self, fid_df):
         name_list = [*self.config_space.keys()]
         single_best = fid_df.groupby(name_list)['auc'].mean().idxmax()
+        sing_best_conf = {}
         df_single_best = fid_df
         for i in range(len(name_list)):
             df_single_best = df_single_best[df_single_best[name_list[i]] == single_best[i]]
-        return single_best, df_single_best
+            sing_best_conf[name_list[i]] = single_best[i]
+        return sing_best_conf, df_single_best
     
     def get_single_best(self, fid, dim):
         subdf = self.df
@@ -302,9 +303,11 @@ class explainer(object):
         name_list = [*self.config_space.keys()]
         best_mean = dim_df.groupby(name_list)['auc'].mean().idxmax()
         df_best_mean = dim_df
+        average_best_conf = {}
         for i in range(len(name_list)):
             df_best_mean = df_best_mean[df_best_mean[name_list[i]] == best_mean[i]]
-        return best_mean, df_best_mean
+            average_best_conf[name_list[i]] = best_mean[i]
+        return average_best_conf, df_best_mean
 
     def get_average_best(self, dim):
         """Returns average best configuration for given dimensionality and the data belonging to it."""
@@ -453,39 +456,48 @@ class explainer(object):
         else:
             return figures_text + file_content
        
+    def plot_best_configs(self, dim, fids, include_best_avg=True):
+        pass
 
     def plot(
         self,
-        partial_dependence=True,
+        partial_dependence=False,
         best_config=True,
         file_prefix=None,
-        check_bias=True,
+        check_bias=False,
         keep_order=False
     ):
         """Plots the explainations for the evaluated algorithm and set of hyper-parameters.
 
         Args:
-            partial_dependence (bool, optional): Show partial dependence plots. Defaults to True.
+            partial_dependence (bool, optional): Show partial dependence plots. Defaults to False.
             best_config (bool, optional): Show force plot of the best single optimizer. Defaults to True.
             file_prefix (str, optional): Prefix for the file-name when saving figures. Defaults to None, meaning figures are not saved.
             check_bias (bool, optional): Check the best configuration for structural bias. Defaults to False.
             keep_order (bool, optional): Uses a fixed order for the features, handy if you want to plot multiple next to each other.
         """
-        df = self.df
+        df = self.df.copy(True)
         df = df.rename(
             columns={"iid": "Instance variance", "seed": "Stochastic variance"}
         )
-        categorical_columns = df.dtypes[df.dtypes == 'object'].index.to_list()
+        df_display = df.copy(True)
+        categorical_columns = df.dtypes[(df.dtypes == 'object') | (df.dtypes == 'category')].index.to_list()
         df[categorical_columns] = df[categorical_columns].apply(lambda col:pd.Categorical(col).codes)
+        df_display[categorical_columns] = df_display[categorical_columns].astype("category")
         #for c in categorical_columns:
         #df[c] = df[c].astype('str')
         #df[c] = df[c].astype("category")
 
         categorical_columns = df.dtypes[df.dtypes == 'category'].index.to_list()
-
-        for fid in self.fids:
-            for dim in self.dims:
+        for dim in self.dims:
+            for fid in self.fids:
+                subdf_display = df_display[(df_display["fid"] == fid) & (df_display["dim"] == dim)]
+                subdf_display = subdf_display.reset_index()
+                subdf_display = subdf_display[
+                    [*self.config_space.keys(),"Instance variance","Stochastic variance"]
+                ]
                 subdf = df[(df["fid"] == fid) & (df["dim"] == dim)]
+                subdf = subdf.reset_index()
                 X = subdf[
                     [
                         *self.config_space.keys(),
@@ -493,6 +505,7 @@ class explainer(object):
                         "Stochastic variance",
                     ]
                 ]
+                
                 y = subdf["auc"].values
                 bst = cb.CatBoostRegressor(iterations=100)
                 
@@ -520,7 +533,6 @@ class explainer(object):
                         show=False,
                         color=plt.get_cmap("viridis"),
                     )
-                axes = plt.gcf().axes
                 plt.tight_layout()
                 plt.xlabel(f"Hyper-parameter contributions on $f_{{{fid}}}$ in $d={dim}$")
                 if file_prefix != None:
@@ -552,34 +564,49 @@ class explainer(object):
                 if best_config:
                     # show force plot of best configuration
                     # get best configuration from subdf
-                    best_config = np.argmax(y)
+                    best_config_name, _ = self.get_single_best(fid, dim)
+                    best_config, aucs = self._get_single_best(subdf)
+                    all_confs = X.query(get_query_string_from_dict(best_config))
+                    best_config_index = all_confs.index[0]
                     if self.verbose:
                         print(
-                            "best config ",
-                            X.iloc[best_config][self.config_space.keys()],
-                            "with auc ",
-                            y[best_config],
+                            "single best config ",
+                            best_config_name,
+                            "with mean auc ",
+                            aucs['auc'].mean(),
                         )
                     if check_bias:
                         self.check_bias(
-                            X.iloc[best_config][self.config_space.keys()],
+                            best_config_name,
                             dim=dim,
                             file_prefix=file_prefix,
                         )
                     shap.force_plot(
-                        y,
-                        shap_values[best_config, :],
-                        X.iloc[best_config],
+                        explainer.expected_value,
+                        shap_values[best_config_index, :],
+                        subdf_display.loc[best_config_index],
                         matplotlib=True,
                         show=False,
                         plot_cmap="PkYg",
                     )
-
+                    plt.tight_layout()
+                    plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
                     if file_prefix != None:
-                        plt.savefig(f"{file_prefix}bestconfig_f{fid}_d{dim}.png")
+                        plt.savefig(f"{file_prefix}singlebest_f{fid}_d{dim}.png")
                     else:
                         plt.show()
                     plt.clf()
+
+                    shap.decision_plot(explainer.expected_value, shap_values[best_config_index,:], 
+                                       subdf_display.loc[best_config_index], show=False,)
+                    plt.tight_layout()
+                    plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
+                    if file_prefix != None:
+                        plt.savefig(f"{file_prefix}singlebest_dec_f{fid}_d{dim}.png")
+                    else:
+                        plt.show()
+                    plt.clf()
+
 
 
 def compare(alg1, al2, normalize=True):

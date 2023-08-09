@@ -97,3 +97,16 @@ def run_verification(args):
                 {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config, "auc": auc}
             )
         return return_list
+
+def get_query_string_from_dict(filter):
+    """Get a query string from a dictionary filter to apply to a pandas Dataframme.
+
+    Args:
+        filter (dict): Dictionary with the columns and values to filter on.
+
+    Returns:
+        string: Query string.
+    """
+    return ' and '.join(
+        [f'({key} == "{val}")' if type(val) == str else f'({key} == {val})' for key, val in filter.items()]
+    )
