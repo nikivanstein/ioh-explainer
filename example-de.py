@@ -3,6 +3,7 @@ from ConfigSpace.util import generate_grid
 from ioh_xplainer import explainer
 from modde import ModularDE, Parameters
 import numpy as np
+import traceback
 
 
 cs = ConfigurationSpace({
@@ -73,15 +74,18 @@ def run_de(func, config, budget, dim, *args, **kwargs):
         return []
     except Exception as e:
         print(f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed")
+        traceback.print_exc()
+        print(item)
+        exit()
         return []
 
 de_explainer = explainer(run_de, 
                  cs , 
                  algname="mod-de",
                  dims = [5,30],#,10,40],#, 10, 20, 40  ,15,30
-                 fids = np.arange(1,25), #,5
-                 iids = [1,5], #20 
-                 reps = 3, 
+                 fids = np.arange(1,2), #,5
+                 iids = [1], #,5 
+                 reps = 1, 
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,
                  sample_size = None,  #only used with random method
