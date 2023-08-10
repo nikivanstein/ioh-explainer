@@ -6,8 +6,8 @@ import numpy as np
 
 
 cs = ConfigurationSpace({
-    "F": (0.0, 2.0),              # Uniform float
-    "CR" : (0.2, 1.0),            # Uniform float
+    "F": [0.25, 0.75, 1.25, 1.75],              # Uniform float
+    "CR" : [0.05, 0.25, 0.75, 1.0],            # Uniform float
     "lambda_": ['nan', '1', '10'],    # 1 or 10xdim
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
@@ -19,8 +19,6 @@ cs = ConfigurationSpace({
 })
 
 steps_dict = {
-    "F": 5, 
-    "CR" : 5,
 }
 
 
@@ -80,9 +78,9 @@ def run_de(func, config, budget, dim, *args, **kwargs):
 de_explainer = explainer(run_de, 
                  cs , 
                  algname="mod-de",
-                 dims = [5],#,10,40],#, 10, 20, 40  ,15,30
+                 dims = [5,30],#,10,40],#, 10, 20, 40  ,15,30
                  fids = np.arange(1,25), #,5
-                 iids = 3, #20 
+                 iids = [1,5], #20 
                  reps = 3, 
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,

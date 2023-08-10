@@ -28,7 +28,7 @@ class explainer(object):
         config_space (ConfigurationSpace): Configuration space listing all hyper-parameters to vary.
         dims (list, optional): List of dimensions to evaluate. Defaults to [5, 10, 20].
         fids (list, optional): List of function ids to evaluate from the BBOB suite. Defaults to [1,5,7,13,18,20,23].
-        iids (int, optional): Number of instances to evaluate. Defaults to 5.
+        iids (list, optional): List of instance ids to evaluate. Defaults to [1,5].
         reps (int, optional): Number of random seeds to evaluate. Defaults to 5.
         sampling_method (str, optional): Either "grid" or "random". Defaults to "grid".
         seed (int, optional): The seed to start with. Defaults to 1.
@@ -42,7 +42,7 @@ class explainer(object):
         algname = "optimizer",
         dims=[5, 10, 20],
         fids=[1, 5, 7, 13, 18, 20, 23],
-        iids=5,
+        iids=[1,5],
         reps=5,
         sampling_method="grid",  # or random
         grid_steps_dict=None,  # used for grid sampling
@@ -59,7 +59,7 @@ class explainer(object):
             algname (string, optional): Name of the algorithm. Defaults to "optimizer".
             dims (list, optional): List of dimensions to evaluate. Defaults to [5, 10, 20].
             fids (list, optional): List of function ids to evaluate from the BBOB suite. Defaults to [1,5,7,13,18,20,23].
-            iids (int, optional): Number of instances to evaluate. Defaults to 5.
+            iids (list, optional): Number of instances to evaluate. Defaults to [1,5].
             reps (int, optional): Number of random seeds to evaluate. Defaults to 5.
             sampling_method (str, optional): Either "grid" or "random". Defaults to "grid".
             grid_steps_dict (dict, optional): A dictionary including number of steps per hyper-parameter. Used for "grid" sampling method. Defaults to None.
@@ -114,7 +114,7 @@ class explainer(object):
         for i in tqdm.tqdm(range(len(grid))):
             if paralell:
                 partial_run = partial(run_verification)
-                args = product(self.dims, self.fids, np.arange(self.iids), [grid[i]], [self.budget], [self.reps], [self.optimizer])
+                args = product(self.dims, self.fids, self.iids, [grid[i]], [self.budget], [self.reps], [self.optimizer])
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
                     for row in tab:
@@ -122,7 +122,7 @@ class explainer(object):
             else:
                 for dim in self.dims:
                     for fid in self.fids:
-                        for iid in range(self.iids):
+                        for iid in self.iids:
                             tab = run_verification([dim, fid, iid, i, self.budget, self.reps, self.optimizer])
                             for row in tab:
                                 self.df.loc[len(self.df)] = row
