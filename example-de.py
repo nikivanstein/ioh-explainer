@@ -84,7 +84,7 @@ de_explainer = explainer(run_de,
                  dims = [5,30],#,10,40],#, 10, 20, 40  ,15,30
                  fids = np.arange(1,25), #,5
                  iids = [1,5], #,5 
-                 reps = 3, 
+                 reps = 3, #maybe later 10? = 11 days processing time
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,
                  sample_size = None,  #only used with random method
