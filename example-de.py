@@ -9,7 +9,7 @@ import traceback
 cs = ConfigurationSpace({
     "F": [0.25, 0.75, 1.25, 1.75],              # Uniform float
     "CR" : [0.05, 0.25, 0.75, 1.0],            # Uniform float
-    "lambda_": ['nan', '1', '10'],    # 1 or 10xdim
+    "lambda_": ['nan', '2', '10'],    # 2 or 10xdim
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
     "mutation_n_comps" : [1,2], 
@@ -76,16 +76,15 @@ def run_de(func, config, budget, dim, *args, **kwargs):
         print(f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed")
         traceback.print_exc()
         print(item)
-        exit()
         return []
 
 de_explainer = explainer(run_de, 
                  cs , 
                  algname="mod-de",
                  dims = [5,30],#,10,40],#, 10, 20, 40  ,15,30
-                 fids = np.arange(1,2), #,5
-                 iids = [1], #,5 
-                 reps = 1, 
+                 fids = np.arange(1,25), #,5
+                 iids = [1,5], #,5 
+                 reps = 3, 
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,
                  sample_size = None,  #only used with random method
