@@ -126,7 +126,7 @@ class explainer(object):
                             tab = run_verification([dim, fid, iid, i, self.budget, self.reps, self.optimizer])
                             for row in tab:
                                 self.df.loc[len(self.df)] = row
-            if checkpoint_file != None:
+            if i%500 == 0 and checkpoint_file != None: #save every 500 evals
                 self.df.to_pickle(checkpoint_file)
         if self.verbose:
             print(self.df)
