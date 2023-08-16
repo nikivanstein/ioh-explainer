@@ -7,7 +7,8 @@ import numpy as np
 from tqdm import tqdm
 from ioh_xplainer import explainer
 import pandas as pd
-
+import ioh
+from scipy.stats import qmc
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from IPython.display import display
@@ -51,10 +52,16 @@ de_explainer = explainer(None,
 
 de_explainer.load_results(data_file)
 
-new_df = pd.DataFrame(columns=['dim','fid','iid',*features, 'auc'])
+m = 8 #(2**m)
+
+new_df = pd.DataFrame(columns=['dim','fid','iid', 'DOE',*features, 'auc'])
 new_df_fidonly = pd.DataFrame(columns=['dim','fid','multimodal', 'global structure', 'funnel',*features, 'auc']) #don't care about instances
 for dim in de_explainer.dims:
     dim_df = de_explainer.df[de_explainer.df['dim'] == dim].copy()
+    
+    sampler = qmc.Sobol(d=dim, scramble=False, seed=42)
+    sample = sampler.random_base2(m=m)
+    sample = sample * 10 - 5
     for fid in de_explainer.fids:
         fid_df = dim_df[dim_df['fid'] == fid]
 
@@ -63,7 +70,7 @@ for dim in de_explainer.dims:
         f = fid
         conf['auc'] = aucs['auc'].mean()
         #add high level features
-        if f in [1,2,5,6,7,10,11,12,13,14]:
+        if f in [1,2,5,6,7,10,11,12,13,14]: #verify!!
             conf['multimodal'] = 0
             conf['global structure'] = 0
             conf['funnel'] = 1
@@ -117,8 +124,17 @@ for dim in de_explainer.dims:
             conf['fid'] = fid
             conf['iid'] = iid
             conf['auc'] = aucs['auc'].mean()
+
+            func = ioh.get_problem(fid, dimension=dim, instance=iid)
+            bbob_y = np.asarray(list(map(func, sample)))
+            doe = (bbob_y.flatten() - np.min(bbob_y)) / (
+                np.max(bbob_y) - np.min(bbob_y)
+            )
+            conf['DOE'] = doe
+
             new_df.loc[len(new_df)] = conf
 print(new_df_fidonly)
 
+print(new_df)
 #now replace fid, iid with features instead, 
 #build multiple decision trees .. visualise
