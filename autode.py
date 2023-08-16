@@ -52,7 +52,7 @@ de_explainer = explainer(None,
 de_explainer.load_results(data_file)
 
 new_df = pd.DataFrame(columns=['dim','fid','iid',*features, 'auc'])
-new_df_fidonly = pd.DataFrame(columns=['dim','fid','iid',*features, 'auc']) #don't care about instances
+new_df_fidonly = pd.DataFrame(columns=['dim','fid','multimodal', 'global structure', 'funnel',*features, 'auc']) #don't care about instances
 for dim in de_explainer.dims:
     dim_df = de_explainer.df[de_explainer.df['dim'] == dim].copy()
     for fid in de_explainer.fids:
@@ -60,9 +60,53 @@ for dim in de_explainer.dims:
 
         conf, aucs = de_explainer._get_single_best(fid_df)
         conf['dim'] = dim
-        conf['fid'] = fid
-        conf['iid'] = iid
+        f = fid
         conf['auc'] = aucs['auc'].mean()
+        #add high level features
+        if f in [1,2,5,6,7,10,11,12,13,14]:
+            conf['multimodal'] = 0
+            conf['global structure'] = 0
+            conf['funnel'] = 1
+        elif f in [3,4]:
+            conf['multimodal'] = 2
+            conf['global structure'] = 3
+            conf['funnel'] = 1
+        elif f in [8,9]:
+            conf['multimodal'] = 1
+            conf['global structure'] = 0
+            conf['funnel'] = 1
+        elif f in [15,19]:
+            conf['multimodal'] = 2
+            conf['global structure'] = 3
+            conf['funnel'] = 1
+        elif f in [16]:
+            conf['multimodal'] = 2
+            conf['global structure'] = 2
+            conf['funnel'] = 0
+        elif f in [17,18]:
+            conf['multimodal'] = 2
+            conf['global structure'] = 2
+            conf['funnel'] = 1
+        elif f in [20]:
+            conf['multimodal'] = 2
+            conf['global structure'] = -1
+            conf['funnel'] = 1
+        elif f in [21]:
+            conf['multimodal'] = 2
+            conf['global structure'] = 0
+            conf['funnel'] = 0
+        elif f in [22]:
+            conf['multimodal'] = 1
+            conf['global structure'] = 0
+            conf['funnel'] = 0
+        elif f in [23]:
+            conf['multimodal'] = 3
+            conf['global structure'] = 0
+            conf['funnel'] = 0
+        elif f in [24]:
+            conf['multimodal'] = 3
+            conf['global structure'] = 1
+            conf['funnel'] = 1
         new_df_fidonly.loc[len(new_df_fidonly)] = conf
 
         for iid in fid_df['iid'].unique():
@@ -77,3 +121,4 @@ for dim in de_explainer.dims:
 print(new_df_fidonly)
 
 #now replace fid, iid with features instead, 
+#build multiple decision trees .. visualise
