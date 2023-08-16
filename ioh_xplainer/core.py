@@ -298,6 +298,13 @@ class explainer(object):
         dim_df = subdf[subdf['dim'] == dim]
         fid_df = dim_df[dim_df['fid'] == fid]
         return self._get_single_best(fid_df)
+    
+    def get_single_best_for_iid(self, fid, iid, dim):
+        subdf = self.df
+        dim_df = subdf[subdf['dim'] == dim]
+        fid_df = dim_df[dim_df['fid'] == fid]
+        iid_df = fid_df[fid_df['iid'] == iid]
+        return self._get_single_best(iid_df)
         
     
     def _get_average_best(self, dim_df):
