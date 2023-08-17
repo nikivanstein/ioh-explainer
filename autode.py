@@ -155,18 +155,16 @@ for dim in [5]: #de_explainer.dims:
             conf.update(y)
             new_doe_df.append(conf)
 
-            #conf2.update(calculate_ela_meta(X, y))
+            conf2.update(calculate_ela_meta(X, y))
             conf2.update(calculate_ela_distribution(X, y))
             conf2.update(calculate_ela_level(X, y))
             conf2.update(calculate_nbc(X, y))
             conf2.update(calculate_dispersion(X, y))
-            #conf2.update(calculate_information_content(X, y, seed = 100))
+            conf2.update(calculate_information_content(X, y, seed = 100))
 
             #all dictionairies! yeaa
             new_ela_df.append(conf2)
-print(new_df_fidonly)
-print(new_ela_df)
-print(new_doe_df)
+
 #now replace fid, iid with features instead, 
 #build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
@@ -178,3 +176,7 @@ new_ela_df.to_pickle("ela-features.pkl")
 
 new_doe_df = pd.DataFrame.from_records(new_doe_df)
 new_doe_df.to_pickle("doe-features.pkl")
+
+print(new_df_fidonly)
+print(new_ela_df)
+print(new_doe_df)
