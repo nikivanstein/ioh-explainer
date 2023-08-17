@@ -157,7 +157,7 @@ for dim in de_explainer.dims:
 
             conf2.update(calculate_ela_meta(X, y))
             conf2.update(calculate_ela_distribution(X, y))
-            #conf2.update(calculate_ela_level(X, y))
+            conf2.update(calculate_ela_level(X, y))
             conf2.update(calculate_nbc(X, y))
             conf2.update(calculate_dispersion(X, y))
             conf2.update(calculate_information_content(X, y, seed = 100))
