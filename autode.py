@@ -1,4 +1,12 @@
 #automatically configure DE usinig either high level features, low level features, or standardized DOEs.
+
+
+## different models we can make:
+# ELA/DOE + config --> AUC
+# ELA ---> config
+# high-level --> config
+# DOE --> config
+
 #first collect all the data
 import os
 import pandas as pd
@@ -12,6 +20,12 @@ from scipy.stats import qmc
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from IPython.display import display
+
+from pflacco.sampling import create_initial_sample
+
+from pflacco.classical_ela_features import calculate_ela_distribution, calculate_ela_meta, calculate_nbc, calculate_dispersion, calculate_information_content, calculate_ela_level, calculate_cm_grad
+from pflacco.misc_features import calculate_fitness_distance_correlation
+from pflacco.local_optima_network_features import compute_local_optima_network, calculate_lon_features
 
 
 
@@ -125,12 +139,28 @@ for dim in de_explainer.dims:
             conf['iid'] = iid
             conf['auc'] = aucs['auc'].mean()
 
+            #ELA
+            
+
             func = ioh.get_problem(fid, dimension=dim, instance=iid)
             bbob_y = np.asarray(list(map(func, sample)))
             doe = (bbob_y.flatten() - np.min(bbob_y)) / (
                 np.max(bbob_y) - np.min(bbob_y)
             )
             conf['DOE'] = doe
+
+            X = sample
+            y = bbob_y
+            conf.update(calculate_ela_meta(X, y))
+            conf.update(calculate_ela_distribution(X, y))
+            conf.update(calculate_ela_level(X, y))
+            conf.update(calculate_nbc(X, y))
+            conf.update(calculate_dispersion(X, y))
+            conf.update(calculate_information_content(X, y, seed = 100))
+
+            #all dictionairies! yeaa
+            a = aaaa
+            
 
             new_df.loc[len(new_df)] = conf
 print(new_df_fidonly)
