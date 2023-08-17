@@ -72,10 +72,12 @@ sample_size1 = 500 #fixed
 use_sample_size2 = False
 sample_size2 = 100 #fixed
 
-ela_auc_df1 = pd.DataFrame(columns=['dim', *features, 'auc'])
-ela_auc_df2 = pd.DataFrame(columns=['dim', *features, 'auc'])
+ela_auc_df1 = None
+ela_auc_df2 = None
+firsttime = True
 
 for index, row in tqdm(de_explainer.df.iterrows(),  total=de_explainer.df.shape[0]):
+
     #let's create different random samples to make it "robust". Let's try different sizes as well
     X1 = create_initial_sample(row['dim'], lower_bound = -5, upper_bound = 5, n=sample_size1, seed=index)
     if use_sample_size2:
@@ -89,12 +91,13 @@ for index, row in tqdm(de_explainer.df.iterrows(),  total=de_explainer.df.shape[
         y2= X2.apply(lambda x: func(x), axis = 1)
         y2 = (y2 - np.min(y2)) / (np.max(y2)  - np.min(y2))
 
-    conf = row[features]
+    conf = row[features].to_dict()
     conf['dim'] = row['dim']
-    conf2 = conf.copy()
+    if use_sample_size2:
+        conf2 = conf.copy()
 
     # start_time = monotonic()
-    # conf.update(calculate_ela_meta(X1, y1))
+    #conf.update(calculate_ela_meta(X1, y1))
     # print(f"Run time calculate_ela_meta {monotonic() - start_time} seconds")
     # start_time = monotonic()
     #start_time = monotonic()
@@ -106,7 +109,7 @@ for index, row in tqdm(de_explainer.df.iterrows(),  total=de_explainer.df.shape[
     # print(f"Run time calculate_nbc {monotonic() - start_time} seconds")
     # start_time = monotonic()
 
-    #conf.update(calculate_ela_level(X1, y1))
+    conf.update(calculate_ela_level(X1, y1))
     # print(f"Run time calculate_ela_level {monotonic() - start_time} seconds")
     # start_time = monotonic()
 
@@ -115,11 +118,16 @@ for index, row in tqdm(de_explainer.df.iterrows(),  total=de_explainer.df.shape[
     # print(f"Run time calculate_dispersion {monotonic() - start_time} seconds")
     # start_time = monotonic()
 
-    # conf.update(calculate_information_content(X1, y1, seed = 100))
+    #conf.update(calculate_information_content(X1, y1, seed = 100))
     # print(f"Run time calculate_information_content {monotonic() - start_time} seconds")
     # start_time = monotonic()
 
-    ela_auc_df1.loc[len(ela_auc_df1)] = conf
+
+    if firsttime:
+        ela_auc_df1 = np.array([conf])
+        firsttime = False
+    else:
+        ela_auc_df1 = np.r_[ela_auc_df1, [conf]]
 
     if use_sample_size2:
         #conf2.update(calculate_ela_meta(X2, y2))
@@ -128,15 +136,15 @@ for index, row in tqdm(de_explainer.df.iterrows(),  total=de_explainer.df.shape[
         conf2.update(calculate_dispersion(X2, y2))
         #conf2.update(calculate_ela_level(X2, y2))
         #conf2.update(calculate_information_content(X2, y2, seed = 100))
-
-        ela_auc_df2.loc[len(ela_auc_df2)] = conf2
+        ela_auc_df2 = np.r_[ela_auc_df2,[conf2]]
             
-print(ela_auc_df1)
-if use_sample_size2:
-    print(ela_auc_df2)
+#print(ela_auc_df1)
+
 #now replace fid, iid with features instead, 
 #build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
+ela_auc_df1 = pd.DataFrame.from_records(ela_auc_df1)
 ela_auc_df1.to_pickle("ela_auc_df1.pkl")
+print(ela_auc_df1)
 if use_sample_size2:
     ela_auc_df2.to_pickle("ela_auc_df2.pkl")

@@ -69,10 +69,10 @@ de_explainer.load_results(data_file)
 
 sample_size = 1000 #fixed
 
-new_doe_df = pd.DataFrame(columns=['dim','fid','iid', 'DOE',*features, 'auc'])
-new_ela_df = pd.DataFrame(columns=['dim','fid','iid',*features, 'auc'])
-new_df_fidonly = pd.DataFrame(columns=['dim','fid','multimodal', 'global structure', 'funnel',*features, 'auc']) #don't care about instances
-for dim in de_explainer.dims:
+new_doe_df = []
+new_ela_df = []
+new_df_fidonly = []
+for dim in [5]: #de_explainer.dims:
     dim_df = de_explainer.df[de_explainer.df['dim'] == dim].copy()
     
     X = create_initial_sample(dim, lower_bound = -5, upper_bound = 5, n=sample_size, seed=42)
@@ -130,7 +130,7 @@ for dim in de_explainer.dims:
             conf['multimodal'] = 3
             conf['global structure'] = 1
             conf['funnel'] = 1
-        new_df_fidonly.loc[len(new_df_fidonly)] = conf
+        new_df_fidonly.append(conf)
 
         for iid in fid_df['iid'].unique():
             iid_df = fid_df[fid_df['iid'] == iid]
@@ -153,25 +153,28 @@ for dim in de_explainer.dims:
             #)
             conf2 = conf.copy()
             conf.update(y)
-            new_doe_df.loc[len(new_doe_df)] = conf
+            new_doe_df.append(conf)
 
-            conf2.update(calculate_ela_meta(X, y))
+            #conf2.update(calculate_ela_meta(X, y))
             conf2.update(calculate_ela_distribution(X, y))
             conf2.update(calculate_ela_level(X, y))
             conf2.update(calculate_nbc(X, y))
             conf2.update(calculate_dispersion(X, y))
-            conf2.update(calculate_information_content(X, y, seed = 100))
+            #conf2.update(calculate_information_content(X, y, seed = 100))
 
             #all dictionairies! yeaa
-            new_ela_df.loc[len(new_ela_df)] = conf2
+            new_ela_df.append(conf2)
 print(new_df_fidonly)
 print(new_ela_df)
 print(new_doe_df)
 #now replace fid, iid with features instead, 
 #build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
+new_df_fidonly = pd.DataFrame.from_records(new_df_fidonly)
 new_df_fidonly.to_pickle("highlevel-features.pkl")
 
+new_ela_df = pd.DataFrame.from_records(new_ela_df)
 new_ela_df.to_pickle("ela-features.pkl")
 
+new_doe_df = pd.DataFrame.from_records(new_doe_df)
 new_doe_df.to_pickle("doe-features.pkl")
