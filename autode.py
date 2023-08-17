@@ -72,7 +72,7 @@ sample_size = 1000 #fixed
 new_doe_df = []
 new_ela_df = []
 new_df_fidonly = []
-for dim in [5]: #de_explainer.dims:
+for dim in de_explainer.dims:
     dim_df = de_explainer.df[de_explainer.df['dim'] == dim].copy()
     
     X = create_initial_sample(dim, lower_bound = -5, upper_bound = 5, n=sample_size, seed=42)
