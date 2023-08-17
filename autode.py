@@ -64,19 +64,21 @@ de_explainer = explainer(None,
                  verbose = True)
 
 
+
 de_explainer.load_results(data_file)
 
-m = 8 #(2**m)
+sample_size = 1000 #fixed
 
-new_df = pd.DataFrame(columns=['dim','fid','iid', 'DOE',*features, 'auc'])
+new_doe_df = pd.DataFrame(columns=['dim','fid','iid', 'DOE',*features, 'auc'])
+new_ela_df = pd.DataFrame(columns=['dim','fid','iid',*features, 'auc'])
 new_df_fidonly = pd.DataFrame(columns=['dim','fid','multimodal', 'global structure', 'funnel',*features, 'auc']) #don't care about instances
 for dim in de_explainer.dims:
     dim_df = de_explainer.df[de_explainer.df['dim'] == dim].copy()
     
-    sampler = qmc.Sobol(d=dim, scramble=False, seed=42)
-    sample = sampler.random_base2(m=m)
-    sample = sample * 10 - 5
-    for fid in de_explainer.fids:
+    X = create_initial_sample(dim, lower_bound = -5, upper_bound = 5, n=sample_size, seed=42)
+    
+
+    for fid in tqdm(de_explainer.fids):
         fid_df = dim_df[dim_df['fid'] == fid]
 
         conf, aucs = de_explainer._get_single_best(fid_df)
@@ -143,28 +145,33 @@ for dim in de_explainer.dims:
             
 
             func = ioh.get_problem(fid, dimension=dim, instance=iid)
-            bbob_y = np.asarray(list(map(func, sample)))
-            doe = (bbob_y.flatten() - np.min(bbob_y)) / (
-                np.max(bbob_y) - np.min(bbob_y)
-            )
-            conf['DOE'] = doe
+            y = X.apply(lambda x: func(x), axis = 1)
+            y = (y - np.min(y)) / (np.max(y)  - np.min(y))
 
-            X = sample
-            y = bbob_y
-            conf.update(calculate_ela_meta(X, y))
-            conf.update(calculate_ela_distribution(X, y))
-            conf.update(calculate_ela_level(X, y))
-            conf.update(calculate_nbc(X, y))
-            conf.update(calculate_dispersion(X, y))
-            conf.update(calculate_information_content(X, y, seed = 100))
+            #doe = (y.flatten() - np.min(y)) / (
+            #    np.max(y) - np.min(y)
+            #)
+            conf2 = conf.copy()
+            conf.update(y)
+            new_doe_df.loc[len(new_doe_df)] = conf
+
+            conf2.update(calculate_ela_meta(X, y))
+            conf2.update(calculate_ela_distribution(X, y))
+            conf2.update(calculate_ela_level(X, y))
+            conf2.update(calculate_nbc(X, y))
+            conf2.update(calculate_dispersion(X, y))
+            conf2.update(calculate_information_content(X, y, seed = 100))
 
             #all dictionairies! yeaa
-            a = aaaa
-            
-
-            new_df.loc[len(new_df)] = conf
+            new_ela_df.loc[len(new_ela_df)] = conf2
 print(new_df_fidonly)
-
-print(new_df)
+print(new_ela_df)
+print(new_doe_df)
 #now replace fid, iid with features instead, 
 #build multiple decision trees .. visualise -- multi-output tree vs single output trees
+
+new_df_fidonly.to_pickle("highlevel-features.pkl")
+
+new_ela_df.to_pickle("ela-features.pkl")
+
+new_doe_df.to_pickle("doe-features.pkl")
