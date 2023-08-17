@@ -109,7 +109,7 @@ for index, row in tqdm(de_explainer.df.iterrows(),  total=de_explainer.df.shape[
     # print(f"Run time calculate_nbc {monotonic() - start_time} seconds")
     # start_time = monotonic()
 
-    conf.update(calculate_ela_level(X1, y1))
+    #conf.update(calculate_ela_level(X1, y1))
     # print(f"Run time calculate_ela_level {monotonic() - start_time} seconds")
     # start_time = monotonic()
 
