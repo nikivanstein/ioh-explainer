@@ -3,6 +3,7 @@ from functools import partial
 from itertools import product
 from multiprocessing import Pool, cpu_count
 
+import os
 import math
 import ioh
 import matplotlib.pyplot as plt
@@ -101,7 +102,7 @@ class explainer(object):
             print(f"Evaluating {len(grid)} configurations.")
         return grid
 
-    def run(self, paralell=True, start_index = 0, checkpoint_file="intermediate.pkl"):
+    def run(self, paralell=True, start_index = 0, checkpoint_file="intermediate.csv"):
         """Run the evaluation of all configurations.
 
         Args:
@@ -118,17 +119,25 @@ class explainer(object):
                 args = product(self.dims, self.fids, self.iids, [grid[i]], [self.budget], [self.reps], [self.optimizer])
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
-                    for row in tab:
-                        self.df.loc[len(self.df)] = row
+                    if (checkpoint_file != None):
+                        df_tab = pd.DataFrame(tab, columns=["fid", "iid", "dim", "seed", *self.config_space.keys(), "auc"])
+                        df_tab.to_csv(checkpoint_file, mode='a', header=not os.path.exists(checkpoint_file))
+                    else:
+                        for row in tab:
+                            self.df.loc[len(self.df)] = row
             else:
                 for dim in self.dims:
                     for fid in self.fids:
                         for iid in self.iids:
                             tab = run_verification([dim, fid, iid, i, self.budget, self.reps, self.optimizer])
-                            for row in tab:
-                                self.df.loc[len(self.df)] = row
-            if i%500 == 0 and checkpoint_file != None: #save every 500 evals
-                self.df.to_pickle(checkpoint_file)
+                            if (checkpoint_file != None):
+                                df_tab = pd.DataFrame(tab, columns=["fid", "iid", "dim", "seed", *self.config_space.keys(), "auc"])
+                                df_tab.to_csv(checkpoint_file, mode='a', header=not os.path.exists(checkpoint_file))
+                            else:
+                                for row in tab:
+                                    self.df.loc[len(self.df)] = row
+        if (checkpoint_file != None):
+            self.df = pd.read_csv(checkpoint_file) #read results to process.
         if self.verbose:
             print(self.df)
 
