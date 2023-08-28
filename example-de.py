@@ -93,10 +93,10 @@ de_explainer = explainer(run_de,
                  verbose = False)
 
 
-de_explainer.run(paralell=True, start_index = 4896288, checkpoint_file="intermediate2.pkl")
+de_explainer.run(paralell=True, start_index = 17001, checkpoint_file="intermediate2.pkl")
 de_explainer.save_results("de_results_huge5d.pkl")
 
-
+#4896288 / 6 / 2/ 24
 #de_explainer.load_results("de_results.pkl")
 #x = de_explainer.df[(de_explainer.df['fid'] == 1) & (de_explainer.df['dim'] == 5)][["F","CR","lambda_"]].to_numpy()
 
