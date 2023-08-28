@@ -93,7 +93,7 @@ de_explainer = explainer(run_de,
                  verbose = False)
 
 
-de_explainer.run(paralell=True, start_index = 17001, checkpoint_file="intermediate3.csv")
+de_explainer.run(paralell=True, start_index = 18001, checkpoint_file="intermediate3.csv")
 de_explainer.save_results("intermediate3.pkl")
 
 #4896288 / 6 / 2/ 24
