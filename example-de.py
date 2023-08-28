@@ -93,7 +93,7 @@ de_explainer = explainer(run_de,
                  verbose = False)
 
 
-de_explainer.run(paralell=True)
+de_explainer.run(paralell=True, start_index = 4896288, checkpoint_file="intermediate2.pkl")
 de_explainer.save_results("de_results_huge5d.pkl")
 
 

@@ -101,17 +101,18 @@ class explainer(object):
             print(f"Evaluating {len(grid)} configurations.")
         return grid
 
-    def run(self, paralell=True, checkpoint_file="intermediate.pkl"):
+    def run(self, paralell=True, start_index = 0, checkpoint_file="intermediate.pkl"):
         """Run the evaluation of all configurations.
 
         Args:
             paralell (bool, optional): Use multiple threads or not. Defaults to True.
+            start_index (integer, optional) : Use to restart / continue a stopped run.
             checkpoint_file (string, optional): used for storing intermediate results.
         """
         # create the configuration grid
         grid = self._create_grid()
         # run all the optimizations
-        for i in tqdm.tqdm(range(len(grid))):
+        for i in tqdm.tqdm(range(start_index, len(grid))):
             if paralell:
                 partial_run = partial(run_verification)
                 args = product(self.dims, self.fids, self.iids, [grid[i]], [self.budget], [self.reps], [self.optimizer])
