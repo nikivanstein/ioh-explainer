@@ -45,7 +45,7 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
     else:
         mu = int(config.get('mu'))
 
-    if mu > lam:
+    if mu != None and lam != None and mu > lam:
         #do not run, instead return
         return []
     
