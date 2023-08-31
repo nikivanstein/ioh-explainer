@@ -23,8 +23,8 @@ cs = ConfigurationSpace({
     'local_restart': ['nan', 'IPOP', 'BIPOP'], 
     'active': [False, True],
     'step_size_adaptation': ['csa', 'psr'],
-    "lambda_": ['nan', '1', '5', '10', '20'],
-    "mu": ['nan', '1', '5', '10']             # Uniform float
+    "lambda_": ['nan',  '5', '10', '20'],
+    "mu": ['nan', '5', '10', '20']             # Uniform float
 }) #20k+
 
 steps_dict = {
@@ -103,7 +103,8 @@ cma_explainer = explainer(run_cma,
                  verbose = False)
 
 
-cma_explainer.run(paralell=True)
+cma_explainer.run(paralell=True, start_index = 0, checkpoint_file="intermediate_cma1.csv")
+#cma_explainer.run(paralell=True, )
 cma_explainer.save_results("cma_results_huge.pkl")
 
 
