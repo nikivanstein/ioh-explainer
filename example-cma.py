@@ -44,6 +44,10 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
         mu = None
     else:
         mu = int(config.get('mu'))
+
+    if mu > lam:
+        #do not run, instead return
+        return []
     
 
     local_restart = config.get('local_restart')
@@ -103,7 +107,7 @@ cma_explainer = explainer(run_cma,
                  verbose = False)
 
 
-cma_explainer.run(paralell=True, start_index = 0, checkpoint_file="intermediate_cma1.csv")
+cma_explainer.run(paralell=True, start_index = 0, checkpoint_file="intermediate_cma2.csv")
 #cma_explainer.run(paralell=True, )
 cma_explainer.save_results("cma_results_huge.pkl")
 
