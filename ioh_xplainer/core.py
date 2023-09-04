@@ -437,7 +437,7 @@ class explainer(object):
         if img_dir == None:
             img_dir = ""
 
-        self.plot(partial_dependence=False,
+        self.explain(partial_dependence=False,
             best_config=False,
             file_prefix=f"{img_dir}/img_",
             check_bias=False,
