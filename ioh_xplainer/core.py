@@ -310,9 +310,12 @@ class explainer(object):
 
         return pd.concat(behaviour, axis=1)
     
-    def _get_single_best(self, fid_df):
+    def _get_single_best(self, fid_df, use_median=False):
         name_list = [*self.config_space.keys()]
-        single_best = fid_df.groupby(name_list)['auc'].mean().idxmax()
+        if use_median:
+            single_best = fid_df.groupby(name_list)['auc'].median().idxmax()
+        else: #use mean
+            single_best = fid_df.groupby(name_list)['auc'].mean().idxmax()
         sing_best_conf = {}
         df_single_best = fid_df
         for i in range(len(name_list)):
@@ -320,23 +323,26 @@ class explainer(object):
             sing_best_conf[name_list[i]] = single_best[i]
         return sing_best_conf, df_single_best
     
-    def get_single_best(self, fid, dim):
+    def get_single_best(self, fid, dim, use_median=False):
         subdf = self.df
         dim_df = subdf[subdf['dim'] == dim]
         fid_df = dim_df[dim_df['fid'] == fid]
-        return self._get_single_best(fid_df)
+        return self._get_single_best(fid_df, use_median)
     
-    def get_single_best_for_iid(self, fid, iid, dim):
+    def get_single_best_for_iid(self, fid, iid, dim, use_median=False):
         subdf = self.df
         dim_df = subdf[subdf['dim'] == dim]
         fid_df = dim_df[dim_df['fid'] == fid]
         iid_df = fid_df[fid_df['iid'] == iid]
-        return self._get_single_best(iid_df)
+        return self._get_single_best(iid_df, use_median)
         
     
-    def _get_average_best(self, dim_df):
+    def _get_average_best(self, dim_df, use_median=False):
         name_list = [*self.config_space.keys()]
-        best_mean = dim_df.groupby(name_list)['auc'].mean().idxmax()
+        if use_median:
+            best_mean = dim_df.groupby(name_list)['auc'].median().idxmax()
+        else: #use mean
+            best_mean = dim_df.groupby(name_list)['auc'].mean().idxmax()
         df_best_mean = dim_df
         average_best_conf = {}
         for i in range(len(name_list)):
@@ -344,10 +350,10 @@ class explainer(object):
             average_best_conf[name_list[i]] = best_mean[i]
         return average_best_conf, df_best_mean
 
-    def get_average_best(self, dim):
+    def get_average_best(self, dim, use_median=False):
         """Returns average best configuration for given dimensionality and the data belonging to it."""
         dim_df = self.df[self.df['dim'] == dim]
-        return self._get_average_best(dim_df)
+        return self._get_average_best(dim_df, use_median)
         
 
     def performance_stats(self, normalize = True, latex = False):
