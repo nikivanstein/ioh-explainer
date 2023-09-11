@@ -141,6 +141,23 @@ class explainer(object):
         if self.verbose:
             print(self.df)
 
+    def get_results_for_config(self, config:dict, dim:int, fid:int, iid=1):
+        """Get the AUC result from a specific configuration in dictorionary form.
+
+        Args:
+            config (dict): The dictionairy to ask.
+            dim (int): The dimensionality.
+            fid (int): The function id.
+            iid (int, optional): The instance id. Defaults to 1.
+
+        Returns:
+            array: auc scores
+        """
+        dim_df = self.df[(self.df['dim'] == dim)]
+        fid_df = dim_df[(dim_df['fid'] == fid)]
+        iid_df = fid_df[(fid_df['iid'] == iid)]
+        return iid_df.query(get_query_string_from_dict(config))['auc']
+
     def save_results(self, filename="results.pkl"):
         """Save results to a pickle file .
 
