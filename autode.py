@@ -29,10 +29,10 @@ from pflacco.local_optima_network_features import compute_local_optima_network, 
 
 
 
-data_file = "mod_de_all.pkl" #read in modular DE data
+data_file = "df_huge.pkl" #read in modular DE data
 df = pd.read_pickle(data_file)
 
-features= ['mutation_base', 'mutation_reference',
+features= ['F','CR', 'lambda_','mutation_base', 'mutation_reference',
        'mutation_n_comps', 'use_archive', 'crossover', 'adaptation_method',
        'lpsr']
 
@@ -81,57 +81,6 @@ for dim in de_explainer.dims:
     for fid in tqdm(de_explainer.fids):
         fid_df = dim_df[dim_df['fid'] == fid]
 
-        conf, aucs = de_explainer._get_single_best(fid_df)
-        conf['dim'] = dim
-        f = fid
-        conf['auc'] = aucs['auc'].mean()
-        #add high level features
-        if f in [1,2,5,6,7,10,11,12,13,14]: #verify!!
-            conf['multimodal'] = 0
-            conf['global structure'] = 0
-            conf['funnel'] = 1
-        elif f in [3,4]:
-            conf['multimodal'] = 2
-            conf['global structure'] = 3
-            conf['funnel'] = 1
-        elif f in [8,9]:
-            conf['multimodal'] = 1
-            conf['global structure'] = 0
-            conf['funnel'] = 1
-        elif f in [15,19]:
-            conf['multimodal'] = 2
-            conf['global structure'] = 3
-            conf['funnel'] = 1
-        elif f in [16]:
-            conf['multimodal'] = 2
-            conf['global structure'] = 2
-            conf['funnel'] = 0
-        elif f in [17,18]:
-            conf['multimodal'] = 2
-            conf['global structure'] = 2
-            conf['funnel'] = 1
-        elif f in [20]:
-            conf['multimodal'] = 2
-            conf['global structure'] = -1
-            conf['funnel'] = 1
-        elif f in [21]:
-            conf['multimodal'] = 2
-            conf['global structure'] = 0
-            conf['funnel'] = 0
-        elif f in [22]:
-            conf['multimodal'] = 1
-            conf['global structure'] = 0
-            conf['funnel'] = 0
-        elif f in [23]:
-            conf['multimodal'] = 3
-            conf['global structure'] = 0
-            conf['funnel'] = 0
-        elif f in [24]:
-            conf['multimodal'] = 3
-            conf['global structure'] = 1
-            conf['funnel'] = 1
-        new_df_fidonly.append(conf)
-
         for iid in fid_df['iid'].unique():
             iid_df = fid_df[fid_df['iid'] == iid]
             #get best performing conf
@@ -168,15 +117,11 @@ for dim in de_explainer.dims:
 #now replace fid, iid with features instead, 
 #build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
-new_df_fidonly = pd.DataFrame.from_records(new_df_fidonly)
-new_df_fidonly.to_pickle("highlevel-features.pkl")
-
 new_ela_df = pd.DataFrame.from_records(new_ela_df)
-new_ela_df.to_pickle("ela-features.pkl")
+new_ela_df.to_pickle("ela-features2.pkl")
 
 new_doe_df = pd.DataFrame.from_records(new_doe_df)
-new_doe_df.to_pickle("doe-features.pkl")
+new_doe_df.to_pickle("doe-features2.pkl")
 
-print(new_df_fidonly)
 print(new_ela_df)
 print(new_doe_df)
