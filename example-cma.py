@@ -107,7 +107,7 @@ cma_explainer = explainer(run_cma,
                  verbose = False)
 
 
-cma_explainer.run(paralell=True, start_index = 0, checkpoint_file="intermediate_cma2.csv")
+cma_explainer.run(paralell=True, start_index = 3624, checkpoint_file="intermediate_cma3.csv")
 #cma_explainer.run(paralell=True, )
 cma_explainer.save_results("cma_results_huge.pkl")
 

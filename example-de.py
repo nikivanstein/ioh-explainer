@@ -83,7 +83,7 @@ de_explainer = explainer(run_de,
                  algname="mod-de",
                  dims = [5,30],#,10,40],#, 10, 20, 40  ,15,30
                  fids = np.arange(1,25), #,5
-                 iids = [1,5], #,5 
+                 iids = [2,3,4], #,5 
                  reps = 3, #maybe later 10? = 11 days processing time
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,
@@ -93,8 +93,8 @@ de_explainer = explainer(run_de,
                  verbose = False)
 
 
-de_explainer.run(paralell=True, start_index = 18001, checkpoint_file="intermediate3.csv")
-de_explainer.save_results("intermediate3.pkl")
+de_explainer.run(paralell=True, start_index = 18001, checkpoint_file="intermediate4.csv")
+de_explainer.save_results("intermediate4.pkl")
 
 #4896288 / 6 / 2/ 24
 #de_explainer.load_results("de_results.pkl")
