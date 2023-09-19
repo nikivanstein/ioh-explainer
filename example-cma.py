@@ -162,7 +162,7 @@ cma_explainer = explainer(run_cma,
                  verbose = False)
 
 
-cma_explainer.run(paralell=False, start_index = 0, checkpoint_file="intermediate_cma_cpp.csv")
+cma_explainer.run(paralell=True, start_index = 0, checkpoint_file="intermediate_cma_cpp.csv")
 #cma_explainer.run(paralell=True, )
 cma_explainer.save_results("cma_results_cpp.pkl")
 
