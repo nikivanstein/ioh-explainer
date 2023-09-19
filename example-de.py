@@ -7,8 +7,8 @@ import traceback
 
 
 cs = ConfigurationSpace({
-    "F": [0.25, 0.75, 1.25, 1.75],              # Uniform float
-    "CR" : [0.05, 0.25, 0.75, 1.0],            # Uniform float
+    "F": [0.5], # [0.25, 0.75, 1.25, 1.75],              # Uniform float
+    "CR" : [0.05, 0.25, 0.5, 0.75, 1.0],            # Uniform float
     "lambda_": ['nan', '2', '10'],    # 2 or 10xdim
     "mutation_base": ['target', 'best', 'rand'], 
     "mutation_reference" : ['pbest', 'rand', 'nan', 'best'], 
@@ -83,7 +83,7 @@ de_explainer = explainer(run_de,
                  algname="mod-de",
                  dims = [5,30],#,10,40],#, 10, 20, 40  ,15,30
                  fids = np.arange(1,25), #,5
-                 iids = [1,5], #,5 
+                 iids = [1,2,3,4,5], #,5 
                  reps = 3, #maybe later 10? = 11 days processing time
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,
@@ -93,8 +93,8 @@ de_explainer = explainer(run_de,
                  verbose = False)
 
 
-de_explainer.run(paralell=True, start_index = 18001, checkpoint_file="intermediate3.csv")
-de_explainer.save_results("intermediate3.pkl")
+de_explainer.run(paralell=True, start_index = 0, checkpoint_file="intermediate5.csv")
+de_explainer.save_results("intermediate5.pkl")
 
 #4896288 / 6 / 2/ 24
 #de_explainer.load_results("de_results.pkl")
