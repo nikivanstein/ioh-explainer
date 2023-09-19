@@ -1,7 +1,16 @@
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from ioh_xplainer import explainer
-from modcma import ModularCMAES, Parameters
+from modcma.c_maes import (
+    mutation,
+    Population,
+    Parameters,
+    parameters,
+    options,
+    ModularCMAES,
+)
+
+
 import numpy as np
 import traceback
 
@@ -17,9 +26,9 @@ sigma0: float = .5
 """
 cs = ConfigurationSpace({
     'elitist' : [False, True], 
-    'mirrored': ['mirrored pairwise', 'nan', 'mirrored'], 
+    'mirrored': ['nan', 'mirrored'],  #'mirrored pairwise', 
     'base_sampler': ['sobol', 'gaussian', 'halton'], 
-    'weights_option': ['default', 'equal', '1/2^lambda'], 
+    'weights_option': ['default', 'equal'], #, '1/2^lambda'], 
     'local_restart': ['nan', 'IPOP', 'BIPOP'], 
     'active': [False, True],
     'step_size_adaptation': ['csa', 'psr'],
@@ -31,8 +40,70 @@ steps_dict = {
 }
 
 
-def run_cma(func, config, budget, dim, *args, **kwargs):
+def config_to_cma_parameters(config, dim, budget):
+    #modules first
+    modules = parameters.Modules()
+    active = bool(config.get('active'))
+    if config.get('active')=="True":
+        active = True
+    if config.get('active')=="False":
+        active = False
+    modules.active = active
 
+    elitist = bool(config.get('elitist'))
+    if config.get('elitist')=="True":
+        elitist = True
+    if config.get('elitist')=="False":
+        elitist = False
+    modules.elitist = elitist
+    #modules.orthogonal = config.get('orthogonal') #Not in use for me
+    #modules.sample_sigma = config.get('sample_sigma') #Not in use for me
+    #modules.sequential_selection  = config.get('sequential_selection') #Not in use for me
+    #modules.threshold_convergence  = config.get('threshold_convergence') #Not in use for me
+    # bound_correction_mapping = {'COTN': options.CorrectionMethod.COTN,
+    #                             'count': options.CorrectionMethod.COUNT,
+    #                             'mirror':  options.CorrectionMethod.MIRROR,
+    #                             'nan':  options.CorrectionMethod.NONE,
+    #                             'saturate':  options.CorrectionMethod.SATURATE,
+    #                             'toroidal':  options.CorrectionMethod.TOROIDAL,
+    #                             'uniform resample':  options.CorrectionMethod.UNIFORM_RESAMPLE
+    #                             } #Not used for me.
+    # modules.bound_correction = bound_correction_mapping[config.get('bound_correction')]
+    mirrored_mapping = {'mirrored': options.Mirror.MIRRORED,
+                        'nan': options.Mirror.NONE,
+                        'mirrored pairwise':  options.Mirror.PAIRWISE
+                        }
+    modules.mirrored = mirrored_mapping[config.get('mirrored')]
+
+    restart_strategy_mapping = {'IPOP': options.RestartStrategy.IPOP,
+                        'nan': options.RestartStrategy.NONE,
+                        'BIPOP':  options.RestartStrategy.BIPOP
+                        }
+    modules.restart_strategy = restart_strategy_mapping[config.get('local_restart')]
+
+    sampler_mapping = {'sobol': options.BaseSampler.SOBOL,
+                        'gaussian': options.BaseSampler.GAUSSIAN,
+                        'halton':  options.BaseSampler.HALTON
+                        }
+    modules.sampler = sampler_mapping[config.get('base_sampler')]
+
+    ssa_mapping = {'csa': options.StepSizeAdaptation.CSA,
+                    'psr': options.StepSizeAdaptation.PSR,
+                    'lpxnes': options.StepSizeAdaptation.LPXNES,
+                    'msr': options.StepSizeAdaptation.MSR,
+                    'mxnes': options.StepSizeAdaptation.MXNES,
+                    'tpa': options.StepSizeAdaptation.TPA,
+                    'xnes': options.StepSizeAdaptation.XNES
+                    }
+    modules.ssa = ssa_mapping[config.get('step_size_adaptation')]
+
+    weights_mapping = {'default': options.RecombinationWeights.DEFAULT,
+                    'equal': options.RecombinationWeights.EQUAL,
+                    '1/2^lambda': options.RecombinationWeights.HALF_POWER_LAMBDA,
+                    }
+    modules.weights = weights_mapping[config.get('weights_option')]
+
+    #settings
     lam = config.get('lambda_')
     if config.get('lambda_') == 'nan':
         lam = None
@@ -47,57 +118,41 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
 
     if mu != None and lam != None and mu > lam:
         #do not run, instead return
-        return []
+        return False
+    settings = parameters.Settings(dim, modules, budget=budget, lambda0=lam, mu0=mu)
+    return Parameters(settings)
+
+
+def run_cma(func, config, budget, dim, *args, **kwargs):
+
+    par = config_to_cma_parameters(config, dim, int(budget))
+    if par == False:
+        return [] #wrong mu/lambda
+
+    #modules = parameters.Modules()
+    #settings = parameters.Settings(2, modules)
+    #par = Parameters(settings)
+    c = ModularCMAES(par)
     
-
-    local_restart = config.get('local_restart')
-    if config.get('local_restart') == 'nan':
-        local_restart = None
-    #mirrored
-    mirrored = config.get('mirrored')
-    if config.get('mirrored') == 'nan':
-        mirrored = None
-    
-    active = bool(config.get('active'))
-    if config.get('active')=="True":
-        active = True
-    if config.get('active')=="False":
-        active = False
-
-    elitist = bool(config.get('elitist'))
-    if config.get('elitist')=="True":
-        elitist = True
-    if config.get('elitist')=="False":
-        elitist = False
-
-    item = {'elitist' : elitist, 
-        'mirrored': mirrored, 
-        'base_sampler': config.get('base_sampler'), 
-        'weights_option': config.get('weights_option'), 
-        'local_restart': local_restart, 
-        'active': active,
-        'step_size_adaptation': config.get('step_size_adaptation'),
-        "lambda_": lam,
-        "mu": mu 
-         }
-    item['budget'] = int(budget)
-    c = ModularCMAES(func, dim, **item)
-
     try:
-        c.run()
+        #print(config)
+        c(func)
         return []
     except Exception as e:
         print(f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed")
         traceback.print_exc()
-        print(item)
+        print(config)
         return []
+
+
+
 
 cma_explainer = explainer(run_cma, 
                  cs , 
                  algname="mod-cma",
                  dims = [5,30],#,10,40],#, 10, 20, 40  ,15,30
                  fids = np.arange(1,25), #,5
-                 iids = [1,5], #,5 
+                 iids = [1,2,3,4,5], #,5 
                  reps = 3, #maybe later 10? = 11 days processing time
                  sampling_method = "grid",  #or random
                  grid_steps_dict = steps_dict,
@@ -107,9 +162,9 @@ cma_explainer = explainer(run_cma,
                  verbose = False)
 
 
-cma_explainer.run(paralell=True, start_index = 0, checkpoint_file="intermediate_cma2.csv")
+cma_explainer.run(paralell=False, start_index = 0, checkpoint_file="intermediate_cma_cpp.csv")
 #cma_explainer.run(paralell=True, )
-cma_explainer.save_results("cma_results_huge.pkl")
+cma_explainer.save_results("cma_results_cpp.pkl")
 
 
 #de_explainer.load_results("de_results.pkl")
