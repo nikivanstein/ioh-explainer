@@ -26,9 +26,9 @@ sigma0: float = .5
 """
 cs = ConfigurationSpace({
     'elitist' : [False, True], 
-    'mirrored': ['nan', 'mirrored'],  #'mirrored pairwise', 
+    'mirrored': ['nan', 'mirrored', 'mirrored pairwise'], 
     'base_sampler': ['sobol', 'gaussian', 'halton'], 
-    'weights_option': ['default', 'equal'], #, '1/2^lambda'], 
+    'weights_option': ['default', 'equal', '1/2^lambda'], 
     'local_restart': ['nan', 'IPOP', 'BIPOP'], 
     'active': [False, True],
     'step_size_adaptation': ['csa', 'psr'],
