@@ -28,30 +28,30 @@ from pflacco.misc_features import calculate_fitness_distance_correlation
 from pflacco.local_optima_network_features import compute_local_optima_network, calculate_lon_features
 
 
-
-data_file = "de_final.pkl" #read in modular DE data
+data_file = "cma_final.pkl"
+features = ['elitist', 'mirrored', 'base_sampler', 'weights_option', 'local_restart', 'step_size_adaptation', 'lambda_', 'mu']
 df = pd.read_pickle(data_file)
 
-features= ['F','CR', 'lambda_','mutation_base', 'mutation_reference',
-       'mutation_n_comps', 'use_archive', 'crossover', 'adaptation_method',
-       'lpsr']
 
 config_dict = {}
 for f in features:
     config_dict[f] = list(map(str, df[f].unique()))
 
-config_dict['mutation_n_comps'] = [1,2]
-config_dict['use_archive'] = [False, True]
-config_dict['lpsr'] = [False, True]
+config_dict['elitist'] = [False, True]
+config_dict['active'] = [False, True]
 
-#for each fid, iid get the best configuration  (mean?)
+print(config_dict)
+print( df['dim'].unique())
+print( df['seed'].unique())
+print( df['iid'].unique())
+
 cs = ConfigurationSpace(config_dict)
 
 print(cs)
-
-de_explainer = explainer(None, 
+print( df['dim'].unique())
+cmaes_explainer = explainer(None, 
                  cs , 
-                 algname="mod-DE",
+                 algname="mod-CMA",
                  dims = [5,30],#, 10, 20, 40 
                  fids = np.arange(1,25), #,5
                  iids = df['iid'].unique(), #20 
@@ -64,27 +64,26 @@ de_explainer = explainer(None,
                  verbose = True)
 
 
-
-de_explainer.load_results(data_file)
+cmaes_explainer.load_results(data_file)
 
 sample_size = 1000 #fixed
 
 new_doe_df = []
 new_ela_df = []
 new_df_fidonly = []
-for dim in de_explainer.dims:
-    dim_df = de_explainer.df[de_explainer.df['dim'] == dim].copy()
+for dim in cmaes_explainer.dims:
+    dim_df = cmaes_explainer.df[cmaes_explainer.df['dim'] == dim].copy()
     
     X = create_initial_sample(dim, lower_bound = -5, upper_bound = 5, n=sample_size, seed=42)
     
 
-    for fid in tqdm(de_explainer.fids):
+    for fid in tqdm(cmaes_explainer.fids):
         fid_df = dim_df[dim_df['fid'] == fid]
 
         for iid in fid_df['iid'].unique():
             iid_df = fid_df[fid_df['iid'] == iid]
             #get best performing conf
-            conf, aucs = de_explainer._get_single_best(iid_df)
+            conf, aucs = cmaes_explainer._get_single_best(iid_df)
             conf['dim'] = dim
             conf['fid'] = fid
             conf['iid'] = iid
@@ -118,10 +117,10 @@ for dim in de_explainer.dims:
 #build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
 new_ela_df = pd.DataFrame.from_records(new_ela_df)
-new_ela_df.to_pickle("ela-features-de.pkl")
+new_ela_df.to_pickle("ela-features-cma.pkl")
 
 new_doe_df = pd.DataFrame.from_records(new_doe_df)
-new_doe_df.to_pickle("doe-features-de.pkl")
+new_doe_df.to_pickle("doe-features-cma.pkl")
 
 print(new_ela_df)
 print(new_doe_df)
