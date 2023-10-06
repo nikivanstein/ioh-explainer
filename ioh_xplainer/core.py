@@ -141,7 +141,7 @@ class explainer(object):
         if self.verbose:
             print(self.df)
 
-    def get_results_for_config(self, config:dict, dim:int, fid:int, iid=1):
+    def get_results_for_config(self, config:dict, dim:int, fid:int, iid=None):
         """Get the AUC result from a specific configuration in dictorionary form.
 
         Args:
@@ -155,7 +155,10 @@ class explainer(object):
         """
         dim_df = self.df[(self.df['dim'] == dim)]
         fid_df = dim_df[(dim_df['fid'] == fid)]
-        iid_df = fid_df[(fid_df['iid'] == iid)]
+        if (iid != None):
+            iid_df = fid_df[(fid_df['iid'] == iid)]
+        else:
+            iid_df = fid_df
         return iid_df.query(get_query_string_from_dict(config))['auc']
 
     def save_results(self, filename="results.pkl"):
