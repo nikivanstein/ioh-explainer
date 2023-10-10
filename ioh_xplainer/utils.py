@@ -102,16 +102,18 @@ def run_verification(args):
         # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
         func = ioh.get_problem(fid, dimension=dim, instance=iid)
         myLogger = auc_logger(budget, triggers=[ioh.logger.trigger.ALWAYS])
+        myLoggerLarge = auc_logger(budget, upper=1e8, triggers=[ioh.logger.trigger.ALWAYS])
         func.attach_logger(myLogger)
         return_list = []
         for seed in range(reps):
             np.random.seed(seed)
             optimizer(func, config, budget=budget, dim=dim, seed=seed)
-            auc = correct_auc(func, myLogger, budget)
+            auc1 = correct_auc(func, myLogger, budget)
+            auc2 = correct_auc(func, myLoggerLarge, budget)            
             func.reset()
             myLogger.reset(func)
             return_list.append(
-                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config, "auc": auc}
+                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config, "auc": auc1, "aucLarge" : auc2}
             )
         return return_list
 
