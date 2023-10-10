@@ -120,7 +120,7 @@ class explainer(object):
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
                     if (checkpoint_file != None):
-                        df_tab = pd.DataFrame(tab, columns=["fid", "iid", "dim", "seed", *self.config_space.keys(), "auc"])
+                        df_tab = pd.DataFrame(tab, columns=["fid", "iid", "dim", "seed", *self.config_space.keys(), "auc", "aucLarge"])
                         df_tab.to_csv(checkpoint_file, mode='a', header=not os.path.exists(checkpoint_file))
                     else:
                         for row in tab:
@@ -131,7 +131,7 @@ class explainer(object):
                         for iid in self.iids:
                             tab = run_verification([dim, fid, iid, grid[i], self.budget, self.reps, self.optimizer])
                             if (checkpoint_file != None):
-                                df_tab = pd.DataFrame(tab, columns=["fid", "iid", "dim", "seed", *self.config_space.keys(), "auc"])
+                                df_tab = pd.DataFrame(tab, columns=["fid", "iid", "dim", "seed", *self.config_space.keys(), "auc", "aucLarge"])
                                 df_tab.to_csv(checkpoint_file, mode='a', header=not os.path.exists(checkpoint_file))
                             else:
                                 for row in tab:
