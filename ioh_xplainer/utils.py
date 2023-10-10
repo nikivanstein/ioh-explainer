@@ -43,17 +43,18 @@ def ioh_f0():
 class auc_logger(ioh.logger.AbstractLogger):
     """Auc_logger class implementing the logging module for ioh."""
 
-    def __init__(self, budget, *args, **kwargs):
+    def __init__(self, budget, lower = 1e-8, upper = 1e2, scale_log = True, *args, **kwargs):
         """Initialize the logger.
 
         Args:
             budget (int): Evaluation budget for calculating AUC.
         """
         super().__init__(*args, **kwargs)
-        self.auc = budget
+        self.auc = 0
+        self.lower = lower
+        self.upper = upper
         self.budget = budget
-        powers = np.round(np.linspace(8, -8, 81), decimals=1)
-        self.target_values = np.power([10] * 81, powers)
+        self.transform = (lambda x : np.log10(x) if scale_log else (lambda x : x)) 
 
     def __call__(self, log_info: ioh.LogInfo):
         """Subscalculate the auc.
@@ -63,10 +64,26 @@ class auc_logger(ioh.logger.AbstractLogger):
         """
         if log_info.evaluations >= self.budget:
             return
-        self.auc -= sum(log_info.y > self.target_values) / 81
+        y_value = np.clip(log_info.raw_y_best, self.lower, self.upper)
+        self.auc += (self.transform(y_value) - self.transform(self.lower))/(self.transform(self.upper)-self.transform(self.lower))
 
     def reset(self, func):
-        self.auc = self.budget
+        super().reset()
+        self.auc = 0
+        
+def correct_auc(ioh_function, logger, budget):
+    """Correct AUC values in case a run stopped before the budget was exhausted
+
+        Args:
+            ioh_function: The function in its final state (before resetting!)
+            logger: The logger in its final state, so we can ensure the settings for auc calculation match
+            budget: The intended maximum budget
+
+        Returns:
+            float: The normalized AUC of the run, corrected for stopped runs
+        """
+    fraction = (logger.transform(np.clip(ioh_function.state.current_best_internal.y, logger.lower, logger.upper)) - logger.transform(logger.lower))/(logger.transform(logger.upper)-logger.transform(logger.lower))
+    return (logger.auc + np.clip(budget - ioh_function.state.evaluations, 0, budget) * fraction)/budget
 
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
@@ -90,7 +107,7 @@ def run_verification(args):
         for seed in range(reps):
             np.random.seed(seed)
             optimizer(func, config, budget=budget, dim=dim, seed=seed)
-            auc = myLogger.auc
+            auc = correct_auc(func, myLogger, budget)
             func.reset()
             myLogger.reset(func)
             return_list.append(
