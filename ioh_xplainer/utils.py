@@ -112,6 +112,7 @@ def run_verification(args):
             auc2 = correct_auc(func, myLoggerLarge, budget)            
             func.reset()
             myLogger.reset(func)
+            myLoggerLarge.reset(func)
             return_list.append(
                 {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config, "auc": auc1, "aucLarge" : auc2}
             )

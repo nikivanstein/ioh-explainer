@@ -7,7 +7,7 @@ import traceback
 
 
 cs = ConfigurationSpace({
-    "F": [0.5], # [0.25, 0.75, 1.25, 1.75],              # Uniform float
+    "F": [0.25, 0.5, 0.75, 1.25, 1.75],              # Uniform float
     "CR" : [0.05, 0.25, 0.5, 0.75, 1.0],            # Uniform float
     "lambda_": ['nan', '2', '10'],    # 2 or 10xdim
     "mutation_base": ['target', 'best', 'rand'], 
