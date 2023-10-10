@@ -40,50 +40,59 @@ def ioh_f0():
     return ioh.wrap_problem(f0, name="f0", lb=0.0, ub=1.0)
 
 
-class auc_logger(ioh.logger.AbstractLogger):
-    """Auc_logger class implementing the logging module for ioh."""
+class aoc_logger(ioh.logger.AbstractLogger):
+    """aoc_logger class implementing the logging module for ioh."""
 
-    def __init__(self, budget, lower = 1e-8, upper = 1e2, scale_log = True, *args, **kwargs):
+    def __init__(self, budget, lower = 1e-8, upper1 = 1e2, upper2 = 1e8, scale_log = True, *args, **kwargs):
         """Initialize the logger.
 
         Args:
-            budget (int): Evaluation budget for calculating AUC.
+            budget (int): Evaluation budget for calculating aoc.
         """
         super().__init__(*args, **kwargs)
-        self.auc = 0
+        self.aoc1 = 0
+        self.aoc2 = 0
         self.lower = lower
-        self.upper = upper
+        self.upper1 = upper1
+        self.upper2 = upper2
         self.budget = budget
         self.transform = (lambda x : np.log10(x) if scale_log else (lambda x : x)) 
 
     def __call__(self, log_info: ioh.LogInfo):
-        """Subscalculate the auc.
+        """Subscalculate the aoc.
 
         Args:
             log_info (ioh.LogInfo): info about current values.
         """
         if log_info.evaluations >= self.budget:
             return
-        y_value = np.clip(log_info.raw_y_best, self.lower, self.upper)
-        self.auc += (self.transform(y_value) - self.transform(self.lower))/(self.transform(self.upper)-self.transform(self.lower))
+        y_value = np.clip(log_info.raw_y_best, self.lower, self.upper1)
+        self.aoc1 += (self.transform(y_value) - self.transform(self.lower))/(self.transform(self.upper1)-self.transform(self.lower))
+        y_value = np.clip(log_info.raw_y_best, self.lower, self.upper2)
+        self.aoc2 += (self.transform(y_value) - self.transform(self.lower))/(self.transform(self.upper2)-self.transform(self.lower))
 
     def reset(self, func):
         super().reset()
-        self.auc = 0
-        
-def correct_auc(ioh_function, logger, budget):
-    """Correct AUC values in case a run stopped before the budget was exhausted
+        self.aoc1 = 0
+        self.aoc2 = 0
+
+def correct_aoc(ioh_function, logger, budget):
+    """Correct aoc values in case a run stopped before the budget was exhausted
 
         Args:
             ioh_function: The function in its final state (before resetting!)
-            logger: The logger in its final state, so we can ensure the settings for auc calculation match
+            logger: The logger in its final state, so we can ensure the settings for aoc calculation match
             budget: The intended maximum budget
 
         Returns:
-            float: The normalized AUC of the run, corrected for stopped runs
+            float: The normalized aoc of the run, corrected for stopped runs
         """
-    fraction = (logger.transform(np.clip(ioh_function.state.current_best_internal.y, logger.lower, logger.upper)) - logger.transform(logger.lower))/(logger.transform(logger.upper)-logger.transform(logger.lower))
-    return (logger.auc + np.clip(budget - ioh_function.state.evaluations, 0, budget) * fraction)/budget
+    fraction = (logger.transform(np.clip(ioh_function.state.current_best_internal.y, logger.lower, logger.upper1)) - logger.transform(logger.lower))/(logger.transform(logger.upper1)-logger.transform(logger.lower))
+    aoc1 = (logger.aoc1 + np.clip(budget - ioh_function.state.evaluations, 0, budget) * fraction)/budget
+    fraction = (logger.transform(np.clip(ioh_function.state.current_best_internal.y, logger.lower, logger.upper2)) - logger.transform(logger.lower))/(logger.transform(logger.upper2)-logger.transform(logger.lower))
+    aoc2 = (logger.aoc2 + np.clip(budget - ioh_function.state.evaluations, 0, budget) * fraction)/budget
+    
+    return 1-aoc1, 1-aoc2
 
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
@@ -101,20 +110,17 @@ def run_verification(args):
         dim, fid, iid, config, budget, reps, optimizer = args
         # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
         func = ioh.get_problem(fid, dimension=dim, instance=iid)
-        myLogger = auc_logger(budget, triggers=[ioh.logger.trigger.ALWAYS])
-        myLoggerLarge = auc_logger(budget, upper=1e8, triggers=[ioh.logger.trigger.ALWAYS])
-        func.attach_logger(myLogger)
+        myLoggerLarge = aoc_logger(budget, upper1=1e2, upper2=1e8, triggers=[ioh.logger.trigger.ALWAYS])
+        func.attach_logger(myLoggerLarge)
         return_list = []
         for seed in range(reps):
             np.random.seed(seed)
             optimizer(func, config, budget=budget, dim=dim, seed=seed)
-            auc1 = correct_auc(func, myLogger, budget)
-            auc2 = correct_auc(func, myLoggerLarge, budget)            
+            auc1, auc2 = correct_aoc(func, myLoggerLarge, budget)
             func.reset()
-            myLogger.reset(func)
             myLoggerLarge.reset(func)
             return_list.append(
-                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config, "auc": auc1, "aucLarge" : auc2}
+                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, "auc": auc1, "aucLarge" : auc2}
             )
         return return_list
 
