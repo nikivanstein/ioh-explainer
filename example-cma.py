@@ -25,6 +25,7 @@ sigma0: float = .5
 
 """
 cs = ConfigurationSpace({
+    'covariance' : [False, True], 
     'elitist' : [False, True], 
     'mirrored': ['nan', 'mirrored', 'mirrored pairwise'], 
     'base_sampler': ['sobol', 'gaussian', 'halton'], 
@@ -102,6 +103,16 @@ def config_to_cma_parameters(config, dim, budget):
                     '1/2^lambda': options.RecombinationWeights.HALF_POWER_LAMBDA,
                     }
     modules.weights = weights_mapping[config.get('weights_option')]
+
+    covariance = bool(config.get("covariance"))
+    if config.get('covariance')=="True":
+        covariance = True
+    if config.get('covariance')=="False":
+        covariance = False
+    if covariance:
+        modules.matrix_adaptation = options.MatrixAdaptationType.COVARIANCE
+    else:
+        modules.matrix_adaptation = options.MatrixAdaptationType.MATRIX
 
     #settings
     lam = config.get('lambda_')
