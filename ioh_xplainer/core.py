@@ -17,7 +17,7 @@ from ConfigSpace.util import generate_grid
 import scipy.stats as stats
 from sklearn.neighbors import KNeighborsRegressor
 
-from .utils import auc_logger, ioh_f0, runParallelFunction, intersection, run_verification, get_query_string_from_dict
+from .utils import ioh_f0, runParallelFunction, intersection, run_verification, get_query_string_from_dict
 
 class explainer(object):
     """Explain an iterative optimization heuristic by evaluating a large set of hyper-parameter configurations and exploring
