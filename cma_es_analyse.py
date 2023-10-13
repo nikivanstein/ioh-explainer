@@ -164,7 +164,7 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
         print(config)
         return []
 
-data_file = "cma_final.pkl"
+data_file = "cma_results_cpp.pkl"
 features = ['covariance','elitist', 'mirrored', 'base_sampler', 'weights_option', 'local_restart', 'step_size_adaptation', 'lambda_', 'mu']
 df = pd.read_pickle(data_file)
 
@@ -175,6 +175,7 @@ for f in features:
 
 config_dict['elitist'] = [False, True]
 config_dict['active'] = [False, True]
+config_dict['covariance'] = [False, True]
 
 print(config_dict)
 print( df['dim'].unique())
