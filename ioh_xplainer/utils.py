@@ -120,7 +120,7 @@ def run_verification(args):
             func.reset()
             myLoggerLarge.reset(func)
             return_list.append(
-                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, "auc": auc1, "aucLarge" : auc2}
+                {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config , "auc": auc1, "aucLarge" : auc2}
             )
         return return_list
 

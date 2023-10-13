@@ -84,7 +84,7 @@ class explainer(object):
         self.budget = budget
         self.models = {}
         self.df = pd.DataFrame(
-            columns=["fid", "iid", "dim", "seed", *config_space.keys(), "auc"]
+            columns=["fid", "iid", "dim", "seed", *config_space.keys(), "auc", "aucLarge"]
         )
         np.random.seed(seed)
 
