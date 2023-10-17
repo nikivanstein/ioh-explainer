@@ -209,12 +209,11 @@ df = cmaes_explainer.performance_stats()
 
 
 #Hall of fame plots
-cmaes_explainer.explain(partial_dependence=False,
-            shap=False,
-            best_config=True,
-            file_prefix="cma_img_new/",
-            check_bias=False,
-            keep_order=True)
+#cmaes_explainer.explain(partial_dependence=False,
+#            best_config=True,
+#            file_prefix="cma_img_new/",
+#            check_bias=False,
+#            keep_order=True)
 
 
 #cmaes_explainer.plot(partial_dependence=False, best_config=False)
