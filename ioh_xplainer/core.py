@@ -528,7 +528,7 @@ class explainer(object):
             shap.initjs()
 
         if catboost_params == None:
-            catboost_params = {'iterations':100, 'depth':14} #probably a bit overkill.. this will take time.
+            catboost_params = {'iterations':100, 'depth':12} #probably a bit overkill.. this will take time.
         
         df = self.df.copy(True)
         df = df.rename(
