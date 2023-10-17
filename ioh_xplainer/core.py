@@ -649,14 +649,19 @@ class explainer(object):
                         shap_values[best_config_index, :],
                         subdf_display.loc[best_config_index],
                         matplotlib=use_matplotlib,
+                        out_names="",
                         show=(not use_matplotlib),
                         plot_cmap="viridis",
                     )
                     if use_matplotlib:
                         plt.xlabel(f"Single best configuration on $f_{{{fid}}}$ in $d={dim}$")
-                        plt.tight_layout()
+                        #plt.tight_layout()
                         if file_prefix != None:
-                            plt.savefig(f"{file_prefix}singlebest_f{fid}_d{dim}.png")
+                            plt.savefig(f"{file_prefix}singlebest_f{fid}_d{dim}.png",
+                                dpi=1200,
+                                transparent=True,
+                                bbox_inches="tight",
+                                format='png')
                         else:
                             plt.show()
                         plt.clf()
