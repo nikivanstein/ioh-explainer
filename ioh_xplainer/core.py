@@ -504,7 +504,6 @@ class explainer(object):
     def explain(
         self,
         partial_dependence=False,
-        shap=True,
         best_config=True,
         file_prefix=None,
         check_bias=False,
@@ -561,48 +560,47 @@ class explainer(object):
                 ]
                 
                 y = subdf["auc"].values
-                if shap:
-                    if (False and self.sampling_method == "grid"): #this takes waay to long to calculate all shap values. 
-                        #we can use a knn regressor with k=1
-                        bst = KNeighborsRegressor(n_neighbors=1)
-                        bst.fit(X, y)
-                        print("fitted model R2 train:",bst.score(X,y)) #when using a grid, we don't care for overfitting.
-                        explainer = shap.KernelExplainer(bst.predict, shap.sample(X,10))
-                    else:
-                        bst = cb.CatBoostRegressor(**catboost_params)
-                        bst.fit(X, y,
-                            cat_features=categorical_columns, verbose=False)
-                        print("fitted model R2 train:",bst.score(X,y))
-                        explainer = shap.TreeExplainer(bst)
+                if (False and self.sampling_method == "grid"): #this takes waay to long to calculate all shap values. 
+                    #we can use a knn regressor with k=1
+                    bst = KNeighborsRegressor(n_neighbors=1)
+                    bst.fit(X, y)
+                    print("fitted model R2 train:",bst.score(X,y)) #when using a grid, we don't care for overfitting.
+                    explainer = shap.KernelExplainer(bst.predict, shap.sample(X,10))
+                else:
+                    bst = cb.CatBoostRegressor(**catboost_params)
+                    bst.fit(X, y,
+                        cat_features=categorical_columns, verbose=False)
+                    print("fitted model R2 train:",bst.score(X,y))
+                    explainer = shap.TreeExplainer(bst)
 
-                    shap_values = explainer.shap_values(X)
+                shap_values = explainer.shap_values(X)
 
-                    if keep_order:
-                        order = list(X.columns.values)
-                        col2num = {col: i for i, col in enumerate(X.columns)}
-                        order = list(map(col2num.get, order))
+                if keep_order:
+                    order = list(X.columns.values)
+                    col2num = {col: i for i, col in enumerate(X.columns)}
+                    order = list(map(col2num.get, order))
 
-                        shap.plots.beeswarm(
-                            explainer(X),
-                            show=False,
-                            order=order,
-                            max_display=20,
-                            color=plt.get_cmap("viridis"),
-                        )
-                    else:
-                        shap.plots.beeswarm(
-                            explainer(X),
-                            show=False,
-                            color=plt.get_cmap("viridis"),
-                        )
-                    plt.tight_layout()
-                    plt.xlabel(f"Hyper-parameter contributions on $f_{{{fid}}}$ in $d={dim}$")
-                    if file_prefix != None:
-                        plt.savefig(f"{file_prefix}summary_f{fid}_d{dim}.png")
-                    else:
-                        plt.show()
-                    
-                    plt.clf()
+                    shap.plots.beeswarm(
+                        explainer(X),
+                        show=False,
+                        order=order,
+                        max_display=20,
+                        color=plt.get_cmap("viridis"),
+                    )
+                else:
+                    shap.plots.beeswarm(
+                        explainer(X),
+                        show=False,
+                        color=plt.get_cmap("viridis"),
+                    )
+                plt.tight_layout()
+                plt.xlabel(f"Hyper-parameter contributions on $f_{{{fid}}}$ in $d={dim}$")
+                if file_prefix != None:
+                    plt.savefig(f"{file_prefix}summary_f{fid}_d{dim}.png")
+                else:
+                    plt.show()
+                
+                plt.clf()
 
                 if partial_dependence:
                     # show dependency plots for all features
