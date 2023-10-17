@@ -545,23 +545,23 @@ class explainer(object):
         for dim in self.dims:
             for fid in self.fids:
                 print(f"Processing d{dim} f{fid}..")
+                subdf_display = df_display[(df_display["fid"] == fid) & (df_display["dim"] == dim)]
+                subdf_display = subdf_display.reset_index()
+                subdf_display = subdf_display[
+                    [*self.config_space.keys(),"Instance variance","Stochastic variance"]
+                ]
+                subdf = df[(df["fid"] == fid) & (df["dim"] == dim)]
+                subdf = subdf.reset_index()
+                X = subdf[
+                    [
+                        *self.config_space.keys(),
+                        "Instance variance",
+                        "Stochastic variance",
+                    ]
+                ]
+                
+                y = subdf["auc"].values
                 if shap:
-                    subdf_display = df_display[(df_display["fid"] == fid) & (df_display["dim"] == dim)]
-                    subdf_display = subdf_display.reset_index()
-                    subdf_display = subdf_display[
-                        [*self.config_space.keys(),"Instance variance","Stochastic variance"]
-                    ]
-                    subdf = df[(df["fid"] == fid) & (df["dim"] == dim)]
-                    subdf = subdf.reset_index()
-                    X = subdf[
-                        [
-                            *self.config_space.keys(),
-                            "Instance variance",
-                            "Stochastic variance",
-                        ]
-                    ]
-                    
-                    y = subdf["auc"].values
                     if (False and self.sampling_method == "grid"): #this takes waay to long to calculate all shap values. 
                         #we can use a knn regressor with k=1
                         bst = KNeighborsRegressor(n_neighbors=1)
