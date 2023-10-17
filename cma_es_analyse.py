@@ -164,10 +164,10 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
         print(config)
         return []
 
-data_file = "cma_results_cpp.pkl"
+data_file = "cma_final.pkl"
 features = ['covariance','elitist', 'mirrored', 'base_sampler', 'weights_option', 'local_restart', 'step_size_adaptation', 'lambda_', 'mu']
 df = pd.read_pickle(data_file)
-
+#dfall = dfall.drop(columns=['Unnamed: 0'])
 
 config_dict = {}
 for f in features:
@@ -186,7 +186,7 @@ cs = ConfigurationSpace(config_dict)
 
 print(cs)
 print( df['dim'].unique())
-cmaes_explainer = explainer(None, 
+cmaes_explainer = explainer(run_cma, 
                  cs , 
                  algname="mod-CMA",
                  dims = [5,30],#, 10, 20, 40 
@@ -210,9 +210,10 @@ df = cmaes_explainer.performance_stats()
 
 #Hall of fame plots
 cmaes_explainer.explain(partial_dependence=False,
+            shap=False,
             best_config=True,
             file_prefix="cma_img_new/",
-            check_bias=True,
+            check_bias=False,
             keep_order=True)
 
 
