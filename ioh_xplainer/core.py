@@ -434,11 +434,13 @@ class explainer(object):
                 
         return pd.concat(self.stats, axis=1)
 
-    def to_latex_report(self, include_behaviour=True, filename=None, img_dir=None):
+    def to_latex_report(self, include_behaviour=True, include_hall_of_fame=True, include_bias=False, filename=None, img_dir=None):
         """Generate a latex report including tables and figures
 
         Args:
             include_behaviour (bool, optional): Include alg stability stats or not. Defaults to True.
+            include_hall_of_fame (bool, optional): Include single best configurations and force plots. Defaults to True.
+            include_bias (bool, optional): Include structural bias indicators for the single best solutions, can only be set to True if hall of fame is True. Defaults to False.
             filename (string, optional): To store to file, when None returns string. Defaults to None.
             img_dir (string, optional): Where to store the images, if None it will store in the base directory. Defaults to None.
 
@@ -464,9 +466,9 @@ class explainer(object):
             img_dir = ""
 
         self.explain(partial_dependence=False,
-            best_config=False,
+            best_config=include_hall_of_fame,
             file_prefix=f"{img_dir}/img_",
-            check_bias=False,
+            check_bias=include_bias,
             keep_order=True)
 
         num_cols = 4
