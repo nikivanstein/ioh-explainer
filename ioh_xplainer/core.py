@@ -435,10 +435,10 @@ class explainer(object):
                                "single-best mean": avg_single, "single-best std": var_single, 
                                "avg-best mean": avg_best_avg, "avg-best std": avg_best_var, 
                                "all mean": avg_avg, "all std": avg_var}
-                include_function_name = False
                 # Use the loc method to add the new row to the DataFrame
                 self.stats[stat_index].loc[len(self.stats[stat_index])] = new_row
                 #check if the single best is significantly better than the avg best
+            include_function_name = False
                 
         return pd.concat(self.stats, axis=1)
 
