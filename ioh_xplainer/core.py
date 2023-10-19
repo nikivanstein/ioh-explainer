@@ -225,7 +225,7 @@ class explainer(object):
             
             return pd.concat(fid_behaviour, axis=0)
         for dim in self.dims:
-            uniform_std = math.sqrt((self.budget)**2 / 12)
+            uniform_std = math.sqrt(1**2 / 12)
 
             dim_df = self.df[(self.df['dim'] == dim)]
             stat_index = f"d={dim}"
@@ -291,9 +291,9 @@ class explainer(object):
                 df.loc[len(df)] = {"Measure": "I-inv. single best", "value": 1 - (seed_var_single_best / uniform_std)}
 
             #gains for avg best and single best
-            df.loc[len(df)] = {"Measure": "Average norm. perf.", "value": mean_performance / self.budget}
-            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": (avg_best_performance - mean_performance) / self.budget}
-            df.loc[len(df)] = {"Measure": "Gain single best", "value": (single_best_performance - mean_performance) / self.budget}
+            df.loc[len(df)] = {"Measure": "Average norm. perf.", "value": mean_performance}
+            df.loc[len(df)] = {"Measure": "Gain avg. best", "value": (avg_best_performance - mean_performance)}
+            df.loc[len(df)] = {"Measure": "Gain single best", "value": (single_best_performance - mean_performance)}
             sig_avg = 0
             res = stats.ttest_ind(dim_df['auc'].values, df_best_mean['auc'].values)
             if res.pvalue < 0.05:
@@ -359,23 +359,26 @@ class explainer(object):
         return self._get_average_best(dim_df, use_median)
         
 
-    def performance_stats(self, normalize = True, latex = False):
+    def performance_stats(self, normalize = False, latex = False):
         """Show the performance of the algorithm, average best per dimension and single-best per fid.
 
         Args:
-            normalize (bool, optional): Normalize the auc by using the budget. Defaults to True.
+            normalize (bool, optional): Normalize the auc by using the budget. Defaults to False as it should already be normalized.
             latex (bool, optional): Formats the table for latex output. Defaults to False.
 
         Returns:
             [type]: [description]
         """
         self.stats = {}
-        
+        include_function_name = True
         for dim in self.dims:
             dim_df = self.df[self.df['dim'] == dim]
             stat_index = f"d={dim}"
             if latex:
-                self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best", "avg-best", "all"])
+                if include_function_name:
+                    self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best", "avg-best", "all"])
+                else:
+                    self.stats[stat_index] = pd.DataFrame(columns=["single-best", "avg-best", "all"])
             else:
                 self.stats[stat_index] = pd.DataFrame(columns=["Function", "single-best mean", "single-best std", "avg-best mean", "avg-best std", "all mean", "all std"])
             #split df per function
@@ -414,10 +417,15 @@ class explainer(object):
 
 
                 if latex:
-                    new_row = {'Function': f"f{fid} {func.meta_data.name}", 
-                                "single-best": f"{avg_single:.2f} ({var_single:.2f})", 
-                                "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
-                                "all": f"{avg_avg:.2f} ({avg_var:.2f})"}
+                    if include_function_name:
+                        new_row = {'Function': f"f{fid} {func.meta_data.name}", 
+                                    "single-best": f"{avg_single:.2f} ({var_single:.2f})", 
+                                    "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
+                                    "all": f"{avg_avg:.2f} ({avg_var:.2f})"}
+                    else:
+                        new_row = {"single-best": f"{avg_single:.2f} ({var_single:.2f})", 
+                                    "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})", 
+                                    "all": f"{avg_avg:.2f} ({avg_var:.2f})"}
                     if single_sig:
                         new_row["single-best"] = "\\textbf{"+f"{avg_single:.2f} ({var_single:.2f})"+"}"
                     if avg_sig:
@@ -427,18 +435,19 @@ class explainer(object):
                                "single-best mean": avg_single, "single-best std": var_single, 
                                "avg-best mean": avg_best_avg, "avg-best std": avg_best_var, 
                                "all mean": avg_avg, "all std": avg_var}
-                
+                include_function_name = False
                 # Use the loc method to add the new row to the DataFrame
                 self.stats[stat_index].loc[len(self.stats[stat_index])] = new_row
                 #check if the single best is significantly better than the avg best
                 
         return pd.concat(self.stats, axis=1)
 
-    def to_latex_report(self, include_behaviour=True, include_hall_of_fame=True, include_bias=False, filename=None, img_dir=None):
+    def to_latex_report(self, include_behaviour=True, include_explain=True, include_hall_of_fame=True, include_bias=False, filename=None, img_dir=None):
         """Generate a latex report including tables and figures
 
         Args:
             include_behaviour (bool, optional): Include alg stability stats or not. Defaults to True.
+            include_explain (bool, optional): Include explainable images or not. Defaults to True.
             include_hall_of_fame (bool, optional): Include single best configurations and force plots. Defaults to True.
             include_bias (bool, optional): Include structural bias indicators for the single best solutions, can only be set to True if hall of fame is True. Defaults to False.
             filename (string, optional): To store to file, when None returns string. Defaults to None.
@@ -464,36 +473,36 @@ class explainer(object):
         figures_text = ""
         if img_dir == None:
             img_dir = ""
+        if include_explain:
+            self.explain(partial_dependence=False,
+                best_config=include_hall_of_fame,
+                file_prefix=f"{img_dir}/img_",
+                check_bias=include_bias,
+                keep_order=True)
 
-        self.explain(partial_dependence=False,
-            best_config=include_hall_of_fame,
-            file_prefix=f"{img_dir}/img_",
-            check_bias=include_bias,
-            keep_order=True)
-
-        num_cols = 4
-        if (len(self.fids) % 4 == 0):
             num_cols = 4
-        else:
-            num_cols = 1
-        for dim in self.dims:
-            figures_text += "\\begin{figure}[t]\n\\centering\n"
-            for fid_i in range(0,len(self.fids),num_cols):
-                if num_cols == 4:
-                    figures_text += "\t\\includegraphics[height=0.15\\textheight,trim=0mm 0mm 30mm 0mm,clip]{" \
-                        + f"{img_dir}img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n" \
-                        + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
-                        + f"{img_dir}img_summary_f{self.fids[fid_i+1]}_d{dim}.png"+ "}\n" \
-                        + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
-                        + f"{img_dir}img_summary_f{self.fids[fid_i+2]}_d{dim}.png"+ "}\n" \
-                        + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 0mm 0mm,clip]{" \
-                        + f"{img_dir}img_summary_f{self.fids[fid_i+3]}_d{dim}.png"+ "}\n"
-                else:
-                    figures_text += "\t\\includegraphics[width=0.3\\textwidth,trim=0mm 0mm 0mm 0mm,clip]{" \
-                        + f"{img_dir}img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n"
-            #caption
-            figures_text += "\\caption{Hyper-parameter contributions per benchmark function for d="+str(dim)+". \\label{fig:shapxplaind"+str(dim)+"}}\n\n"
-            figures_text += "\\end{figure}\n\n"
+            if (len(self.fids) % 4 == 0):
+                num_cols = 4
+            else:
+                num_cols = 1
+            for dim in self.dims:
+                figures_text += "\\begin{figure}[t]\n\\centering\n"
+                for fid_i in range(0,len(self.fids),num_cols):
+                    if num_cols == 4:
+                        figures_text += "\t\\includegraphics[height=0.15\\textheight,trim=0mm 0mm 30mm 0mm,clip]{" \
+                            + f"{img_dir}img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n" \
+                            + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
+                            + f"{img_dir}img_summary_f{self.fids[fid_i+1]}_d{dim}.png"+ "}\n" \
+                            + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 30mm 0mm,clip]{" \
+                            + f"{img_dir}img_summary_f{self.fids[fid_i+2]}_d{dim}.png"+ "}\n" \
+                            + "\t\\includegraphics[height=0.15\\textheight,trim=60mm 0mm 0mm 0mm,clip]{" \
+                            + f"{img_dir}img_summary_f{self.fids[fid_i+3]}_d{dim}.png"+ "}\n"
+                    else:
+                        figures_text += "\t\\includegraphics[width=0.3\\textwidth,trim=0mm 0mm 0mm 0mm,clip]{" \
+                            + f"{img_dir}img_summary_f{self.fids[fid_i]}_d{dim}.png"+ "}\n"
+                #caption
+                figures_text += "\\caption{Hyper-parameter contributions per benchmark function for d="+str(dim)+". \\label{fig:shapxplaind"+str(dim)+"}}\n\n"
+                figures_text += "\\end{figure}\n\n"
 
         if filename != None:
             with open(f'{filename}.tex', "w") as fh:
