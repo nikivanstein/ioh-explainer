@@ -202,6 +202,10 @@ cmaes_explainer = explainer(run_cma,
 
 
 cmaes_explainer.load_results(data_file)
+
+#use aucLarge for D30
+cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30,'auc'] = cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30,'aucLarge']
+
 #for feature in features:
 #    cmaes_explainer.df[feature] = cmaes_explainer.df[feature].astype("category")
 df = cmaes_explainer.performance_stats()
