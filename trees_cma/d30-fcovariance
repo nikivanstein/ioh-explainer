@@ -27,18 +27,6 @@
                             <td><img src="/tmp/node9_569.svg"/></td>
                     </tr>
                     </table>>]
-	node8 [margin="0" shape=none label=<<table border="0">
-                    
-                    <tr>
-                            <td><img src="/tmp/node8_569.svg"/></td>
-                    </tr>
-                    </table>>]
-	node2 [margin="0" shape=none label=<<table border="0">
-                    
-                    <tr>
-                            <td><img src="/tmp/node2_569.svg"/></td>
-                    </tr>
-                    </table>>]
 	node15 [margin="0" shape=none label=<<table border="0">
                     
                     <tr>
@@ -51,16 +39,40 @@
                             <td><img src="/tmp/node13_569.svg"/></td>
                     </tr>
                     </table>>]
-	node1 [margin="0" shape=none label=<<table border="0">
-                    
-                    <tr>
-                            <td><img src="/tmp/node1_569.svg"/></td>
-                    </tr>
-                    </table>>]
 	node19 [margin="0" shape=none label=<<table border="0">
                     
                     <tr>
                             <td><img src="/tmp/node19_569.svg"/></td>
+                    </tr>
+                    </table>>]
+	node22 [margin="0" shape=none label=<<table border="0">
+                    
+                    <tr>
+                            <td><img src="/tmp/node22_569.svg"/></td>
+                    </tr>
+                    </table>>]
+	node18 [margin="0" shape=none label=<<table border="0">
+                    
+                    <tr>
+                            <td><img src="/tmp/node18_569.svg"/></td>
+                    </tr>
+                    </table>>]
+	node12 [margin="0" shape=none label=<<table border="0">
+                    
+                    <tr>
+                            <td><img src="/tmp/node12_569.svg"/></td>
+                    </tr>
+                    </table>>]
+	node8 [margin="0" shape=none label=<<table border="0">
+                    
+                    <tr>
+                            <td><img src="/tmp/node8_569.svg"/></td>
+                    </tr>
+                    </table>>]
+	node2 [margin="0" shape=none label=<<table border="0">
+                    
+                    <tr>
+                            <td><img src="/tmp/node2_569.svg"/></td>
                     </tr>
                     </table>>]
 	node27 [margin="0" shape=none label=<<table border="0">
@@ -81,22 +93,10 @@
                             <td><img src="/tmp/node25_569.svg"/></td>
                     </tr>
                     </table>>]
-	node23 [margin="0" shape=none label=<<table border="0">
+	node1 [margin="0" shape=none label=<<table border="0">
                     
                     <tr>
-                            <td><img src="/tmp/node23_569.svg"/></td>
-                    </tr>
-                    </table>>]
-	node22 [margin="0" shape=none label=<<table border="0">
-                    
-                    <tr>
-                            <td><img src="/tmp/node22_569.svg"/></td>
-                    </tr>
-                    </table>>]
-	node18 [margin="0" shape=none label=<<table border="0">
-                    
-                    <tr>
-                            <td><img src="/tmp/node18_569.svg"/></td>
+                            <td><img src="/tmp/node1_569.svg"/></td>
                     </tr>
                     </table>>]
 	node0 [margin="0" shape=none label=<<table border="0">
@@ -129,22 +129,6 @@
                         leaf10 -> leaf11 [style=invis]
                     }
                     
-	node8 -> node9 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	node8 -> leaf12 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	
-                    {
-                        rank=same;
-                        node9 -> leaf12 [style=invis]
-                    }
-                    
-	node2 -> node3 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	node2 -> node8 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	
-                    {
-                        rank=same;
-                        node3 -> node8 [style=invis]
-                    }
-                    
 	node15 -> leaf16 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
 	node15 -> leaf17 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
 	
@@ -161,20 +145,52 @@
                         leaf14 -> node15 [style=invis]
                     }
                     
-	node1 -> node2 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	node1 -> node13 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	
-                    {
-                        rank=same;
-                        node2 -> node13 [style=invis]
-                    }
-                    
 	node19 -> leaf20 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
 	node19 -> leaf21 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
 	
                     {
                         rank=same;
                         leaf20 -> leaf21 [style=invis]
+                    }
+                    
+	node22 -> leaf23 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	node22 -> leaf24 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	
+                    {
+                        rank=same;
+                        leaf23 -> leaf24 [style=invis]
+                    }
+                    
+	node18 -> node19 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	node18 -> node22 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	
+                    {
+                        rank=same;
+                        node19 -> node22 [style=invis]
+                    }
+                    
+	node12 -> node13 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	node12 -> node18 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	
+                    {
+                        rank=same;
+                        node13 -> node18 [style=invis]
+                    }
+                    
+	node8 -> node9 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	node8 -> node12 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	
+                    {
+                        rank=same;
+                        node9 -> node12 [style=invis]
+                    }
+                    
+	node2 -> node3 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	node2 -> node8 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	
+                    {
+                        rank=same;
+                        node3 -> node8 [style=invis]
                     }
                     
 	node27 -> leaf28 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
@@ -201,36 +217,20 @@
                         node26 -> leaf31 [style=invis]
                     }
                     
-	node23 -> leaf24 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	node23 -> node25 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	node1 -> node2 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
+	node1 -> node25 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
 	
                     {
                         rank=same;
-                        leaf24 -> node25 [style=invis]
-                    }
-                    
-	node22 -> node23 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	node22 -> leaf32 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	
-                    {
-                        rank=same;
-                        node23 -> leaf32 [style=invis]
-                    }
-                    
-	node18 -> node19 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	node18 -> node22 [penwidth=0.3 fontname="Arial" color="#444443" label=<> fontcolor="#444443"]
-	
-                    {
-                        rank=same;
-                        node19 -> node22 [style=invis]
+                        node2 -> node25 [style=invis]
                     }
                     
 	node0 -> node1 [penwidth=0.3 fontname="Arial" color="#444443" label=<  &le;> fontcolor="#444443"]
-	node0 -> node18 [penwidth=0.3 fontname="Arial" color="#444443" label=<  &gt;> fontcolor="#444443"]
+	node0 -> leaf32 [penwidth=0.3 fontname="Arial" color="#444443" label=<  &gt;> fontcolor="#444443"]
 	
                     {
                         rank=same;
-                        node1 -> node18 [style=invis]
+                        node1 -> leaf32 [style=invis]
                     }
                     
             leaf5 [margin="0" shape=box penwidth="0" color="#444443" label=<<table border="0" CELLBORDER="0">
@@ -263,12 +263,6 @@
                         <td><img src="/tmp/leaf11_569.svg"/></td>
                 </tr>
                 </table>>]
-	leaf12 [margin="0" shape=box penwidth="0" color="#444443" label=<<table border="0" CELLBORDER="0">
-                
-                <tr>
-                        <td><img src="/tmp/leaf12_569.svg"/></td>
-                </tr>
-                </table>>]
 	leaf14 [margin="0" shape=box penwidth="0" color="#444443" label=<<table border="0" CELLBORDER="0">
                 
                 <tr>
@@ -297,6 +291,12 @@
                 
                 <tr>
                         <td><img src="/tmp/leaf21_569.svg"/></td>
+                </tr>
+                </table>>]
+	leaf23 [margin="0" shape=box penwidth="0" color="#444443" label=<<table border="0" CELLBORDER="0">
+                
+                <tr>
+                        <td><img src="/tmp/leaf23_569.svg"/></td>
                 </tr>
                 </table>>]
 	leaf24 [margin="0" shape=box penwidth="0" color="#444443" label=<<table border="0" CELLBORDER="0">
