@@ -1,3 +1,5 @@
+"""Process the DE pkl file (fixing mu and lambda)"""
+
 import os
 import pandas as pd
 import re

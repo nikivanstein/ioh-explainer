@@ -1,3 +1,7 @@
+"""
+Processes the CMA-ES data into images and tables using the ioh-xplain package.
+"""
+
 import os
 import pandas as pd
 import re

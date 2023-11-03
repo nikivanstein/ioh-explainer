@@ -1,3 +1,6 @@
+"""Analyse the Modular DE results from the pickle file using ioh-xplain
+"""
+
 import os
 import pandas as pd
 import re
