@@ -18,8 +18,8 @@ dfall['lambda_'] = dfall['lambda_'].replace(np.nan,'nan')
 dfall['mu'] = dfall['mu'].replace(np.nan,'nan')
 
 #remove all mu > lambda
-dfall.loc[(dfall['lambda_'] == 'nan') & (dfall['dim'] == 5),'lambda_'] = 6.0
-dfall.loc[(dfall['lambda_'] == 'nan') & (dfall['dim'] == 30),'lambda_'] = 8.0
+dfall.loc[(dfall['lambda_'] == 'nan') & (dfall['dim'] == 5),'lambda_'] = 8.0
+dfall.loc[(dfall['lambda_'] == 'nan') & (dfall['dim'] == 30),'lambda_'] = 14.0
 dfall.loc[dfall['mu'] == 'nan','mu'] = dfall.loc[dfall['mu'] == 'nan','lambda_'] // 2
 dfall['mu'] = dfall['mu'].astype(float)
 

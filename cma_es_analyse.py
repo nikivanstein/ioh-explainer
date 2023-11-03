@@ -46,7 +46,7 @@ cs = ConfigurationSpace({
     'local_restart': ['nan', 'IPOP', 'BIPOP'], 
     'active': [False, True],
     'step_size_adaptation': ['csa', 'psr'],
-    "lambda_": ['nan',  '5', '10', '20'],
+    "lambda_": ['nan',  '5', '10', '20', '200'],
     "mu": ['nan', '5', '10', '20']             # Uniform float
 }) #20k+
 
