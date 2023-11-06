@@ -168,7 +168,7 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
         print(config)
         return []
 
-data_file = "cma_final.pkl"
+data_file = "cma_final_processed.pkl"
 features = ['covariance','elitist', 'mirrored', 'base_sampler', 'weights_option', 'local_restart', 'step_size_adaptation', 'lambda_', 'mu']
 df = pd.read_pickle(data_file)
 #dfall = dfall.drop(columns=['Unnamed: 0'])

@@ -30,7 +30,7 @@ from pflacco.misc_features import calculate_fitness_distance_correlation
 from pflacco.local_optima_network_features import compute_local_optima_network, calculate_lon_features
 
 
-data_file = "cma_final.pkl"
+data_file = "cma_final_processed.pkl"
 features = ['covariance', 'elitist', 'mirrored', 'base_sampler', 'weights_option', 'local_restart', 'step_size_adaptation', 'lambda_', 'mu']
 df = pd.read_pickle(data_file)
 
