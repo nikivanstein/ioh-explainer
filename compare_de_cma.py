@@ -150,7 +150,7 @@ def compare(alg1, alg2, normalize=False):
     return comparison_stats
 
 print("Loading CMA")
-data_file = "cma_final.pkl"
+data_file = "cma_final_processed.pkl"
 features = ['covariance','elitist', 'mirrored', 'base_sampler', 'weights_option', 'local_restart', 'step_size_adaptation', 'lambda_', 'mu']
 features2 = features
 df = pd.read_pickle(data_file)
