@@ -28,10 +28,10 @@ dfall = dfall[dfall['mu'] <= dfall['lambda_']]
 
 #print(dfall['mu'])
 dfall.describe()
-df2 =  pd.read_pickle("cma_final.pkl")
-df2.loc[(df2['lambda_'] == 6.0) & (df2['dim'] == 5),'lambda_'] = 8.0
-df2.loc[(df2['lambda_'] == 8.0) & (df2['dim'] == 30),'lambda_'] = 14.0
+#df2 =  pd.read_pickle("cma_final.pkl")
+#df2.loc[(df2['lambda_'] == 6.0) & (df2['dim'] == 5),'lambda_'] = 8.0
+#df2.loc[(df2['lambda_'] == 8.0) & (df2['dim'] == 30),'lambda_'] = 14.0
 
-df3 = pd.concat([dfall,df2])
-df3.to_pickle("cma_final_processed.pkl")
+#df3 = pd.concat([dfall,df2])
+dfall.to_pickle("cma_final_processed.pkl")
 #print(dfall['lambda_'].describe())
