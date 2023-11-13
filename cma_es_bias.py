@@ -183,6 +183,13 @@ cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30,'auc'] = cmaes_explainer.
 hall_of_fame = []
 for dim in cmaes_explainer.dims:
     dim_df = cmaes_explainer.df[cmaes_explainer.df['dim'] == dim].copy()
+
+    conf, aucs = cmaes_explainer._get_average_best(dim_df)
+    conf['bias'] = cmaes_explainer.check_bias(conf, dim, file_prefix=f"ab_cma")
+    conf['dim'] = dim
+    conf['fid'] = 'All'
+    conf['auc'] = aucs['auc'].mean()
+    hall_of_fame.append(conf)
     
     for fid in tqdm(cmaes_explainer.fids):
         fid_df = dim_df[dim_df['fid'] == fid]

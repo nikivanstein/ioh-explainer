@@ -116,6 +116,13 @@ de_explainer.df.loc[de_explainer.df["dim"] == 30,'auc'] = de_explainer.df.loc[de
 hall_of_fame = []
 for dim in de_explainer.dims:
     dim_df = de_explainer.df[de_explainer.df['dim'] == dim].copy()
+
+    conf, aucs = de_explainer._get_average_best(dim_df)
+    conf['bias'] = de_explainer.check_bias(conf, dim, file_prefix=f"ab_de")
+    conf['dim'] = dim
+    conf['fid'] = 'All'
+    conf['auc'] = aucs['auc'].mean()
+    hall_of_fame.append(conf)
     
     for fid in tqdm(de_explainer.fids):
         fid_df = dim_df[dim_df['fid'] == fid]
