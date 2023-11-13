@@ -196,10 +196,10 @@ for dim in cmaes_explainer.dims:
 
         #get single best (average best over all instances)
         conf, aucs = cmaes_explainer._get_single_best(fid_df)
-        conf['bias'] = cmaes_explainer.check_bias(conf, dim, file_prefix=f"{fid}_cma")
+        conf['bias'] = cmaes_explainer.check_bias(conf, dim, num_runs=600, file_prefix=f"{fid}_cma")
         conf['dim'] = dim
         conf['fid'] = fid
-        conf['auc'] = aucs['auc'].mean()
+        conf['mean auc'] = aucs['auc'].mean()
 
         
         hall_of_fame.append(conf)

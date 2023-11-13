@@ -121,7 +121,7 @@ for dim in de_explainer.dims:
     conf['bias'] = de_explainer.check_bias(conf, dim, file_prefix=f"ab_de")
     conf['dim'] = dim
     conf['fid'] = 'All'
-    conf['auc'] = aucs['auc'].mean()
+    conf['mean auc'] = aucs['auc'].mean()
     hall_of_fame.append(conf)
     
     for fid in tqdm(de_explainer.fids):
@@ -129,7 +129,7 @@ for dim in de_explainer.dims:
 
         #get single best (average best over all instances)
         conf, aucs = de_explainer._get_single_best(fid_df)
-        conf['bias'] = de_explainer.check_bias(conf, dim, file_prefix=f"{fid}_de")
+        conf['bias'] = de_explainer.check_bias(conf, dim, num_runs=600, file_prefix=f"{fid}_de")
         conf['dim'] = dim
         conf['fid'] = fid
         conf['auc'] = aucs['auc'].mean()

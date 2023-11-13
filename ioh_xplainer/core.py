@@ -190,8 +190,8 @@ class explainer(object):
         samples = []
         f0 = ioh_f0()
         if self.verbose:
-            print("Running 100 evaluations on f0 for bias detection..")
-        for i in np.arange(100):
+            print(f"Running {num_runs} evaluations on f0 for bias detection..")
+        for i in np.arange(num_runs):
             self.optimizer(f0, config, budget=self.budget, dim=dim, seed=i)
             scaled_x = (f0.state.current_best.x + 5) / 10.0
             samples.append(scaled_x)
