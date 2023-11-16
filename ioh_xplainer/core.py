@@ -199,16 +199,20 @@ class explainer(object):
 
         samples = np.array(samples)
         test = BIAS()
-        y, preds = test.predict_deep(samples)
         filename = None
         if file_prefix != None:
             config_str = '_'.join(f'{value}' for value in config.values())
             config_str = config_str.replace("1/2^lambda", "hp-lambda")
-            filename = f"{file_prefix}_bias_{config_str}-{dim}.png"
-        if y != "unif":
+            filename = f"{file_prefix}_bias_deep_{config_str}-{dim}.png"
+            filename2 = f"{file_prefix}_bias_{config_str}-{dim}.png"
+        preds, y = test.predict(samples, show_figure=True, filename=filename2)
+        if (y != "none"):
+            y, preds = test.predict_deep(samples)
+        
+        if y != "unif" and y != "none":
             if self.verbose:
                 print(
-                    f"Warning! Single best configuration shows structural bias of type {y}."
+                    f"Warning! Configuration shows structural bias of type {y}."
                 )
             test.explain(samples, preds, filename=filename)
         return y
