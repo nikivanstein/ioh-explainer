@@ -129,10 +129,10 @@ for dim in de_explainer.dims:
 
         #get single best (average best over all instances)
         conf, aucs = de_explainer._get_single_best(fid_df)
-        conf['bias'] = de_explainer.check_bias(conf, dim, num_runs=600, file_prefix=f"{fid}_de")
+        conf['bias'] = de_explainer.check_bias(conf, dim, num_runs=100, file_prefix=f"bias_plots/{fid}_de")
         conf['dim'] = dim
         conf['fid'] = fid
-        conf['auc'] = aucs['auc'].mean()
+        conf['mean auc'] = aucs['auc'].mean()
 
         
         hall_of_fame.append(conf)
@@ -144,7 +144,3 @@ hall_of_fame = pd.DataFrame.from_records(hall_of_fame)
 hall_of_fame.to_pickle("de-hall_of_fame.pkl")
 
 hall_of_fame[['dim','fid',*features, 'mean auc', 'bias']].to_latex("de-hall-of-fame.tex",index=False)
-pd.plotting.parallel_coordinates(
-    hall_of_fame, class_column='dim', cols=features
-)
-plt.save("de-hall-of-fame.png")

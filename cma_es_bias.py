@@ -188,7 +188,7 @@ for dim in cmaes_explainer.dims:
     conf['bias'] = cmaes_explainer.check_bias(conf, dim, file_prefix=f"ab_cma")
     conf['dim'] = dim
     conf['fid'] = 'All'
-    conf['auc'] = aucs['auc'].mean()
+    conf['mean auc'] = aucs['auc'].mean()
     hall_of_fame.append(conf)
     
     for fid in tqdm(cmaes_explainer.fids):
@@ -196,11 +196,10 @@ for dim in cmaes_explainer.dims:
 
         #get single best (average best over all instances)
         conf, aucs = cmaes_explainer._get_single_best(fid_df)
-        conf['bias'] = cmaes_explainer.check_bias(conf, dim, num_runs=600, file_prefix=f"{fid}_cma")
+        conf['bias'] = cmaes_explainer.check_bias(conf, dim, num_runs=100, file_prefix=f"bias_plots/{fid}_cma")
         conf['dim'] = dim
         conf['fid'] = fid
         conf['mean auc'] = aucs['auc'].mean()
-
         
         hall_of_fame.append(conf)
 
@@ -211,7 +210,3 @@ hall_of_fame = pd.DataFrame.from_records(hall_of_fame)
 hall_of_fame.to_pickle("cma_es-hall_of_fame.pkl")
 
 hall_of_fame[['dim','fid',*features, 'mean auc', 'bias']].to_latex("cma_es-hall-of-fame.tex",index=False)
-pd.plotting.parallel_coordinates(
-    hall_of_fame, class_column='dim', cols=features
-)
-plt.save("cma_es-hall-of-fame.png")
