@@ -17,7 +17,7 @@ from ConfigSpace.util import generate_grid
 import scipy.stats as stats
 from sklearn.neighbors import KNeighborsRegressor
 
-from .utils import ioh_f0, runParallelFunction, intersection, run_verification, get_query_string_from_dict
+from .utils import wrap_f0, get_f0, runParallelFunction, intersection, run_verification, get_query_string_from_dict
 
 class explainer(object):
     """Explain an iterative optimization heuristic by evaluating a large set of hyper-parameter configurations and exploring
@@ -178,6 +178,7 @@ class explainer(object):
         self.df = pd.read_pickle(filename)
 
     def check_bias(self, config, dim, num_runs=100, file_prefix=None):
+        wrap_f0()
         """Runs the bias result on the given configuration .
 
         Args:
@@ -188,9 +189,9 @@ class explainer(object):
         """
         from BIAS import BIAS
         samples = []
-        f0 = ioh_f0()
         if self.verbose:
             print(f"Running {num_runs} evaluations on f0 for bias detection..")
+        f0 = get_f0(dim)
         for i in np.arange(num_runs):
             self.optimizer(f0, config, budget=self.budget, dim=dim, seed=i)
             scaled_x = (f0.state.current_best.x + 5) / 10.0

@@ -26,8 +26,11 @@ def runParallelFunction(runFunction, arguments):
     p.close()
     return results
 
+def wrap_f0():
+    from BIAS import f0
+    return ioh.wrap_problem(f0, name="f0", lb=0.0, ub=1.0)
 
-def ioh_f0():
+def get_f0(dim=5):
     """Wrapped version of the f0 objective function.
 
     Args:
@@ -36,8 +39,7 @@ def ioh_f0():
     Returns:
         function: ioh problem class
     """
-    from BIAS import f0
-    return ioh.wrap_problem(f0, name="f0", lb=0.0, ub=1.0)
+    return ioh.get_problem("f0", dimension=dim)
 
 
 class aoc_logger(ioh.logger.AbstractLogger):
