@@ -117,7 +117,7 @@ class explainer(object):
             conf['auc'] = aucs['auc'].mean()
             hall_of_fame.append(conf)
             
-            for fid in tqdm(self.fids):
+            for fid in tqdm.tqdm(self.fids):
                 fid_df = dim_df[dim_df['fid'] == fid]
 
                 #get single best (average best over all instances)
@@ -130,7 +130,10 @@ class explainer(object):
                 
                 hall_of_fame.append(conf)
         if full_run:
-            self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
+            temp_reps = self.reps
+            self.reps = reps
+            self.run(False, 0, "full_run_checkpoint.csv", True, full_run_folder, configs_to_rerun)
+            self.reps = temp_reps
         #now replace fid, iid with features instead, 
         #build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
@@ -170,10 +173,10 @@ class explainer(object):
             grid = self._create_grid()
         # run all the optimizations
         for i in tqdm.tqdm(range(start_index, len(grid))):
+            folder_name = self.algname
+            alg_name = f"{self.algname}-{i}"
             if paralell:
                 partial_run = partial(run_verification)
-                folder_name = self.algname
-                alg_name = f"{self.algname}-{i}"
                 args = product(self.dims, self.fids, self.iids, [grid[i]], [self.budget], [self.reps], [self.optimizer], [full_ioh], [folder_root], [folder_name], [alg_name])
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
