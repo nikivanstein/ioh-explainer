@@ -1,70 +1,15 @@
 #Extract ela features for all instances and store the best performing algorithm configurations for DE
 
-
-## different models we can make:
-# ELA/DOE + config --> AUC
-# ELA ---> config
-# high-level --> config
-# DOE --> config
-
-#first collect all the data
-import os
 import pandas as pd
-import re
 import numpy as np
 from tqdm import tqdm
-from ioh_xplainer import explainer
 import pandas as pd
 import ioh
-from scipy.stats import qmc
-from ConfigSpace import ConfigurationSpace
-from ConfigSpace.util import generate_grid
-from IPython.display import display
-
 from pflacco.sampling import create_initial_sample
-
 from pflacco.classical_ela_features import calculate_ela_distribution, calculate_ela_meta, calculate_nbc, calculate_dispersion, calculate_information_content, calculate_ela_level, calculate_cm_grad
-from pflacco.misc_features import calculate_fitness_distance_correlation
-from pflacco.local_optima_network_features import compute_local_optima_network, calculate_lon_features
-
-
+from config import de_explainer
 
 data_file = "de_final_processed.pkl" #read in modular DE data
-df = pd.read_pickle(data_file)
-
-features= ['F','CR', 'lambda_','mutation_base', 'mutation_reference',
-       'mutation_n_comps', 'use_archive', 'crossover', 'adaptation_method',
-       'lpsr']
-
-config_dict = {}
-for f in features:
-    config_dict[f] = list(map(str, df[f].unique()))
-
-config_dict['mutation_n_comps'] = [1,2]
-config_dict['use_archive'] = [False, True]
-config_dict['lpsr'] = [False, True]
-
-#for each fid, iid get the best configuration  (mean?)
-cs = ConfigurationSpace(config_dict)
-
-print(cs)
-
-de_explainer = explainer(None, 
-                 cs , 
-                 algname="mod-DE",
-                 dims = [5,30],#, 10, 20, 40 
-                 fids = np.arange(1,25), #,5
-                 iids = df['iid'].unique(), #20 
-                 reps = len( df['seed'].unique()), 
-                 sampling_method = "grid",  #or random
-                 grid_steps_dict = {},
-                 sample_size = None,  #only used with random method
-                 budget = 10000, #10000
-                 seed = 1,
-                 verbose = True)
-
-
-
 de_explainer.load_results(data_file)
 
 sample_size = 1000 #fixed

@@ -1,6 +1,9 @@
 # ioh-xplainer
 eXplainable benchmarking using XAI for iterative optimization heuristics
 
+# Experimental setup
+
+The Modular CMA and Modular DE setup are specified in the `config.py` file.
 
 # scripts
 

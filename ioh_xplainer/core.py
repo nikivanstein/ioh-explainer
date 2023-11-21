@@ -88,6 +88,61 @@ class explainer(object):
         )
         np.random.seed(seed)
 
+    def analyse_best(self, filename=None, check_bias=False, bias_folder="bias_plots/", full_run=False, full_run_folder="/data/", reps=10):
+        """Analyse the best configurations (single best and average best) per dim and fid in more detail.
+        Optionally also checks the configurations for structural bias, and performs a full re-run with more random seeds with ioh analyser.
+
+        Args:
+            filename (string, optional): The file to store the dataframe in tex format, if None no file is written. Defaults to None.
+            check_bias (bool, optional): Check for structural bias using the bias toolbox. Defaults to False.
+            bias_folder (string, optional): The folder to store the bias visualisations. Defaults to "bias_folder"
+            full_run (bool, optional): Perform a re-run with ioh analyser attached. Defaults to False.
+            full_run_folder (string, optional): The folder to store the IOH logs. Defaults to "/data/".
+            reps (integer, optional): number of random runs. Defaults to 10.\
+        
+        Returns:
+            DataFrame
+        """
+        hall_of_fame = []
+        configs_to_rerun = []
+        for dim in self.dims:
+            dim_df = self.df[self.df['dim'] == dim].copy()
+
+            conf, aucs = self._get_average_best(dim_df)
+            configs_to_rerun.append(conf.copy())
+            if check_bias:
+                conf['bias'] = self.check_bias(conf, dim, file_prefix=f"{bias_folder}ab_cma")
+            conf['dim'] = dim
+            conf['fid'] = 'All'
+            conf['auc'] = aucs['auc'].mean()
+            hall_of_fame.append(conf)
+            
+            for fid in tqdm(self.fids):
+                fid_df = dim_df[dim_df['fid'] == fid]
+
+                #get single best (average best over all instances)
+                conf, aucs = self._get_single_best(fid_df)
+                if check_bias:
+                    conf['bias'] = self.check_bias(conf, dim, num_runs=100, file_prefix=f"{bias_folder}{fid}_{self.algname}")
+                conf['dim'] = dim
+                conf['fid'] = fid
+                conf['auc'] = aucs['auc'].mean()
+                
+                hall_of_fame.append(conf)
+        if full_run:
+            self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
+        #now replace fid, iid with features instead, 
+        #build multiple decision trees .. visualise -- multi-output tree vs single output trees
+
+        hall_of_fame = pd.DataFrame.from_records(hall_of_fame)
+        if filename != None:
+            cols = ['dim','fid',*self.config_space.keys(), 'auc']
+            if check_bias:
+                cols = ['dim','fid',*self.config_space.keys(), 'auc', 'bias']
+            hall_of_fame[cols].to_latex(filename,index=False)
+        return hall_of_fame
+
+
     def _create_grid(self):
         """Generate the configurations to evaluate."""
         if self.sampling_method == "grid":
@@ -102,7 +157,7 @@ class explainer(object):
             print(f"Evaluating {len(grid)} configurations.")
         return grid
 
-    def run(self, paralell=True, start_index = 0, checkpoint_file="intermediate.csv"):
+    def run(self, paralell=True, start_index = 0, checkpoint_file="intermediate.csv", full_ioh = False, folder_root ="/data/", grid=None):
         """Run the evaluation of all configurations.
 
         Args:
@@ -111,12 +166,15 @@ class explainer(object):
             checkpoint_file (string, optional): used for storing intermediate results.
         """
         # create the configuration grid
-        grid = self._create_grid()
+        if grid == None:
+            grid = self._create_grid()
         # run all the optimizations
         for i in tqdm.tqdm(range(start_index, len(grid))):
             if paralell:
                 partial_run = partial(run_verification)
-                args = product(self.dims, self.fids, self.iids, [grid[i]], [self.budget], [self.reps], [self.optimizer])
+                folder_name = self.algname
+                alg_name = f"{self.algname}-{i}"
+                args = product(self.dims, self.fids, self.iids, [grid[i]], [self.budget], [self.reps], [self.optimizer], [full_ioh], [folder_root], [folder_name], [alg_name])
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
                     if (checkpoint_file != None):
@@ -129,7 +187,7 @@ class explainer(object):
                 for dim in self.dims:
                     for fid in self.fids:
                         for iid in self.iids:
-                            tab = run_verification([dim, fid, iid, grid[i], self.budget, self.reps, self.optimizer])
+                            tab = run_verification([dim, fid, iid, grid[i], self.budget, self.reps, self.optimizer, full_ioh, folder_root, folder_name, alg_name])
                             if (checkpoint_file != None):
                                 df_tab = pd.DataFrame(tab, columns=["fid", "iid", "dim", "seed", *self.config_space.keys(), "auc", "aucLarge"])
                                 df_tab.to_csv(checkpoint_file, mode='a', header=not os.path.exists(checkpoint_file))

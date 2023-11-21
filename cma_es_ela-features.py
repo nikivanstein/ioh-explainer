@@ -10,18 +10,14 @@ To be used with cma_es_AAC (auto algorithm configuration)
 # DOE --> config
 
 #first collect all the data
-import os
 import pandas as pd
-import re
 import numpy as np
 from tqdm import tqdm
 from ioh_xplainer import explainer
 import pandas as pd
 import ioh
-from scipy.stats import qmc
 from ConfigSpace import ConfigurationSpace
-from ConfigSpace.util import generate_grid
-from IPython.display import display
+from config import cma_features, cmaes_explainer
 
 from pflacco.sampling import create_initial_sample
 
@@ -31,44 +27,10 @@ from pflacco.local_optima_network_features import compute_local_optima_network, 
 
 
 data_file = "cma_final_processed.pkl"
-features = ['covariance', 'elitist', 'mirrored', 'base_sampler', 'weights_option', 'local_restart', 'step_size_adaptation', 'lambda_', 'mu']
+features = cma_features
 df = pd.read_pickle(data_file)
 
-
-config_dict = {}
-for f in features:
-    config_dict[f] = list(map(str, df[f].unique()))
-
-config_dict['elitist'] = [False, True]
-config_dict['active'] = [False, True]
-config_dict['covariance'] = [False, True]
-
-print(config_dict)
-print( df['dim'].unique())
-print( df['seed'].unique())
-print( df['iid'].unique())
-
-cs = ConfigurationSpace(config_dict)
-
-print(cs)
-print( df['dim'].unique())
-cmaes_explainer = explainer(None, 
-                 cs , 
-                 algname="mod-CMA",
-                 dims = [5,30],#, 10, 20, 40 
-                 fids = np.arange(1,25), #,5
-                 iids = df['iid'].unique(), #20 
-                 reps = len( df['seed'].unique()), 
-                 sampling_method = "grid",  #or random
-                 grid_steps_dict = {},
-                 sample_size = None,  #only used with random method
-                 budget = 10000, #10000
-                 seed = 1,
-                 verbose = True)
-
-
 cmaes_explainer.load_results(data_file)
-
 sample_size = 1000 #fixed
 
 new_doe_df = []
@@ -79,7 +41,6 @@ for dim in cmaes_explainer.dims:
     
     X = create_initial_sample(dim, lower_bound = -5, upper_bound = 5, n=sample_size, seed=42)
     
-
     for fid in tqdm(cmaes_explainer.fids):
         fid_df = dim_df[dim_df['fid'] == fid]
 
@@ -93,8 +54,6 @@ for dim in cmaes_explainer.dims:
             conf['auc'] = aucs['auc'].mean()
 
             #ELA
-            
-
             func = ioh.get_problem(fid, dimension=dim, instance=iid)
             y = X.apply(lambda x: func(x), axis = 1)
             y = (y - np.min(y)) / (np.max(y)  - np.min(y))

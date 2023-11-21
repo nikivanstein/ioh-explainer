@@ -109,11 +109,14 @@ def run_verification(args):
         Returns:
             list: A list of dictionaries containing the auc scores of each random repetition.
         """
-        dim, fid, iid, config, budget, reps, optimizer = args
+        dim, fid, iid, config, budget, reps, optimizer, full_ioh, folder_root, folder_name, alg_name = args
         # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
         func = ioh.get_problem(fid, dimension=dim, instance=iid)
         myLoggerLarge = aoc_logger(budget, upper1=1e2, upper2=1e8, triggers=[ioh.logger.trigger.ALWAYS])
         func.attach_logger(myLoggerLarge)
+        if full_ioh:
+            logger = ioh.logger.Analyzer(root=folder_root, folder_name=folder_name, algorithm_name=alg_name, )
+            func.attach_logger(logger)
         return_list = []
         for seed in range(reps):
             np.random.seed(seed)
@@ -121,6 +124,8 @@ def run_verification(args):
             auc1, auc2 = correct_aoc(func, myLoggerLarge, budget)
             func.reset()
             myLoggerLarge.reset(func)
+            if full_ioh:
+                logger.reset()
             return_list.append(
                 {"fid": fid, "iid": iid, "dim": dim, "seed": seed, **config , "auc": auc1, "aucLarge" : auc2}
             )
