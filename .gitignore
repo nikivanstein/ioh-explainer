@@ -161,3 +161,5 @@ cython_debug/
 
 data/
 catboost_info/
+/*.csv
+/*.pkl
