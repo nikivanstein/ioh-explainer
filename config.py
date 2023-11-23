@@ -11,10 +11,10 @@ from ConfigSpace.util import generate_grid
 from IPython.display import display
 from modcma.c_maes import (ModularCMAES, Parameters, Population, mutation,
                            options, parameters)
-from modde import ModularDE, Parameters
+from modde import ModularDE
 from tqdm import tqdm
 
-from ioh_xplainer import explainer
+from ioh_xplain import explainer
 
 cma_cs = ConfigurationSpace(
     {

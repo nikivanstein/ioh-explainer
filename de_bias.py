@@ -10,5 +10,12 @@ de_explainer.df.loc[de_explainer.df["dim"] == 30, "auc"] = de_explainer.df.loc[
     de_explainer.df["dim"] == 30, "aucLarge"
 ]
 
-hall_of_fame = de_explainer.analyse_best("de-hall-of-fame.tex", True, "bias_plots/")
+hall_of_fame = de_explainer.analyse_best(
+    "de-hall-of-fame.tex",
+    False,
+    "bias_plots/",
+    True,
+    "/data/neocortex/de_data/",
+    10,
+)
 print(hall_of_fame)

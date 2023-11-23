@@ -164,7 +164,7 @@ class explainer(object):
         if full_run:
             temp_reps = self.reps
             self.reps = reps
-            self.run(False, 0, None, True, full_run_folder, configs_to_rerun)
+            self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
             self.reps = temp_reps
         # now replace fid, iid with features instead,
         # build multiple decision trees .. visualise -- multi-output tree vs single output trees
@@ -208,7 +208,6 @@ class explainer(object):
             grid = self._create_grid()
         # run all the optimizations
         for i in tqdm.tqdm(range(start_index, len(grid))):
-            folder_name = self.algname
             alg_name = f"{self.algname}-{i}"
             if paralell:
                 partial_run = partial(run_verification)
@@ -222,8 +221,7 @@ class explainer(object):
                     [self.optimizer],
                     [full_ioh],
                     [folder_root],
-                    [folder_name],
-                    [alg_name],
+                    [alg_name]
                 )
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
@@ -263,8 +261,7 @@ class explainer(object):
                                     self.optimizer,
                                     full_ioh,
                                     folder_root,
-                                    folder_name,
-                                    alg_name,
+                                    alg_name
                                 ]
                             )
                             if checkpoint_file != None:

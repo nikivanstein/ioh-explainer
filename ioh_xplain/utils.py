@@ -158,8 +158,7 @@ def run_verification(args):
         optimizer,
         full_ioh,
         folder_root,
-        folder_name,
-        alg_name,
+        alg_name
     ) = args
     # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
     func = ioh.get_problem(fid, dimension=dim, instance=iid)
@@ -170,7 +169,7 @@ def run_verification(args):
     if full_ioh:
         logger = ioh.logger.Analyzer(
             root=folder_root,
-            folder_name=folder_name,
+            folder_name=f"{alg_name}-{dim}-{fid}-{iid}",
             algorithm_name=alg_name,
         )
         func.attach_logger(logger)

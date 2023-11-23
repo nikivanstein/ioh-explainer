@@ -14,3 +14,10 @@ Steps to reproduce the experiments from the paper.
 3. Analyse the performance data of all configurations using IOH-Xplain *(de|cma_es)_analyse.py*.
 4. Compare the two frameworks using *compare_de_cma.py*. Writes the result as latex file (compare-new.tex).
 5. Perform automated algorithm configuration experiment using *(de|cma_es)_AAC-notebook.ipynb* files.
+
+
+# Setting up the dev environment
+
+- Checkout this code.
+- Make sure `pipx` (https://github.com/pypa/pipx) is installed with python 3.8+
+- Install Poetry with pipx `pipx install poetry`

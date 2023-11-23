@@ -4,22 +4,15 @@ It then uses a "compare" function to process the performance data between the fr
 
 Writes a compare-new.tex file with the comparison in latex table format.
 """
-
-import os
-import re
-
 import ioh
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
 import seaborn as sns
-from ConfigSpace import ConfigurationSpace
-from ConfigSpace.util import generate_grid
-from IPython.display import display
-from tqdm import tqdm
+from ioh_xplain import explainer
 
-from ioh_xplainer import explainer
+from config import cmaes_explainer, de_explainer, de_features, cma_features
 
 
 def intersection(lst1, lst2):
@@ -161,121 +154,19 @@ def compare(alg1, alg2, normalize=False):
 
 print("Loading CMA")
 data_file = "cma_final_processed.pkl"
-features = [
-    "covariance",
-    "elitist",
-    "mirrored",
-    "base_sampler",
-    "weights_option",
-    "local_restart",
-    "step_size_adaptation",
-    "lambda_",
-    "mu",
-]
-features2 = features
-df = pd.read_pickle(data_file)
-# dfall = dfall.drop(columns=['Unnamed: 0'])
-
-config_dict = {}
-for f in features:
-    config_dict[f] = list(map(str, df[f].unique()))
-
-config_dict["elitist"] = [False, True]
-config_dict["active"] = [False, True]
-config_dict["covariance"] = [False, True]
-
-print(config_dict)
-print(df["dim"].unique())
-print(df["seed"].unique())
-print(df["iid"].unique())
-
-cs = ConfigurationSpace(config_dict)
-
-print(cs)
-print(df["dim"].unique())
-cmaes_explainer = explainer(
-    None,
-    cs,
-    algname="mod-CMA",
-    dims=[5, 30],  # , 10, 20, 40
-    fids=np.arange(1, 25),  # ,5
-    iids=df["iid"].unique(),  # 20
-    reps=len(df["seed"].unique()),
-    sampling_method="grid",  # or random
-    grid_steps_dict={},
-    sample_size=None,  # only used with random method
-    budget=10000,  # 10000
-    seed=1,
-    verbose=True,
-)
-
-
 cmaes_explainer.load_results(data_file)
-
 # use aucLarge for D30
 cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30, "auc"] = cmaes_explainer.df.loc[
     cmaes_explainer.df["dim"] == 30, "aucLarge"
 ]
 
 print("Loading DE")
-
-
 data_file = "de_final_processed.pkl"
-df = pd.read_pickle(data_file)
-
-
-features = [
-    "mutation_base",
-    "mutation_reference",
-    "CR",
-    "F",
-    "lambda_",
-    "mutation_n_comps",
-    "use_archive",
-    "crossover",
-    "adaptation_method",
-    "lpsr",
-]
-
-config_dict = {}
-for f in features:
-    config_dict[f] = list(map(str, df[f].unique()))
-
-config_dict["mutation_n_comps"] = [1, 2]
-config_dict["use_archive"] = [False, True]
-config_dict["lpsr"] = [False, True]
-
-print(config_dict)
-print(df["dim"].unique())
-print(df["seed"].unique())
-print(df["iid"].unique())
-
-
-cs = ConfigurationSpace(config_dict)
-
-print(cs)
-
-de_explainer = explainer(
-    None,
-    cs,
-    algname="mod-DE",
-    dims=[5, 30],  # , 10, 20, 40
-    fids=np.arange(1, 25),  # ,5
-    iids=df["iid"].unique(),  # 20
-    reps=len(df["seed"].unique()),
-    sampling_method="grid",  # or random
-    grid_steps_dict={},
-    sample_size=None,  # only used with random method
-    budget=10000,  # 10000
-    seed=1,
-    verbose=True,
-)
 de_explainer.load_results(data_file)
 # auc Large
 de_explainer.df.loc[de_explainer.df["dim"] == 30, "auc"] = de_explainer.df.loc[
     de_explainer.df["dim"] == 30, "aucLarge"
 ]
-
 
 dffinal = compare(de_explainer, cmaes_explainer)
 
@@ -302,8 +193,8 @@ for dim in de_explainer.dims:
 
         cma_es_df_fid = cma_es_df[(cma_es_df["dim"] == dim) & (cma_es_df["fid"] == fid)]
 
-        fid_auc_matrix.append(df_dim_fid.groupby(features)["auc"].mean())
-        fid_auc_matrix_cma.append(cma_es_df_fid.groupby(features2)["auc"].mean())
+        fid_auc_matrix.append(df_dim_fid.groupby(de_features)["auc"].mean())
+        fid_auc_matrix_cma.append(cma_es_df_fid.groupby(cma_features)["auc"].mean())
 
     fid_auc_matrix = np.array(fid_auc_matrix).T
     fid_auc_matrix_cma = np.array(fid_auc_matrix_cma).T
