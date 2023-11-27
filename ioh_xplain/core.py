@@ -721,13 +721,13 @@ class explainer(object):
             )
         # generate files and latex code for the shap summary plots
         figures_text = ""
-        if img_dir == None:
-            img_dir = ""
+        if img_dir != None:
+            img_dir = f"{img_dir}/img_"
         if include_explain:
             self.explain(
                 partial_dependence=False,
                 best_config=include_hall_of_fame,
-                file_prefix=f"{img_dir}/img_",
+                file_prefix=img_dir,
                 check_bias=include_bias,
                 keep_order=True,
             )
