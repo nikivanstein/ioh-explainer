@@ -71,37 +71,39 @@ def get_scenario(path, fid, dimension):
 
 dim = 5,30
 
-for fid in range(1, 25):
-    f, axes = plt.subplots(1, 2, figsize=(20, 10))
-    f.suptitle(f"F{fid}")
-    for ax, d in zip(axes.ravel(), dim):
-        path = "/data/neocortex/de_data/"
-        
-        for config in range(0,25):
-            config_nr = config
-            if (d == 30):
-                config_nr += 25
-            for iid in range(1,6):
-                iid_runs = []
-                folder = f"mod-de-{config_nr}-{d}-{fid}-{iid}"
-                if os.path.isdir(os.path.join(path, folder)):
-                    algpath = os.path.join(path, folder)
-                    scenario, name = get_scenario(algpath, fid, d)
-                    if not scenario:
-                        continue
-                    t, runs = get_run_data(scenario)
-                    iid_runs.extend(runs)
-            if (config_nr == 0 and d == 5) or (config_nr == 25 and d == 30):
-                plot_runs(t, np.array(iid_runs), "Average-best", ax, "green")
-            elif (config_nr == fid and d == 5) or (config_nr == fid+25 and d == 30):
-                plot_runs(t, np.array(iid_runs), "Single-best", ax, "blue")
-            #else:
-            #    plot_runs(t, np.array(iid_runs), "Other", ax, "gray")
-        ax.set_title(f"{d}D")
-        ax.grid()
-        ax.legend()
-        ax.set_xlabel("evals")
-        ax.set_xlabel("best so far")
-    plt.tight_layout()
-    plt.savefig(f"de-{fid}.png")
-    plt.clf()
+for framework in ["de", "cma"]:
+    for fid in range(1, 25):
+        f, axes = plt.subplots(1, 2, figsize=(20, 10))
+        f.suptitle(f"F{fid}")
+        for ax, d in zip(axes.ravel(), dim):
+            path = f"/data/neocortex/{framework}_data/"
+            
+            for config in range(0,25):
+                config_nr = config
+                if (d == 30):
+                    config_nr += 25
+                for iid in range(1,6):
+                    iid_runs = []
+                    folder = f"mod-{framework}-{config_nr}-{d}-{fid}-{iid}"
+                    if os.path.isdir(os.path.join(path, folder)):
+                        algpath = os.path.join(path, folder)
+                        scenario, name = get_scenario(algpath, fid, d)
+                        if not scenario:
+                            continue
+                        t, runs = get_run_data(scenario)
+                        iid_runs.extend(runs)
+                if (config_nr == 0 and d == 5) or (config_nr == 25 and d == 30):
+                    plot_runs(t, np.array(iid_runs), "Average-best", ax, "green")
+                elif config == fid:
+                    plot_runs(t, np.array(iid_runs), "Single-best", ax, "blue")
+                #else:
+                #    plot_runs(t, np.array(iid_runs), "Other", ax, "gray")
+            ax.set_title(f"{d}D")
+            ax.grid()
+            ax.legend()
+            ax.set_xlabel("evals")
+            ax.set_xlabel("best so far")
+        plt.tight_layout()
+        plt.savefig(f"output/convergence_plots/{framework}-{fid}.png")
+        plt.clf()
+        plt.close()
