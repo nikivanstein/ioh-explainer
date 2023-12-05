@@ -14,7 +14,7 @@ from modcma.c_maes import (ModularCMAES, Parameters, Population, mutation,
 from modde import ModularDE
 from tqdm import tqdm
 
-from ioh_xplain import explainer
+from ioh_xplainer import explainer
 
 cma_cs = ConfigurationSpace(
     {

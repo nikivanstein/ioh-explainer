@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 import seaborn as sns
-from ioh_xplain import explainer
+from ioh_xplainer import explainer
 
 from config import cmaes_explainer, de_explainer, de_features, cma_features
 
