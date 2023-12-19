@@ -158,7 +158,7 @@ def run_verification(args):
         optimizer,
         full_ioh,
         folder_root,
-        alg_name
+        alg_name,
     ) = args
     # func = auc_func(fid, dimension=dim, instance=iid, budget=self.budget)
     func = ioh.get_problem(fid, dimension=dim, instance=iid)

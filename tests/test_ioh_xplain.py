@@ -3,8 +3,9 @@ import os
 import pandas as pd
 import pytest
 from ConfigSpace import ConfigurationSpace
-from ioh_xplainer import __version__, explainer
 from scipy.optimize import differential_evolution
+
+from ioh_xplainer import __version__, explainer
 
 """
 Configuration space for test functions

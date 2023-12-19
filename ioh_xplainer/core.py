@@ -17,14 +17,8 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from sklearn.neighbors import KNeighborsRegressor
 
-from .utils import (
-    get_f0,
-    get_query_string_from_dict,
-    intersection,
-    run_verification,
-    runParallelFunction,
-    wrap_f0,
-)
+from .utils import (get_f0, get_query_string_from_dict, intersection,
+                    run_verification, runParallelFunction, wrap_f0)
 
 
 class explainer(object):
@@ -221,7 +215,7 @@ class explainer(object):
                     [self.optimizer],
                     [full_ioh],
                     [folder_root],
-                    [alg_name]
+                    [alg_name],
                 )
                 res = runParallelFunction(partial_run, args)
                 for tab in res:
@@ -261,7 +255,7 @@ class explainer(object):
                                     self.optimizer,
                                     full_ioh,
                                     folder_root,
-                                    alg_name
+                                    alg_name,
                                 ]
                             )
                             if checkpoint_file != None:
@@ -380,7 +374,7 @@ class explainer(object):
 
             return pd.concat(fid_behaviour, axis=0)
         for dim in self.dims:
-            uniform_std = math.sqrt(1 ** 2 / 12)
+            uniform_std = math.sqrt(1**2 / 12)
 
             dim_df = self.df[(self.df["dim"] == dim)]
             stat_index = f"d={dim}"
