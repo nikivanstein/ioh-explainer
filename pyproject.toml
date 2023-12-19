@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ioh-xplain"
+name = "ioh-xplainer"
 version = "0.1.0"
 description = "eXplainable Benchmarking for Iterative Optimization Heuristics"
 authors = ["Niki van Stein <n.van.stein@liacs.leidenuniv.nl>"]
