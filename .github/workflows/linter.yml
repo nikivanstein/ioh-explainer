@@ -13,4 +13,4 @@ jobs:
       - name: Install black
         run: pip install black==23.7.0
       - name: Run black
-        run: black --check --verbose ./ioh_plainer/
+        run: black --check --verbose ./ioh_xplainer/

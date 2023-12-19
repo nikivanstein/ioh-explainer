@@ -2,6 +2,7 @@
 
 <br/><br/><br/>
 
+![Build](https://github.com/Basvanstein/ioh-xplainer/actions/workflows/linter.yml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/ioh-xplainer.svg)](https://badge.fury.io/py/ioh-xplainer) 
 ![Python versions](https://img.shields.io/pypi/pyversions/ioh-xplainer)
 ![license](https://img.shields.io/pypi/l/ioh-xplainer)
