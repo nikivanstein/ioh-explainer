@@ -2,7 +2,8 @@
 
 <br/><br/><br/>
 
-![Build](https://github.com/Basvanstein/ioh-xplainer/actions/workflows/test.yml/badge.svg)
+![Build](https://github.com/Basvanstein/ioh-explainer/actions/workflows/test.yml/badge.svg)
+[![codecov](https://codecov.io/gh/Basvanstein/ioh-explainer/graph/badge.svg?token=SYBOLV6H44)](https://codecov.io/gh/Basvanstein/ioh-explainer)
 [![PyPI version](https://badge.fury.io/py/ioh-xplainer.svg)](https://badge.fury.io/py/ioh-xplainer) 
 ![Python versions](https://img.shields.io/pypi/pyversions/ioh-xplainer)
 ![license](https://img.shields.io/pypi/l/ioh-xplainer)
