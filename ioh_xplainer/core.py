@@ -17,8 +17,14 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from sklearn.neighbors import KNeighborsRegressor
 
-from .utils import (get_f0, get_query_string_from_dict, intersection,
-                    run_verification, runParallelFunction, wrap_f0)
+from .utils import (
+    get_f0,
+    get_query_string_from_dict,
+    intersection,
+    run_verification,
+    runParallelFunction,
+    wrap_f0,
+)
 
 
 class explainer(object):

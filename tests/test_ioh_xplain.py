@@ -10,7 +10,7 @@ from ioh_xplainer import __version__, explainer
 """
 Configuration space for test functions
 """
-
+ 
 import traceback
 
 import numpy as np
