@@ -36,7 +36,7 @@ confSpace = ConfigurationSpace(
     }
 ) 
 
-features = ["strategy", "popsize"
+features = ["strategy", "popsize"]
 
 def run_de(func, config, budget, dim, *args, **kwargs):
     bounds = [(-5,5)] * dim #define the boundaries
@@ -81,6 +81,7 @@ Also see the [python notebook file](example.ipynb) for additional demo material.
 
 # Experimental setup
 
+All experiments and setup from the scientific paper can be found in the (experiments)[experiments/] folder.  
 The Modular CMA and Modular DE setup are specified in the `config.py` file.
 
 ## Reproducing the experiments
@@ -92,7 +93,7 @@ See https://github.com/IOHprofiler/ModularCMAES for installation instructions.
 The experiments are run on two modular frameworks, Modular DE and Modular CMAES. Both can be easily installed `poetry add modde modcma`.
 
 1. Run all Modular DE or Modular CMA configurations using the *(de|cma_es)_run-configurations.py* file, writes a pkl file as result. 
-(This step takes a few days on a supercomputer with 120 cores). The results of this step can also be downloaded via zenodo.
+(This step takes a few days on a supercomputer with 120 cores). The processed results of this step and the step 2 can also be downloaded (since it takes roughly a month to run on a CPU cluster): (cma_final_processed.pkl)[https://www.dropbox.com/scl/fi/ry9b1nnn7681o3b08o073/cma_final_processed.pkl?rlkey=zi9kjjs8t870ldzx9iw87fpm9&dl=0] and (de_final_processed.pkl)[https://www.dropbox.com/scl/fi/f46q2tuhylupm7vgth948/de_final_processed.pkl?rlkey=j87etm66ilvglue0l35mvw8n7&dl=0].
 2. Pre-process the pickle files with *(de|cma_es)_process_pkl.py*.
 3. Analyse the performance data of all configurations using IOH-Xplainer *(de|cma_es)_analyse.py*.
 4. Compare the two frameworks using *compare_de_cma.py*. Writes the result as latex file (compare-new.tex).
