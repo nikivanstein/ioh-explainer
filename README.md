@@ -30,6 +30,8 @@ Define the `search space` and the algorithm runner, basically the hyper-paramete
 
 ```python
 from scipy.optimize import differential_evolution
+from ConfigSpace import ConfigurationSpace
+import numpy as np
 
 confSpace = ConfigurationSpace(
     {
@@ -76,6 +78,8 @@ de_explainer.save_results("de.pkl")
 Finally we can analyze the run data and make various plots and reports.
 
 ```python
+import os
+os.mkdir("de_report")
 de_explainer.to_latex_report(filename="de_report", img_dir="de_report/")
 ```
 
