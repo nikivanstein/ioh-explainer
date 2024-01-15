@@ -533,6 +533,20 @@ files = [
 ]
 
 [[package]]
+name = "colour"
+version = "0.1.5"
+description = "converts and manipulates various color representation (HSL, RVB, web, X11, ...)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "colour-0.1.5-py2.py3-none-any.whl", hash = "sha256:33f6db9d564fadc16e59921a56999b79571160ce09916303d35346dddc17978c"},
+    {file = "colour-0.1.5.tar.gz", hash = "sha256:af20120fefd2afede8b001fbef2ea9da70ad7d49fafdb6489025dae8745c3aee"},
+]
+
+[package.extras]
+test = ["nose"]
+
+[[package]]
 name = "comm"
 version = "0.2.0"
 description = "Jupyter Python Comm implementation, for usage in ipykernel, xeus-python etc."
@@ -858,6 +872,33 @@ files = [
     {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
     {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
 ]
+
+[[package]]
+name = "dtreeviz"
+version = "2.2.2"
+description = "A Python 3 library for sci-kit learn, XGBoost, LightGBM, Spark, and TensorFlow decision tree visualization"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "dtreeviz-2.2.2-py3-none-any.whl", hash = "sha256:e510d80857b29f15a12e8ebe2c7ab3fb667096739742ab47e5d8889cf78da8fe"},
+    {file = "dtreeviz-2.2.2.tar.gz", hash = "sha256:a145ff91ffaa11bd2f59186fdcffaa384d90c1757517cbb27e66cc83922319ba"},
+]
+
+[package.dependencies]
+colour = "*"
+graphviz = ">=0.9"
+matplotlib = "*"
+numpy = "*"
+pandas = "*"
+pytest = "*"
+scikit-learn = "*"
+
+[package.extras]
+all = ["lightgbm", "pyspark", "tensorflow-decision-forests", "xgboost"]
+lightgbm = ["lightgbm"]
+pyspark = ["pyspark"]
+tensorflow-decision-forests = ["tensorflow-decision-forests"]
+xgboost = ["xgboost"]
 
 [[package]]
 name = "exceptiongroup"
@@ -1888,6 +1929,50 @@ files = [
     {file = "mistune-3.0.2-py3-none-any.whl", hash = "sha256:71481854c30fdbc938963d3605b72501f5c10a9320ecd412c121c163a1c7d205"},
     {file = "mistune-3.0.2.tar.gz", hash = "sha256:fc7f93ded930c92394ef2cb6f04a8aabab4117a91449e72dcc8dfa646a508be8"},
 ]
+
+[[package]]
+name = "modcma"
+version = "1.0.3"
+description = "Package Containing Modular CMA-ES optimizer"
+optional = false
+python-versions = "*"
+files = [
+    {file = "modcma-1.0.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a78cca15136e507c8f89b456e9ba8500f6087d42a3c03295c8cd42f71628bc00"},
+    {file = "modcma-1.0.3-cp310-cp310-win_amd64.whl", hash = "sha256:1be1486a08c55ff8a1b1629fecff47bd6d319dad3720713e84a4c76dd66fbc03"},
+    {file = "modcma-1.0.3-cp311-cp311-win_amd64.whl", hash = "sha256:880e4702aa65b8447e7e9cc5d561dd4ff90609fbd7b2827d4ab6126f115a7bfc"},
+    {file = "modcma-1.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:408b2a58c48388c3cb95e557e0ffc22bf445313a77ad481cc4585344c8ea4686"},
+    {file = "modcma-1.0.3-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:497c530432514f665826d15a59c021d9fb1b0708ad1dba3b608323f2398317bc"},
+    {file = "modcma-1.0.3-cp36-cp36m-win_amd64.whl", hash = "sha256:0a29333b5e0186c6252af523100aa0288b4cb568bcbceab6e9df907ff8a75b11"},
+    {file = "modcma-1.0.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:862715db99ae0169b8a20ac20064006761d653b9b34b11e162248b7413958b12"},
+    {file = "modcma-1.0.3-cp37-cp37m-win_amd64.whl", hash = "sha256:5263baf7940c235597db947b2ac730ff9df37a4310d28efdab78b3bef1a2085a"},
+    {file = "modcma-1.0.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fbec6674f88def4fac5a90becacd197e60f7a23da3b97fdf94ddc4b2947aaae8"},
+    {file = "modcma-1.0.3-cp38-cp38-win_amd64.whl", hash = "sha256:078f85028762ae5242e0899cc9cab716b1c19bb1cd87fc7a0e66ac3ef8c3d2bd"},
+    {file = "modcma-1.0.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:298d93cb13d81cf4e59f48cf38cda5bccdb7f3b8c2bf1b11a6d44b8e869ba904"},
+    {file = "modcma-1.0.3-cp39-cp39-win_amd64.whl", hash = "sha256:b150b5e2d384bd9fe298ed668bdd2cf88fb96cdccaf388ffbd3aa224f3bbdf41"},
+    {file = "modcma-1.0.3.tar.gz", hash = "sha256:aa0be3000019062481065fab60ac5214700af1807daa7c3460ae843f7c61027e"},
+]
+
+[package.dependencies]
+ioh = "*"
+numpy = "*"
+scipy = "*"
+
+[[package]]
+name = "modde"
+version = "0.0.1"
+description = "Package Containing Modular DE optimizer"
+optional = false
+python-versions = "*"
+files = [
+    {file = "modde-0.0.1-py3-none-any.whl", hash = "sha256:135f7820d283f6303ce31ecbae3f5811fd46801c3248187bad1e90f8196a101a"},
+    {file = "modde-0.0.1.tar.gz", hash = "sha256:d1f8f4d04711f394e6742c1b5bf9ef8a4f237390551878aa39f3e63f289fea2f"},
+]
+
+[package.dependencies]
+ioh = "*"
+numba = "*"
+numpy = "*"
+scipy = "*"
 
 [[package]]
 name = "more-itertools"
@@ -3080,6 +3165,27 @@ doc = ["matplotlib (>2)", "numpydoc", "pydata-sphinx-theme (==0.9.0)", "sphinx (
 test = ["asv", "gmpy2", "mpmath", "pytest", "pytest-cov", "pytest-xdist", "scikit-umfpack", "threadpoolctl"]
 
 [[package]]
+name = "seaborn"
+version = "0.13.0"
+description = "Statistical data visualization"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "seaborn-0.13.0-py3-none-any.whl", hash = "sha256:70d740828c48de0f402bb17234e475eda687e3c65f4383ea25d0cc4728f7772e"},
+    {file = "seaborn-0.13.0.tar.gz", hash = "sha256:0e76abd2ec291c655b516703c6a022f0fd5afed26c8e714e8baef48150f73598"},
+]
+
+[package.dependencies]
+matplotlib = ">=3.3,<3.6.1 || >3.6.1"
+numpy = ">=1.20,<1.24.0 || >1.24.0"
+pandas = ">=1.2"
+
+[package.extras]
+dev = ["flake8", "flit", "mypy", "pandas-stubs", "pre-commit", "pytest", "pytest-cov", "pytest-xdist"]
+docs = ["ipykernel", "nbconvert", "numpydoc", "pydata_sphinx_theme (==0.10.0rc2)", "pyyaml", "sphinx (<6.0.0)", "sphinx-copybutton", "sphinx-design", "sphinx-issues"]
+stats = ["scipy (>=1.7)", "statsmodels (>=0.12)"]
+
+[[package]]
 name = "send2trash"
 version = "1.8.2"
 description = "Send file to trash natively under Mac OS X, Windows and Linux"
@@ -3511,4 +3617,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.0"
-content-hash = "c359263b65389506fcb5d24fa48781251a05ff0a7a45fd56f7feb8078c174654"
+content-hash = "d6d9b1683460546d0f96c15394f3db9ff3c38fb0f3fbde36590d3e1c1be15539"
