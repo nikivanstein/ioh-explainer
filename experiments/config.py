@@ -31,6 +31,7 @@ cma_cs = ConfigurationSpace(
     }
 )  # 20k+
 cma_features = [
+    "active",
     "covariance",
     "elitist",
     "mirrored",
