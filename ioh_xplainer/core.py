@@ -445,7 +445,7 @@ class explainer(object):
 
             return pd.concat(fid_behaviour, axis=0)
         for dim in self.dims:
-            uniform_std = math.sqrt(1 ** 2 / 12)
+            uniform_std = math.sqrt(1**2 / 12)
 
             dim_df = self.df[(self.df["dim"] == dim)]
             stat_index = f"d={dim}"
