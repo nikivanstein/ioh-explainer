@@ -20,6 +20,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from .utils import (
     get_f0,
     get_query_string_from_dict,
+    get_query_string_from_dict_for_others,
     intersection,
     run_verification,
     runParallelFunction,
@@ -104,6 +105,31 @@ class explainer(object):
         )
         np.random.seed(seed)
 
+    def get_grid_effect(self, conf, aucs, dim, fid=None, iid=None):
+        """Get the relative improvement of each feature for a specific configuration using the other grid samples.
+        Only works if the sampling method is a grid.
+
+        Args:
+            conf (dict): Configuration to check.
+            aucs (array): Array of the configuration to check.
+            dim (int): Dimension.
+            fid (int, optional): Function id to use for the comparison. Defaults to None.
+            iid (int, optional): Instance id to use for the comparison. Defaults to None.
+
+        Returns:
+            dict: Dictionary with added feature results.
+        """
+        if self.sampling_method == "grid":
+            mean_auc = aucs['auc'].mean()
+            conf_to_send = conf.copy()
+            for f in self.config_space.keys():
+                res_others = self.get_results_for_other_configs(conf_to_send, f, dim, fid, iid)
+                mean_other_aucs = np.array(res_others).mean()
+                print(f, conf[f], (mean_auc - mean_other_aucs))
+                #conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
+                conf[f"{f} effect"] = (mean_auc - mean_other_aucs)
+        return conf
+
     def analyse_best(
         self,
         filename=None,
@@ -134,6 +160,11 @@ class explainer(object):
 
             conf, aucs = self._get_average_best(dim_df)
             configs_to_rerun.append(conf.copy())
+
+            #check effect of each configuration option (if grid was used)
+            conf = self.get_grid_effect(conf, aucs, dim)
+
+            
             if check_bias:
                 conf["bias"] = self.check_bias(
                     conf, dim, file_prefix=f"{bias_folder}ab_cma"
@@ -149,6 +180,8 @@ class explainer(object):
                 # get single best (average best over all instances)
                 conf, aucs = self._get_single_best(fid_df)
                 configs_to_rerun.append(conf.copy())
+                conf = self.get_grid_effect(conf, aucs, dim, fid)
+
                 if check_bias:
                     conf["bias"] = self.check_bias(
                         conf,
@@ -290,25 +323,52 @@ class explainer(object):
         if self.verbose:
             print(self.df)
 
-    def get_results_for_config(self, config: dict, dim: int, fid: int, iid=None):
+    def get_results_for_config(self, config: dict, dim: int, fid= None, iid=None):
         """Get the AUC result from a specific configuration in dictorionary form.
 
         Args:
             config (dict): The dictionairy to ask.
             dim (int): The dimensionality.
-            fid (int): The function id.
-            iid (int, optional): The instance id. Defaults to 1.
+            fid (int, optional): The function id. Defaults to None (is all).
+            iid (int, optional): The instance id. Defaults to None (is all).
 
         Returns:
             array: auc scores
         """
         dim_df = self.df[(self.df["dim"] == dim)]
-        fid_df = dim_df[(dim_df["fid"] == fid)]
+        if fid != None:
+            fid_df = dim_df[(dim_df["fid"] == fid)]
+        else:
+            fid_df = dim_df
         if iid != None:
             iid_df = fid_df[(fid_df["iid"] == iid)]
         else:
             iid_df = fid_df
         return iid_df.query(get_query_string_from_dict(config))["auc"]
+    
+    def get_results_for_other_configs(self, config: dict, feature: str, dim: int, fid= None, iid=None):
+        """Get the AUC result from variations in one feature for a specific configuration in dictorionary form.
+
+        Args:
+            config (dict): The dictionairy to ask.
+            feature (string): The feature to complement (vary from the original).
+            dim (int): The dimensionality.
+            fid (int, optional): The function id. Defaults to None (is all).
+            iid (int, optional): The instance id. Defaults to None (is all).
+
+        Returns:
+            array: auc scores
+        """
+        dim_df = self.df[(self.df["dim"] == dim)]
+        if fid != None:
+            fid_df = dim_df[(dim_df["fid"] == fid)]
+        else:
+            fid_df = dim_df
+        if iid != None:
+            iid_df = fid_df[(fid_df["iid"] == iid)]
+        else:
+            iid_df = fid_df
+        return iid_df.query(get_query_string_from_dict_for_others(config.copy(), feature))["auc"]
 
     def save_results(self, filename="results.pkl"):
         """Save results to a pickle file .

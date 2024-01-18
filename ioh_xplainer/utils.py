@@ -211,3 +211,25 @@ def get_query_string_from_dict(filter):
             for key, val in filter.items()
         ]
     )
+
+
+def get_query_string_from_dict_for_others(filter, column):
+    """Get a query string from a dictionary filter to apply to a pandas Dataframme where one column is negated.
+
+    Args:
+        filter (dict): Dictionary with the columns and values to filter on.
+        column (string): Column that is negated to get all other configurations.
+
+    Returns:
+        string: Query string.
+    """
+    to_negate_val = filter.pop(column)
+    
+    normal_items = " and ".join(
+        [
+            f'({key} == "{val}")' if type(val) == str else f"({key} == {val})"
+            for key, val in filter.items()
+        ]
+    )
+    negated_item = f'({column} != "{to_negate_val}")' if type(to_negate_val) == str else f"({column} != {to_negate_val})"
+    return f"{normal_items} and {negated_item}"
