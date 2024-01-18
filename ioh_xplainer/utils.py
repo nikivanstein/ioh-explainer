@@ -224,12 +224,16 @@ def get_query_string_from_dict_for_others(filter, column):
         string: Query string.
     """
     to_negate_val = filter.pop(column)
-    
+
     normal_items = " and ".join(
         [
             f'({key} == "{val}")' if type(val) == str else f"({key} == {val})"
             for key, val in filter.items()
         ]
     )
-    negated_item = f'({column} != "{to_negate_val}")' if type(to_negate_val) == str else f"({column} != {to_negate_val})"
+    negated_item = (
+        f'({column} != "{to_negate_val}")'
+        if type(to_negate_val) == str
+        else f"({column} != {to_negate_val})"
+    )
     return f"{normal_items} and {negated_item}"

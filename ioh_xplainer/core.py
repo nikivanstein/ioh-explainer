@@ -120,14 +120,16 @@ class explainer(object):
             dict: Dictionary with added feature results.
         """
         if self.sampling_method == "grid":
-            mean_auc = aucs['auc'].mean()
+            mean_auc = aucs["auc"].mean()
             conf_to_send = conf.copy()
             for f in self.config_space.keys():
-                res_others = self.get_results_for_other_configs(conf_to_send, f, dim, fid, iid)
+                res_others = self.get_results_for_other_configs(
+                    conf_to_send, f, dim, fid, iid
+                )
                 mean_other_aucs = np.array(res_others).mean()
                 print(f, conf[f], (mean_auc - mean_other_aucs))
-                #conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
-                conf[f"{f} effect"] = (mean_auc - mean_other_aucs)
+                # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
+                conf[f"{f} effect"] = mean_auc - mean_other_aucs
         return conf
 
     def analyse_best(
@@ -161,10 +163,9 @@ class explainer(object):
             conf, aucs = self._get_average_best(dim_df)
             configs_to_rerun.append(conf.copy())
 
-            #check effect of each configuration option (if grid was used)
+            # check effect of each configuration option (if grid was used)
             conf = self.get_grid_effect(conf, aucs, dim)
 
-            
             if check_bias:
                 conf["bias"] = self.check_bias(
                     conf, dim, file_prefix=f"{bias_folder}ab_cma"
@@ -323,7 +324,7 @@ class explainer(object):
         if self.verbose:
             print(self.df)
 
-    def get_results_for_config(self, config: dict, dim: int, fid= None, iid=None):
+    def get_results_for_config(self, config: dict, dim: int, fid=None, iid=None):
         """Get the AUC result from a specific configuration in dictorionary form.
 
         Args:
@@ -345,8 +346,10 @@ class explainer(object):
         else:
             iid_df = fid_df
         return iid_df.query(get_query_string_from_dict(config))["auc"]
-    
-    def get_results_for_other_configs(self, config: dict, feature: str, dim: int, fid= None, iid=None):
+
+    def get_results_for_other_configs(
+        self, config: dict, feature: str, dim: int, fid=None, iid=None
+    ):
         """Get the AUC result from variations in one feature for a specific configuration in dictorionary form.
 
         Args:
@@ -368,7 +371,9 @@ class explainer(object):
             iid_df = fid_df[(fid_df["iid"] == iid)]
         else:
             iid_df = fid_df
-        return iid_df.query(get_query_string_from_dict_for_others(config.copy(), feature))["auc"]
+        return iid_df.query(
+            get_query_string_from_dict_for_others(config.copy(), feature)
+        )["auc"]
 
     def save_results(self, filename="results.pkl"):
         """Save results to a pickle file .
@@ -440,7 +445,7 @@ class explainer(object):
 
             return pd.concat(fid_behaviour, axis=0)
         for dim in self.dims:
-            uniform_std = math.sqrt(1**2 / 12)
+            uniform_std = math.sqrt(1 ** 2 / 12)
 
             dim_df = self.df[(self.df["dim"] == dim)]
             stat_index = f"d={dim}"
