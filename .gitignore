@@ -163,3 +163,5 @@ data/
 catboost_info/
 /*.csv
 /*.pkl
+experiments/cma-d*
+experiments/de-d*

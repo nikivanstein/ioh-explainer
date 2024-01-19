@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ioh-xplainer"
-version = "0.1.0"
+version = "0.2.0"
 description = "eXplainable Benchmarking for Iterative Optimization Heuristics"
 authors = ["Niki van Stein <n.van.stein@liacs.leidenuniv.nl>"]
 license = "MIT"
@@ -16,6 +16,7 @@ tqdm = "^4.66.1"
 shap = "^0.43.0"
 catboost = "^1.2.2"
 configspace = "^0.7.1"
+dtreeviz = "^2.2.2"
 
 [tool.poetry.dev-dependencies]
 black = "^23.11.0"
@@ -26,6 +27,13 @@ pytest = "^7.4.3"
 jupyter = "^1.0.0"
 pytest-cov = "^4.1.0"
 codecov = "^2.1.13"
+
+
+[tool.poetry.group.extra.dependencies]
+seaborn = "^0.13.0"
+modcma = "^1.0.3"
+modde = "^0.0.1"
+salib = "^1.4.7"
 
 [build-system]
 requires = ["poetry-core>=1.2.0"]

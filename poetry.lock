@@ -533,6 +533,20 @@ files = [
 ]
 
 [[package]]
+name = "colour"
+version = "0.1.5"
+description = "converts and manipulates various color representation (HSL, RVB, web, X11, ...)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "colour-0.1.5-py2.py3-none-any.whl", hash = "sha256:33f6db9d564fadc16e59921a56999b79571160ce09916303d35346dddc17978c"},
+    {file = "colour-0.1.5.tar.gz", hash = "sha256:af20120fefd2afede8b001fbef2ea9da70ad7d49fafdb6489025dae8745c3aee"},
+]
+
+[package.extras]
+test = ["nose"]
+
+[[package]]
 name = "comm"
 version = "0.2.0"
 description = "Jupyter Python Comm implementation, for usage in ipykernel, xeus-python etc."
@@ -858,6 +872,47 @@ files = [
     {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
     {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
 ]
+
+[[package]]
+name = "dill"
+version = "0.3.7"
+description = "serialize all of Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "dill-0.3.7-py3-none-any.whl", hash = "sha256:76b122c08ef4ce2eedcd4d1abd8e641114bfc6c2867f49f3c41facf65bf19f5e"},
+    {file = "dill-0.3.7.tar.gz", hash = "sha256:cc1c8b182eb3013e24bd475ff2e9295af86c1a38eb1aff128dac8962a9ce3c03"},
+]
+
+[package.extras]
+graph = ["objgraph (>=1.7.2)"]
+
+[[package]]
+name = "dtreeviz"
+version = "2.2.2"
+description = "A Python 3 library for sci-kit learn, XGBoost, LightGBM, Spark, and TensorFlow decision tree visualization"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "dtreeviz-2.2.2-py3-none-any.whl", hash = "sha256:e510d80857b29f15a12e8ebe2c7ab3fb667096739742ab47e5d8889cf78da8fe"},
+    {file = "dtreeviz-2.2.2.tar.gz", hash = "sha256:a145ff91ffaa11bd2f59186fdcffaa384d90c1757517cbb27e66cc83922319ba"},
+]
+
+[package.dependencies]
+colour = "*"
+graphviz = ">=0.9"
+matplotlib = "*"
+numpy = "*"
+pandas = "*"
+pytest = "*"
+scikit-learn = "*"
+
+[package.extras]
+all = ["lightgbm", "pyspark", "tensorflow-decision-forests", "xgboost"]
+lightgbm = ["lightgbm"]
+pyspark = ["pyspark"]
+tensorflow-decision-forests = ["tensorflow-decision-forests"]
+xgboost = ["xgboost"]
 
 [[package]]
 name = "exceptiongroup"
@@ -1890,6 +1945,50 @@ files = [
 ]
 
 [[package]]
+name = "modcma"
+version = "1.0.3"
+description = "Package Containing Modular CMA-ES optimizer"
+optional = false
+python-versions = "*"
+files = [
+    {file = "modcma-1.0.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a78cca15136e507c8f89b456e9ba8500f6087d42a3c03295c8cd42f71628bc00"},
+    {file = "modcma-1.0.3-cp310-cp310-win_amd64.whl", hash = "sha256:1be1486a08c55ff8a1b1629fecff47bd6d319dad3720713e84a4c76dd66fbc03"},
+    {file = "modcma-1.0.3-cp311-cp311-win_amd64.whl", hash = "sha256:880e4702aa65b8447e7e9cc5d561dd4ff90609fbd7b2827d4ab6126f115a7bfc"},
+    {file = "modcma-1.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:408b2a58c48388c3cb95e557e0ffc22bf445313a77ad481cc4585344c8ea4686"},
+    {file = "modcma-1.0.3-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:497c530432514f665826d15a59c021d9fb1b0708ad1dba3b608323f2398317bc"},
+    {file = "modcma-1.0.3-cp36-cp36m-win_amd64.whl", hash = "sha256:0a29333b5e0186c6252af523100aa0288b4cb568bcbceab6e9df907ff8a75b11"},
+    {file = "modcma-1.0.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:862715db99ae0169b8a20ac20064006761d653b9b34b11e162248b7413958b12"},
+    {file = "modcma-1.0.3-cp37-cp37m-win_amd64.whl", hash = "sha256:5263baf7940c235597db947b2ac730ff9df37a4310d28efdab78b3bef1a2085a"},
+    {file = "modcma-1.0.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fbec6674f88def4fac5a90becacd197e60f7a23da3b97fdf94ddc4b2947aaae8"},
+    {file = "modcma-1.0.3-cp38-cp38-win_amd64.whl", hash = "sha256:078f85028762ae5242e0899cc9cab716b1c19bb1cd87fc7a0e66ac3ef8c3d2bd"},
+    {file = "modcma-1.0.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:298d93cb13d81cf4e59f48cf38cda5bccdb7f3b8c2bf1b11a6d44b8e869ba904"},
+    {file = "modcma-1.0.3-cp39-cp39-win_amd64.whl", hash = "sha256:b150b5e2d384bd9fe298ed668bdd2cf88fb96cdccaf388ffbd3aa224f3bbdf41"},
+    {file = "modcma-1.0.3.tar.gz", hash = "sha256:aa0be3000019062481065fab60ac5214700af1807daa7c3460ae843f7c61027e"},
+]
+
+[package.dependencies]
+ioh = "*"
+numpy = "*"
+scipy = "*"
+
+[[package]]
+name = "modde"
+version = "0.0.1"
+description = "Package Containing Modular DE optimizer"
+optional = false
+python-versions = "*"
+files = [
+    {file = "modde-0.0.1-py3-none-any.whl", hash = "sha256:135f7820d283f6303ce31ecbae3f5811fd46801c3248187bad1e90f8196a101a"},
+    {file = "modde-0.0.1.tar.gz", hash = "sha256:d1f8f4d04711f394e6742c1b5bf9ef8a4f237390551878aa39f3e63f289fea2f"},
+]
+
+[package.dependencies]
+ioh = "*"
+numba = "*"
+numpy = "*"
+scipy = "*"
+
+[[package]]
 name = "more-itertools"
 version = "10.1.0"
 description = "More routines for operating on iterables, beyond itertools"
@@ -1899,6 +1998,34 @@ files = [
     {file = "more-itertools-10.1.0.tar.gz", hash = "sha256:626c369fa0eb37bac0291bce8259b332fd59ac792fa5497b59837309cd5b114a"},
     {file = "more_itertools-10.1.0-py3-none-any.whl", hash = "sha256:64e0735fcfdc6f3464ea133afe8ea4483b1c5fe3a3d69852e6503b43a0b222e6"},
 ]
+
+[[package]]
+name = "multiprocess"
+version = "0.70.15"
+description = "better multiprocessing and multithreading in Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "multiprocess-0.70.15-pp310-pypy310_pp73-macosx_10_9_x86_64.whl", hash = "sha256:aa36c7ed16f508091438687fe9baa393a7a8e206731d321e443745e743a0d4e5"},
+    {file = "multiprocess-0.70.15-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:20e024018c46d0d1602024c613007ac948f9754659e3853b0aa705e83f6931d8"},
+    {file = "multiprocess-0.70.15-pp37-pypy37_pp73-manylinux_2_24_i686.whl", hash = "sha256:e576062981c91f0fe8a463c3d52506e598dfc51320a8dd8d78b987dfca91c5db"},
+    {file = "multiprocess-0.70.15-pp37-pypy37_pp73-manylinux_2_24_x86_64.whl", hash = "sha256:e73f497e6696a0f5433ada2b3d599ae733b87a6e8b008e387c62ac9127add177"},
+    {file = "multiprocess-0.70.15-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:73db2e7b32dcc7f9b0f075c2ffa45c90b6729d3f1805f27e88534c8d321a1be5"},
+    {file = "multiprocess-0.70.15-pp38-pypy38_pp73-manylinux_2_24_i686.whl", hash = "sha256:4271647bd8a49c28ecd6eb56a7fdbd3c212c45529ad5303b40b3c65fc6928e5f"},
+    {file = "multiprocess-0.70.15-pp38-pypy38_pp73-manylinux_2_24_x86_64.whl", hash = "sha256:cf981fb998d6ec3208cb14f0cf2e9e80216e834f5d51fd09ebc937c32b960902"},
+    {file = "multiprocess-0.70.15-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:18f9f2c7063346d1617bd1684fdcae8d33380ae96b99427260f562e1a1228b67"},
+    {file = "multiprocess-0.70.15-pp39-pypy39_pp73-manylinux_2_24_i686.whl", hash = "sha256:0eac53214d664c49a34695e5824872db4006b1a465edd7459a251809c3773370"},
+    {file = "multiprocess-0.70.15-pp39-pypy39_pp73-manylinux_2_24_x86_64.whl", hash = "sha256:1a51dd34096db47fb21fa2b839e615b051d51b97af9a67afbcdaa67186b44883"},
+    {file = "multiprocess-0.70.15-py310-none-any.whl", hash = "sha256:7dd58e33235e83cf09d625e55cffd7b0f0eede7ee9223cdd666a87624f60c21a"},
+    {file = "multiprocess-0.70.15-py311-none-any.whl", hash = "sha256:134f89053d82c9ed3b73edd3a2531eb791e602d4f4156fc92a79259590bd9670"},
+    {file = "multiprocess-0.70.15-py37-none-any.whl", hash = "sha256:f7d4a1629bccb433114c3b4885f69eccc200994323c80f6feee73b0edc9199c5"},
+    {file = "multiprocess-0.70.15-py38-none-any.whl", hash = "sha256:bee9afba476c91f9ebee7beeee0601face9eff67d822e893f9a893725fbd6316"},
+    {file = "multiprocess-0.70.15-py39-none-any.whl", hash = "sha256:3e0953f5d52b4c76f1c973eaf8214554d146f2be5decb48e928e55c7a2d19338"},
+    {file = "multiprocess-0.70.15.tar.gz", hash = "sha256:f20eed3036c0ef477b07a4177cf7c1ba520d9a2677870a4f47fe026f0cd6787e"},
+]
+
+[package.dependencies]
+dill = ">=0.3.7"
 
 [[package]]
 name = "mypy-extensions"
@@ -3000,6 +3127,30 @@ files = [
 ]
 
 [[package]]
+name = "salib"
+version = "1.4.7"
+description = "Tools for global sensitivity analysis. Contains Sobol', Morris, FAST, DGSM, PAWN, HDMR, Moment Independent and fractional factorial methods"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "salib-1.4.7-py3-none-any.whl", hash = "sha256:d04657d9a4972b56ca34ac0f0b1128f21e464d505892adbf921ec70f20662e84"},
+    {file = "salib-1.4.7.tar.gz", hash = "sha256:2e6cb19ec772d6cb7368feceae0f61e51f2d6afdbc4f8986a780b87d657b38cc"},
+]
+
+[package.dependencies]
+matplotlib = ">=3.2.2"
+multiprocess = "*"
+numpy = ">=1.20.3"
+pandas = ">=1.1.2"
+scipy = ">=1.7.3"
+
+[package.extras]
+dev = ["hatch", "pre-commit", "salib[distributed]", "salib[doc]", "salib[test]"]
+distributed = ["pathos (>=0.2.5)"]
+doc = ["myst-parser", "numpydoc", "pydata-sphinx-theme (>=0.10)", "sphinx"]
+test = ["pytest", "pytest-cov", "salib[distributed]"]
+
+[[package]]
 name = "scikit-learn"
 version = "1.3.0"
 description = "A set of python modules for machine learning and data mining"
@@ -3078,6 +3229,27 @@ numpy = ">=1.18.5,<1.26.0"
 dev = ["flake8", "mypy", "pycodestyle", "typing_extensions"]
 doc = ["matplotlib (>2)", "numpydoc", "pydata-sphinx-theme (==0.9.0)", "sphinx (!=4.1.0)", "sphinx-panels (>=0.5.2)", "sphinx-tabs"]
 test = ["asv", "gmpy2", "mpmath", "pytest", "pytest-cov", "pytest-xdist", "scikit-umfpack", "threadpoolctl"]
+
+[[package]]
+name = "seaborn"
+version = "0.13.0"
+description = "Statistical data visualization"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "seaborn-0.13.0-py3-none-any.whl", hash = "sha256:70d740828c48de0f402bb17234e475eda687e3c65f4383ea25d0cc4728f7772e"},
+    {file = "seaborn-0.13.0.tar.gz", hash = "sha256:0e76abd2ec291c655b516703c6a022f0fd5afed26c8e714e8baef48150f73598"},
+]
+
+[package.dependencies]
+matplotlib = ">=3.3,<3.6.1 || >3.6.1"
+numpy = ">=1.20,<1.24.0 || >1.24.0"
+pandas = ">=1.2"
+
+[package.extras]
+dev = ["flake8", "flit", "mypy", "pandas-stubs", "pre-commit", "pytest", "pytest-cov", "pytest-xdist"]
+docs = ["ipykernel", "nbconvert", "numpydoc", "pydata_sphinx_theme (==0.10.0rc2)", "pyyaml", "sphinx (<6.0.0)", "sphinx-copybutton", "sphinx-design", "sphinx-issues"]
+stats = ["scipy (>=1.7)", "statsmodels (>=0.12)"]
 
 [[package]]
 name = "send2trash"
@@ -3511,4 +3683,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.0"
-content-hash = "c359263b65389506fcb5d24fa48781251a05ff0a7a45fd56f7feb8078c174654"
+content-hash = "3bfc76d05ed0536d23b22b404fba640e8c7c90d385f3b929201e87b5eba38039"
