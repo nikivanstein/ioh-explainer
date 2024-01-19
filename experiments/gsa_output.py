@@ -1,3 +1,13 @@
+"""Processing the samples for GSA report
+Afterwards run using Docker the following commands: 
+ > docker run --rm -v ./de-d5/output:/output -v ./de-d5/:/data ghcr.io/basvanstein/gsareport:main -p /data/problem.json -d /data -o /output
+ > docker run --rm -v ./de-d30/output:/output -v ./de-d30/:/data ghcr.io/basvanstein/gsareport:main -p /data/problem.json -d /data -o /output
+ > docker run --rm -v ./cma-d5/output:/output -v ./cma-d5/:/data ghcr.io/basvanstein/gsareport:main -p /data/problem.json -d /data -o /output
+ > docker run --rm -v ./cma-d30/output:/output -v ./de-d30/:/data ghcr.io/basvanstein/gsareport:main -p /data/problem.json -d /data -o /output
+
+The reports will be in the output directories.
+"""
+
 import numpy as np
 import json
 from sklearn.ensemble import RandomForestRegressor
@@ -23,7 +33,7 @@ def generateSamples(sample_size=10000, problem={}):
             x_sobol = None
         return x_lhs, x_morris, x_sobol
 
-for folder in ["de-d5", "de-d30"]: #"cma-d5", "cma-d30"
+for folder in ["cma-d5", "cma-d30" ,"de-d5", "de-d30"]: #"cma-d5", "cma-d30"
 
     #folder = "d30"
 

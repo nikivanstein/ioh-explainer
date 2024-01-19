@@ -10,4 +10,4 @@ de_explainer.load_results(data_file)
 de_explainer.df.loc[de_explainer.df["dim"] == 30, "auc"] = de_explainer.df.loc[
     de_explainer.df["dim"] == 30, "aucLarge"
 ]
-de_explainer.to_latex_report(filename="mod_de_new", img_dir="de_img_new/")
+de_explainer.to_latex_report(filename="../output/mod_de_new", img_dir="../output/de_img_new/")

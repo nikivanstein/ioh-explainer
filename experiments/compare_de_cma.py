@@ -170,7 +170,7 @@ de_explainer.df.loc[de_explainer.df["dim"] == 30, "auc"] = de_explainer.df.loc[
 
 dffinal = compare(de_explainer, cmaes_explainer)
 
-with open(f"compare-new.tex", "w") as fh:
+with open(f"../output/compare-new.tex", "w") as fh:
     for dim in ["d=5", "d=30"]:
         dffinal[dim].to_latex(
             buf=fh,
@@ -215,24 +215,24 @@ for dim in de_explainer.dims:
         corr, method="complete", cmap="viridis", annot=True, annot_kws={"size": 8}
     )
     plt.tight_layout()
-    plt.savefig(f"de-clustermap-{dim}d.pdf")
+    plt.savefig(f"../output/de-clustermap-{dim}d.pdf")
     plt.clf()
 
     g = sns.heatmap(corr, annot=False, cmap="viridis")
     plt.tight_layout()
-    plt.savefig(f"de-heatmap-{dim}d.pdf")
+    plt.savefig(f"../output/de-heatmap-{dim}d.pdf")
     plt.clf()
 
     g = sns.clustermap(
         corr2, method="complete", cmap="viridis", annot=True, annot_kws={"size": 8}
     )
     plt.tight_layout()
-    plt.savefig(f"cma-clustermap-{dim}d.pdf")
+    plt.savefig(f"../output/cma-clustermap-{dim}d.pdf")
     plt.clf()
 
     g = sns.heatmap(corr2, annot=False, cmap="viridis")
     plt.tight_layout()
-    plt.savefig(f"cma-heatmap-{dim}d.pdf")
+    plt.savefig(f"../output/cma-heatmap-{dim}d.pdf")
     plt.clf()
 
 all_cors = np.array(all_cors)
@@ -247,10 +247,10 @@ g = sns.clustermap(
     alldf, method="complete", cmap="viridis", annot=True, annot_kws={"size": 8}
 )
 plt.tight_layout()
-plt.savefig(f"all-clustermap.pdf")
+plt.savefig(f"../output/all-clustermap.pdf")
 plt.clf()
 plt.clf()
 g = sns.heatmap(alldf, annot=False, cmap="viridis")
 plt.tight_layout()
-plt.savefig(f"min-cor-all.pdf")
+plt.savefig(f"../output/min-cor-all.pdf")
 plt.clf()

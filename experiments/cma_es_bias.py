@@ -15,9 +15,9 @@ cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30, "auc"] = cmaes_explainer
 ]
 
 hall_of_fame = cmaes_explainer.analyse_best(
-    "cma_es-hall-of-fame.tex",
+    "../output/cma_es-hall-of-fame.tex",
     False,
-    "bias_plots/",
+    "../output/bias_plots/",
     True,
     "/data/neocortex/cma_data/",
     10,
