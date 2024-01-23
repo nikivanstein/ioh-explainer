@@ -119,17 +119,16 @@ class explainer(object):
         Returns:
             dict: Dictionary with added feature results.
         """
-        if self.sampling_method == "grid":
-            mean_auc = aucs["auc"].mean()
-            conf_to_send = conf.copy()
-            for f in self.config_space.keys():
-                res_others = self.get_results_for_other_configs(
-                    conf_to_send, f, dim, fid, iid
-                )
-                mean_other_aucs = np.array(res_others).mean()
-                print(f, conf[f], (mean_auc - mean_other_aucs))
-                # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
-                conf[f"{f} effect"] = mean_auc - mean_other_aucs
+        mean_auc = aucs["auc"].mean()
+        conf_to_send = conf.copy()
+        for f in self.config_space.keys():
+            res_others = self.get_results_for_other_configs(
+                conf_to_send, f, dim, fid, iid
+            )
+            mean_other_aucs = np.array(res_others).mean()
+            print(f, conf[f], (mean_auc - mean_other_aucs))
+            # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
+            conf[f"{f} effect"] = mean_auc - mean_other_aucs
         return conf
 
     def analyse_best(
