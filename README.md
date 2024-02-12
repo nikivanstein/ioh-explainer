@@ -2,7 +2,8 @@
 
 <br/><br/><br/>
 
-![Build](https://github.com/Basvanstein/ioh-xplainer/actions/workflows/test.yml/badge.svg)
+![Build](https://github.com/Basvanstein/ioh-explainer/actions/workflows/test.yml/badge.svg)
+[![codecov](https://codecov.io/gh/Basvanstein/ioh-explainer/graph/badge.svg?token=SYBOLV6H44)](https://codecov.io/gh/Basvanstein/ioh-explainer)
 [![PyPI version](https://badge.fury.io/py/ioh-xplainer.svg)](https://badge.fury.io/py/ioh-xplainer) 
 ![Python versions](https://img.shields.io/pypi/pyversions/ioh-xplainer)
 ![license](https://img.shields.io/pypi/l/ioh-xplainer)
@@ -29,6 +30,8 @@ Define the `search space` and the algorithm runner, basically the hyper-paramete
 
 ```python
 from scipy.optimize import differential_evolution
+from ConfigSpace import ConfigurationSpace
+import numpy as np
 
 confSpace = ConfigurationSpace(
     {
@@ -75,6 +78,8 @@ de_explainer.save_results("de.pkl")
 Finally we can analyze the run data and make various plots and reports.
 
 ```python
+import os
+os.mkdir("de_report")
 de_explainer.to_latex_report(filename="de_report", img_dir="de_report/")
 ```
 
