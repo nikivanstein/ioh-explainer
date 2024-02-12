@@ -126,7 +126,7 @@ class explainer(object):
                 conf_to_send, f, dim, fid, iid
             )
             mean_other_aucs = np.array(res_others).mean()
-            print(f, conf[f], (mean_auc - mean_other_aucs))
+            #print(f, conf[f], (mean_auc - mean_other_aucs))
             # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
             conf[f"{f} effect"] = mean_auc - mean_other_aucs
         return conf
@@ -139,6 +139,7 @@ class explainer(object):
         full_run=False,
         full_run_folder="/data/",
         reps=10,
+        grid_effect=False,
     ):
         """Analyse the best configurations (single best and average best) per dim and fid in more detail.
         Optionally also checks the configurations for structural bias, and performs a full re-run with more random seeds with ioh analyser.
@@ -149,8 +150,9 @@ class explainer(object):
             bias_folder (string, optional): The folder to store the bias visualisations. Defaults to "bias_folder"
             full_run (bool, optional): Perform a re-run with ioh analyser attached. Defaults to False.
             full_run_folder (string, optional): The folder to store the IOH logs. Defaults to "/data/".
-            reps (integer, optional): number of random runs. Defaults to 10.\
-        
+            reps (integer, optional): number of random runs. Defaults to 10.
+            grid_effect (bool, optional): to include the effect of turning modules off or not. Defaults to False.\
+            
         Returns:
             DataFrame
         """
@@ -163,7 +165,8 @@ class explainer(object):
             configs_to_rerun.append(conf.copy())
 
             # check effect of each configuration option (if grid was used)
-            conf = self.get_grid_effect(conf, aucs, dim)
+            if grid_effect:
+                conf = self.get_grid_effect(conf, aucs, dim)
 
             if check_bias:
                 conf["bias"] = self.check_bias(
@@ -180,7 +183,8 @@ class explainer(object):
                 # get single best (average best over all instances)
                 conf, aucs = self._get_single_best(fid_df)
                 configs_to_rerun.append(conf.copy())
-                conf = self.get_grid_effect(conf, aucs, dim, fid)
+                if grid_effect:
+                    conf = self.get_grid_effect(conf, aucs, dim, fid)
 
                 if check_bias:
                     conf["bias"] = self.check_bias(
@@ -390,7 +394,7 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
-    def check_bias(self, config, dim, num_runs=100, file_prefix=None):
+    def check_bias(self, config, dim, num_runs=100, deep=True, return_preds=False, file_prefix=None):
         wrap_f0()
         """Runs the bias result on the given configuration .
 
@@ -398,6 +402,8 @@ class explainer(object):
             config (dict): Configuration of an optimzer.
             dim (int): Dimensionality
             num_runs (int): number of runs on f0, should be either 30,50,100,200,500 or 600 (600 gives highest precision)
+            deep (boolean): to use the deep extension or not. Defautls to True.
+            return_preds (boolean): To also return the predicted class probabilities or not.
             file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
         from BIAS import BIAS
@@ -421,13 +427,15 @@ class explainer(object):
             filename = f"{file_prefix}_bias_deep_{config_str}-{dim}.png"
             filename2 = f"{file_prefix}_bias_{config_str}-{dim}.png"
         preds, y = test.predict(samples, show_figure=True, filename=filename2)
-        if y != "none":
+        if y != "none" and deep:
             y, preds = test.predict_deep(samples)
 
-        if y != "unif" and y != "none":
+        if y != "unif" and y != "none" and deep:
             if self.verbose:
                 print(f"Warning! Configuration shows structural bias of type {y}.")
             test.explain(samples, preds, filename=filename)
+        if return_preds:
+            return y, preds
         return y
 
     def behaviour_stats(self, fids=None, per_fid=False):

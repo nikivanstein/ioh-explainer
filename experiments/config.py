@@ -30,10 +30,50 @@ cma_cs = ConfigurationSpace(
         "mu": ["nan", "5", "10", "20"],  # Uniform float
     }
 )  # 20k+
+
+
+cma_cs_bias = ConfigurationSpace(
+    {
+        "covariance": [False, True],
+        "elitist": [False, True],
+        "orthogonal": [False, True],
+        "sequential": [False, True],
+        "threshold":  [False, True],
+        "sigma":  [False, True],
+        "mirrored": ["nan", "mirrored", "mirrored pairwise"],
+        "base_sampler": ["sobol", "gaussian", "halton"],
+        "weights_option": ["default", "equal", "1/2^lambda"],
+        "local_restart": ["nan", "IPOP", "BIPOP"],
+        "active": [False, True],
+        "step_size_adaptation": ["csa", "psr", "tpa", "msr", "xnes", "mxnes", "lpxnes"],
+        "bound_correction": ["nan", "saturate", "mirror", "cotn", "toroidal", "uniform"],
+        "lambda_": ["20"],
+        "mu": ["5"],  # Uniform float
+    }
+)  # 20k+
+
 cma_features = [
     "active",
     "covariance",
     "elitist",
+    "mirrored",
+    "base_sampler",
+    "weights_option",
+    "local_restart",
+    "step_size_adaptation",
+    "lambda_",
+    "mu",
+]
+
+cma_features_bias = [
+    "active",
+    "covariance",
+    "elitist",
+    "orthogonal",
+    "sequential",
+    "threshold",
+    "sigma",
+    "bound_correction",
     "mirrored",
     "base_sampler",
     "weights_option",
@@ -61,19 +101,49 @@ def config_to_cma_parameters(config, dim, budget):
     if config.get("elitist") == "False":
         elitist = False
     modules.elitist = elitist
-    # modules.orthogonal = config.get('orthogonal') #Not in use for me
-    # modules.sample_sigma = config.get('sample_sigma') #Not in use for me
-    # modules.sequential_selection  = config.get('sequential_selection') #Not in use for me
-    # modules.threshold_convergence  = config.get('threshold_convergence') #Not in use for me
-    # bound_correction_mapping = {'COTN': options.CorrectionMethod.COTN,
-    #                             'count': options.CorrectionMethod.COUNT,
-    #                             'mirror':  options.CorrectionMethod.MIRROR,
-    #                             'nan':  options.CorrectionMethod.NONE,
-    #                             'saturate':  options.CorrectionMethod.SATURATE,
-    #                             'toroidal':  options.CorrectionMethod.TOROIDAL,
-    #                             'uniform resample':  options.CorrectionMethod.UNIFORM_RESAMPLE
-    #                             } #Not used for me.
-    # modules.bound_correction = bound_correction_mapping[config.get('bound_correction')]
+
+    if config.get("orthogonal") != None:
+        orthogonal = bool(config.get("orthogonal"))
+        if config.get("orthogonal") == "True":
+            orthogonal = True
+        if config.get("orthogonal") == "False":
+            orthogonal = False
+        modules.orthogonal = orthogonal
+
+    if config.get("sigma") != None:
+        sigma = bool(config.get("sigma"))
+        if config.get("sigma") == "True":
+            sigma = True
+        if config.get("sigma") == "False":
+            sigma = False
+        modules.sample_sigma = sigma
+
+    if config.get("sequential") != None:
+        sequential = bool(config.get("sequential"))
+        if config.get("sequential") == "True":
+            sequential = True
+        if config.get("sequential") == "False":
+            sequential = False
+        modules.sequential_selection = sequential
+
+    if config.get("threshold") != None:
+        threshold = bool(config.get("threshold"))
+        if config.get("threshold") == "True":
+            threshold = True
+        if config.get("threshold") == "False":
+            threshold = False
+        modules.threshold_convergence  = threshold
+
+    if config.get("bound_correction") != None:
+        correction_mapping = {'cotn': options.CorrectionMethod.COTN,
+                                'mirror':  options.CorrectionMethod.MIRROR,
+                                'nan':  options.CorrectionMethod.NONE,
+                                'saturate':  options.CorrectionMethod.SATURATE,
+                                'toroidal':  options.CorrectionMethod.TOROIDAL,
+                                'uniform':  options.CorrectionMethod.UNIFORM_RESAMPLE
+                            }
+        modules.bound_correction  = correction_mapping[config.get("bound_correction")]
+
     mirrored_mapping = {
         "mirrored": options.Mirror.MIRRORED,
         "nan": options.Mirror.NONE,
@@ -104,6 +174,7 @@ def config_to_cma_parameters(config, dim, budget):
         "tpa": options.StepSizeAdaptation.TPA,
         "xnes": options.StepSizeAdaptation.XNES,
     }
+
     modules.ssa = ssa_mapping[config.get("step_size_adaptation")]
 
     weights_mapping = {
@@ -176,6 +247,22 @@ cmaes_explainer = explainer(
     fids=np.arange(1, 25),  # ,5
     iids=[1, 2, 3, 4, 5],
     reps=3,
+    sampling_method="grid",  # or random
+    grid_steps_dict={},
+    sample_size=None,  # only used with random method
+    budget=10000,  # 10000
+    seed=1,
+    verbose=True,
+)
+
+bias_cmaes_explainer = explainer(
+    run_cma,
+    cma_cs_bias,
+    algname="mod-CMA",
+    dims=[30],  # , 10, 20, 40
+    fids=[0],  # ,5
+    iids=[1],
+    reps=1,
     sampling_method="grid",  # or random
     grid_steps_dict={},
     sample_size=None,  # only used with random method
