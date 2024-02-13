@@ -28,7 +28,7 @@ bias_cmaes_explainer.budget = 5000
 bias_cmaes_explainer.verbose = False
 for i in tqdm.tqdm(range(0, len(grid))):
     alg_name = f"ModCMA-{i}"
-    row = grid[i].get_array()
+    row = grid[i].get_array() #change to dict
 
     y,preds = bias_cmaes_explainer.check_bias(grid[i], 5, num_runs=100, method="deep", return_preds=True)
     #print(y,preds)
