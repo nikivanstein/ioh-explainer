@@ -10,7 +10,7 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from IPython.display import display
 from modcma.c_maes import (ModularCMAES, Parameters, Population, mutation,
-                           options, parameters)
+                           options, parameters, utils)
 from modde import ModularDE
 from tqdm import tqdm
 
@@ -21,7 +21,7 @@ cma_cs = ConfigurationSpace(
         "covariance": [False, True],
         "elitist": [False, True],
         "mirrored": ["nan", "mirrored", "mirrored pairwise"],
-        "base_sampler": ["sobol", "gaussian", "halton"],
+        "base_sampler": ["halton"], #"sobol", "gaussian", 
         "weights_option": ["default", "equal", "1/2^lambda"],
         "local_restart": ["nan", "IPOP", "BIPOP"],
         "active": [False, True],
@@ -102,7 +102,7 @@ def config_to_cma_parameters(config, dim, budget):
         elitist = False
     modules.elitist = elitist
 
-    if config.get("orthogonal") != None:
+    if "orthogonal" in config.keys():
         orthogonal = bool(config.get("orthogonal"))
         if config.get("orthogonal") == "True":
             orthogonal = True
@@ -110,7 +110,7 @@ def config_to_cma_parameters(config, dim, budget):
             orthogonal = False
         modules.orthogonal = orthogonal
 
-    if config.get("sigma") != None:
+    if "sigma" in config.keys():
         sigma = bool(config.get("sigma"))
         if config.get("sigma") == "True":
             sigma = True
@@ -118,7 +118,7 @@ def config_to_cma_parameters(config, dim, budget):
             sigma = False
         modules.sample_sigma = sigma
 
-    if config.get("sequential") != None:
+    if "sequential" in config.keys():
         sequential = bool(config.get("sequential"))
         if config.get("sequential") == "True":
             sequential = True
@@ -126,7 +126,7 @@ def config_to_cma_parameters(config, dim, budget):
             sequential = False
         modules.sequential_selection = sequential
 
-    if config.get("threshold") != None:
+    if "threshold" in config.keys():
         threshold = bool(config.get("threshold"))
         if config.get("threshold") == "True":
             threshold = True
@@ -134,7 +134,7 @@ def config_to_cma_parameters(config, dim, budget):
             threshold = False
         modules.threshold_convergence  = threshold
 
-    if config.get("bound_correction") != None:
+    if "bound_correction" in config.keys():
         correction_mapping = {'cotn': options.CorrectionMethod.COTN,
                                 'mirror':  options.CorrectionMethod.MIRROR,
                                 'nan':  options.CorrectionMethod.NONE,
@@ -214,7 +214,10 @@ def config_to_cma_parameters(config, dim, budget):
     return Parameters(settings)
 
 
-def run_cma(func, config, budget, dim, *args, **kwargs):
+def run_cma(func, config, budget, dim, *args, seed=0, **kwargs):
+
+    utils.set_seed(seed)
+    #print(seed)
 
     par = config_to_cma_parameters(config, dim, int(budget))
     if par == False:
@@ -224,10 +227,10 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
     # settings = parameters.Settings(2, modules)
     # par = Parameters(settings)
     c = ModularCMAES(par)
-
     try:
         # print(config)
-        c(func)
+        c.run(func)
+
         return []
     except Exception as e:
         print(

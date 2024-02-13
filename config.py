@@ -41,7 +41,7 @@ cma_cs_bias = ConfigurationSpace(
         "threshold":  [False, True],
         "sigma":  [False, True],
         "mirrored": ["nan", "mirrored", "mirrored pairwise"],
-        "base_sampler": ["sobol", "gaussian"], #, "halton"
+        "base_sampler": ["sobol", "gaussian", "halton"],
         "weights_option": ["default", "equal", "1/2^lambda"],
         "local_restart": ["nan", "IPOP", "BIPOP"],
         "active": [False, True],
