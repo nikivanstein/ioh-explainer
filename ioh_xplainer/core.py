@@ -394,7 +394,7 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
-    def check_bias(self, config, dim, num_runs=100, deep=True, return_preds=False, file_prefix=None):
+    def check_bias(self, config, dim, num_runs=100, method="both", return_preds=False, file_prefix=None):
         wrap_f0()
         """Runs the bias result on the given configuration .
 
@@ -402,7 +402,7 @@ class explainer(object):
             config (dict): Configuration of an optimzer.
             dim (int): Dimensionality
             num_runs (int): number of runs on f0, should be either 30,50,100,200,500 or 600 (600 gives highest precision)
-            deep (boolean): to use the deep extension or not. Defautls to True.
+            method (string): either "deep", "stat" or "both" to use the deep extension or not. Defautls to deep.
             return_preds (boolean): To also return the predicted class probabilities or not.
             file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
@@ -421,16 +421,19 @@ class explainer(object):
         samples = np.array(samples)
         test = BIAS()
         filename = None
+        filename2 = None
         if file_prefix != None:
             config_str = "_".join(f"{value}" for value in config.values())
             config_str = config_str.replace("1/2^lambda", "hp-lambda")
             filename = f"{file_prefix}_bias_deep_{config_str}-{dim}.png"
             filename2 = f"{file_prefix}_bias_{config_str}-{dim}.png"
-        preds, y = test.predict(samples, show_figure=True, filename=filename2)
-        if y != "none" and deep:
+        y = ""
+        if (method == "stat" or method == "both"):
+            preds, y = test.predict(samples, show_figure=True, filename=filename2)
+        if y != "none" and (method == "deep" or method == "both"):
             y, preds = test.predict_deep(samples)
 
-        if y != "unif" and y != "none" and deep:
+        if y != "unif" and y != "none" and (method == "deep" or method == "both") and file_prefix != None:
             if self.verbose:
                 print(f"Warning! Configuration shows structural bias of type {y}.")
             test.explain(samples, preds, filename=filename)
