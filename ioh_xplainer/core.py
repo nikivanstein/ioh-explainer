@@ -92,6 +92,7 @@ class explainer(object):
         self.verbose = verbose
         self.budget = budget
         self.models = {}
+        self.biastest = None
         self.df = pd.DataFrame(
             columns=[
                 "fid",
@@ -406,7 +407,7 @@ class explainer(object):
             return_preds (boolean): To also return the predicted class probabilities or not.
             file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
-        from BIAS import BIAS
+        
 
         samples = []
         if self.verbose:
@@ -419,7 +420,9 @@ class explainer(object):
             f0.reset()
 
         samples = np.array(samples)
-        test = BIAS()
+        if self.biastest == None:
+            from BIAS import BIAS
+            self.biastest = BIAS()
         filename = None
         filename2 = None
         if file_prefix != None:
@@ -429,14 +432,14 @@ class explainer(object):
             filename2 = f"{file_prefix}_bias_{config_str}-{dim}.png"
         y = ""
         if (method == "stat" or method == "both"):
-            preds, y = test.predict(samples, show_figure=True, filename=filename2)
+            preds, y = self.biastest.predict(samples, show_figure=True, filename=filename2)
         if y != "none" and (method == "deep" or method == "both"):
-            y, preds = test.predict_deep(samples)
+            y, preds = self.biastest.predict_deep(samples)
 
         if y != "unif" and y != "none" and (method == "deep" or method == "both") and file_prefix != None:
             if self.verbose:
                 print(f"Warning! Configuration shows structural bias of type {y}.")
-            test.explain(samples, preds, filename=filename)
+            self.biastest.explain(samples, preds, filename=filename)
         if return_preds:
             return y, preds
         return y
