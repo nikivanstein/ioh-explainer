@@ -21,7 +21,7 @@ cma_cs = ConfigurationSpace(
         "covariance": [False, True],
         "elitist": [False, True],
         "mirrored": ["nan", "mirrored", "mirrored pairwise"],
-        "base_sampler": ["halton"], #"sobol", "gaussian", 
+        "base_sampler": ["halton", "sobol", "gaussian"], 
         "weights_option": ["default", "equal", "1/2^lambda"],
         "local_restart": ["nan", "IPOP", "BIPOP"],
         "active": [False, True],

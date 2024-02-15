@@ -128,7 +128,7 @@ class explainer(object):
             )
             mean_other_aucs = np.array(res_others).mean()
             #print(f, conf[f], (mean_auc - mean_other_aucs))
-            # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
+            #conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
             conf[f"{f} effect"] = mean_auc - mean_other_aucs
         return conf
 
@@ -184,6 +184,7 @@ class explainer(object):
                 # get single best (average best over all instances)
                 conf, aucs = self._get_single_best(fid_df)
                 configs_to_rerun.append(conf.copy())
+                
                 if grid_effect:
                     conf = self.get_grid_effect(conf, aucs, dim, fid)
 
@@ -192,7 +193,7 @@ class explainer(object):
                         conf,
                         dim,
                         num_runs=100,
-                        file_prefix=f"{bias_folder}{fid}_{self.algname}",
+                        file_prefix=f"{bias_folder}{fid}_{dim}",
                     )
                 conf["dim"] = dim
                 conf["fid"] = fid
@@ -428,8 +429,8 @@ class explainer(object):
         if file_prefix != None:
             config_str = "_".join(f"{value}" for value in config.values())
             config_str = config_str.replace("1/2^lambda", "hp-lambda")
-            filename = f"{file_prefix}_bias_deep_{config_str}-{dim}.png"
-            filename2 = f"{file_prefix}_bias_{config_str}-{dim}.png"
+            filename = f"{file_prefix}_bias_deep-{dim}.png"
+            filename2 = f"{file_prefix}_bias-{dim}.png"
         y = ""
         if (method == "stat" or method == "both"):
             preds, y = self.biastest.predict(samples, show_figure=True, filename=filename2)
