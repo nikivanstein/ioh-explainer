@@ -15,4 +15,4 @@ cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30, "auc"] = cmaes_explainer
 ]
 
 df = cmaes_explainer.performance_stats()
-cmaes_explainer.to_latex_report(filename="./output/mod_cma_new", img_dir="../output/cma_img_new/")
+cmaes_explainer.to_latex_report(filename="../output/cma_es-report", img_dir="../output/cma_img_new/")
