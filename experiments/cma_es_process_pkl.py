@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-dfall = pd.read_pickle("cma_results_cpp.pkl")
+dfall = pd.read_pickle("cma_final.pkl")
 
 dfall = dfall.drop(columns=["Unnamed: 0"])
 dfall["lambda_"] = dfall["lambda_"].replace(np.nan, "nan")
@@ -17,7 +17,7 @@ dfall["mu"] = dfall["mu"].astype(float)
 dfall = dfall[dfall["mu"] <= dfall["lambda_"]]
 dfall = dfall.groupby(['fid', 'iid', 'dim', 'seed', 'active', 'base_sampler', 'covariance',
        'elitist', 'lambda_', 'local_restart', 'mirrored', 'mu',
-       'step_size_adaptation', 'weights_option']).agg('mean')
+       'step_size_adaptation', 'weights_option']).agg('mean').reset_index()
 
 dfall.describe()
 dfall.to_pickle("cma_final_processed.pkl")

@@ -199,11 +199,6 @@ class explainer(object):
                 conf["auc"] = aucs["auc"].mean()
 
                 hall_of_fame.append(conf)
-        if full_run:
-            temp_reps = self.reps
-            self.reps = reps
-            self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
-            self.reps = temp_reps
         # now replace fid, iid with features instead,
         # build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
@@ -213,6 +208,11 @@ class explainer(object):
             if check_bias:
                 cols = ["dim", "fid", *self.config_space.keys(), "auc", "bias"]
             hall_of_fame[cols].to_latex(filename, index=False)
+        if full_run: #do as last step as it will take time
+            temp_reps = self.reps
+            self.reps = reps
+            self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
+            self.reps = temp_reps
         return hall_of_fame
 
     def _create_grid(self):
