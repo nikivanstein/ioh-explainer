@@ -102,42 +102,47 @@ def config_to_cma_parameters(config, dim, budget):
         elitist = False
     modules.elitist = elitist
 
-    orthogonal = bool(config.get("orthogonal"))
-    if config.get("orthogonal") == "True":
-        orthogonal = True
-    if config.get("orthogonal") == "False":
-        orthogonal = False
-    modules.orthogonal = orthogonal
+    if "orthogonal" in config.keys():
+        orthogonal = bool(config.get("orthogonal"))
+        if config.get("orthogonal") == "True":
+            orthogonal = True
+        if config.get("orthogonal") == "False":
+            orthogonal = False
+        modules.orthogonal = orthogonal
 
-    sigma = bool(config.get("sigma"))
-    if config.get("sigma") == "True":
-        sigma = True
-    if config.get("sigma") == "False":
-        sigma = False
-    modules.sample_sigma = sigma
+    if "sigma" in config.keys():
+        sigma = bool(config.get("sigma"))
+        if config.get("sigma") == "True":
+            sigma = True
+        if config.get("sigma") == "False":
+            sigma = False
+        modules.sample_sigma = sigma
 
-    sequential = bool(config.get("sequential"))
-    if config.get("sequential") == "True":
-        sequential = True
-    if config.get("sequential") == "False":
-        sequential = False
-    modules.sequential_selection = sequential
+    if "sequential" in config.keys():
+        sequential = bool(config.get("sequential"))
+        if config.get("sequential") == "True":
+            sequential = True
+        if config.get("sequential") == "False":
+            sequential = False
+        modules.sequential_selection = sequential
 
-    threshold = bool(config.get("threshold"))
-    if config.get("threshold") == "True":
-        threshold = True
-    if config.get("threshold") == "False":
-        threshold = False
-    modules.threshold_convergence  = threshold
+    if "threshold" in config.keys():
+        threshold = bool(config.get("threshold"))
+        if config.get("threshold") == "True":
+            threshold = True
+        if config.get("threshold") == "False":
+            threshold = False
+        modules.threshold_convergence  = threshold
 
-    correction_mapping = {'cotn': options.CorrectionMethod.COTN,
-                            'mirror':  options.CorrectionMethod.MIRROR,
-                            'nan':  options.CorrectionMethod.NONE,
-                            'saturate':  options.CorrectionMethod.SATURATE,
-                            'toroidal':  options.CorrectionMethod.TOROIDAL,
-                            'uniform':  options.CorrectionMethod.UNIFORM_RESAMPLE
-                        }
-    modules.bound_correction  = correction_mapping[config.get("bound_correction")]
+    if "bound_correction" in config.keys():
+        correction_mapping = {'cotn': options.CorrectionMethod.COTN,
+                                'mirror':  options.CorrectionMethod.MIRROR,
+                                'nan':  options.CorrectionMethod.NONE,
+                                'saturate':  options.CorrectionMethod.SATURATE,
+                                'toroidal':  options.CorrectionMethod.TOROIDAL,
+                                'uniform':  options.CorrectionMethod.UNIFORM_RESAMPLE
+                            }
+        modules.bound_correction  = correction_mapping[config.get("bound_correction")]
 
     mirrored_mapping = {
         "mirrored": options.Mirror.MIRRORED,
@@ -207,7 +212,6 @@ def config_to_cma_parameters(config, dim, budget):
         return False
     settings = parameters.Settings(dim, modules, budget=budget, lambda0=lam, mu0=mu)
     return Parameters(settings)
-
 
 def run_cma(func, config, budget, dim, *args, **kwargs):
 
