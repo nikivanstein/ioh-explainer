@@ -1,29 +1,29 @@
-<h1><img src="IOH-xplainer-logo.png" width="256" style="float:left;">IOH-Xplainer</h1>
+<h1><img src="IOH-xplainer-logo.png" width="256" style="float:left;">IOHxplainer</h1>
 
 <br/><br/><br/>
 
-![Build](https://github.com/Basvanstein/ioh-explainer/actions/workflows/test.yml/badge.svg)
-[![codecov](https://codecov.io/gh/Basvanstein/ioh-explainer/graph/badge.svg?token=SYBOLV6H44)](https://codecov.io/gh/Basvanstein/ioh-explainer)
-[![PyPI version](https://badge.fury.io/py/ioh-xplainer.svg)](https://badge.fury.io/py/ioh-xplainer) 
-![Python versions](https://img.shields.io/pypi/pyversions/ioh-xplainer)
-![license](https://img.shields.io/pypi/l/ioh-xplainer)
+![Build](https://github.com/nikivanstein/iohxplainer/actions/workflows/test.yml/badge.svg)
+[![codecov](https://codecov.io/gh/nikivanstein/iohxplainer/graph/badge.svg?token=SYBOLV6H44)](https://codecov.io/gh/nikivanstein/iohxplainer)
+[![PyPI version](https://badge.fury.io/py/iohxplainer.svg)](https://badge.fury.io/py/iohxplainer) 
+![Python versions](https://img.shields.io/pypi/pyversions/iohxplainer)
+![license](https://img.shields.io/pypi/l/iohxplainer)
 
 eXplainable benchmarking using XAI methods for iterative optimization heuristics.
 
-IOH-Xplainer builds on top of the `IOH` package, including IOH-experimenter and IOH-profiler.
+IOHxplainer builds on top of the `IOH` package, including IOHexperimenter and IOHprofiler.
 
 # Installation
 
 Either install the package from source or via Pypi:
 
-`pip install ioh-xplainer`
+`pip install iohxplainer`
 
 ## Quick Start
 
 Import the package
 
 ```python
-from ioh_xplainer import explainer
+from iohxplainer import explainer
 ```
 
 Define the `search space` and the algorithm runner, basically the hyper-parameters and ranges you want to explore for a given optimization algorithm or modular algorithm. In this example we use the Differential Evolution implementation by [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html) and we take a limited set of hyper-parameter options to explore.
