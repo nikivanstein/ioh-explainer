@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "iohxplainer"
-version = "0.9.0"
+version = "0.9.1"
 description = "eXplainable Benchmarking for Iterative Optimization Heuristics"
 authors = ["Niki van Stein <n.van.stein@liacs.leidenuniv.nl>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/nikivanstein/IOHxplainer"
+repository = "https://github.com/nikivanstein/IOHxplainer"
 
 [tool.poetry.dependencies]
 python = "^3.8.0"
