@@ -58,10 +58,6 @@ test_explainer = explainer(
 data_file = "test_de.pkl"
 
 
-def test_version():
-    assert __version__ == "0.1.0"
-
-
 def test_de_run():
     test_explainer.run(
         paralell=True, start_index=0, checkpoint_file="test_paralell.csv"
