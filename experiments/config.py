@@ -9,8 +9,15 @@ import pandas as pd
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from IPython.display import display
-from modcma.c_maes import (ModularCMAES, Parameters, Population, mutation,
-                           options, parameters, utils)
+from modcma.c_maes import (
+    ModularCMAES,
+    Parameters,
+    Population,
+    mutation,
+    options,
+    parameters,
+    utils,
+)
 from modde import ModularDE
 from tqdm import tqdm
 
@@ -21,7 +28,7 @@ cma_cs = ConfigurationSpace(
         "covariance": [False, True],
         "elitist": [False, True],
         "mirrored": ["nan", "mirrored", "mirrored pairwise"],
-        "base_sampler": ["halton", "sobol", "gaussian"], 
+        "base_sampler": ["halton", "sobol", "gaussian"],
         "weights_option": ["default", "equal", "1/2^lambda"],
         "local_restart": ["nan", "IPOP", "BIPOP"],
         "active": [False, True],
@@ -38,15 +45,22 @@ cma_cs_bias = ConfigurationSpace(
         "elitist": [False, True],
         "orthogonal": [False, True],
         "sequential": [False, True],
-        "threshold":  [False, True],
-        "sigma":  [False, True],
+        "threshold": [False, True],
+        "sigma": [False, True],
         "mirrored": ["nan", "mirrored", "mirrored pairwise"],
         "base_sampler": ["sobol", "gaussian", "halton"],
         "weights_option": ["default", "equal", "1/2^lambda"],
         "local_restart": ["nan", "IPOP", "BIPOP"],
         "active": [False, True],
         "step_size_adaptation": ["csa", "psr", "tpa", "msr", "xnes", "mxnes", "lpxnes"],
-        "bound_correction": ["nan", "saturate", "mirror", "cotn", "toroidal", "uniform"],
+        "bound_correction": [
+            "nan",
+            "saturate",
+            "mirror",
+            "cotn",
+            "toroidal",
+            "uniform",
+        ],
         "lambda_": ["20"],
         "mu": ["5"],  # Uniform float
     }
@@ -132,17 +146,18 @@ def config_to_cma_parameters(config, dim, budget):
             threshold = True
         if config.get("threshold") == "False":
             threshold = False
-        modules.threshold_convergence  = threshold
+        modules.threshold_convergence = threshold
 
     if "bound_correction" in config.keys():
-        correction_mapping = {'cotn': options.CorrectionMethod.COTN,
-                                'mirror':  options.CorrectionMethod.MIRROR,
-                                'nan':  options.CorrectionMethod.NONE,
-                                'saturate':  options.CorrectionMethod.SATURATE,
-                                'toroidal':  options.CorrectionMethod.TOROIDAL,
-                                'uniform':  options.CorrectionMethod.UNIFORM_RESAMPLE
-                            }
-        modules.bound_correction  = correction_mapping[config.get("bound_correction")]
+        correction_mapping = {
+            "cotn": options.CorrectionMethod.COTN,
+            "mirror": options.CorrectionMethod.MIRROR,
+            "nan": options.CorrectionMethod.NONE,
+            "saturate": options.CorrectionMethod.SATURATE,
+            "toroidal": options.CorrectionMethod.TOROIDAL,
+            "uniform": options.CorrectionMethod.UNIFORM_RESAMPLE,
+        }
+        modules.bound_correction = correction_mapping[config.get("bound_correction")]
 
     mirrored_mapping = {
         "mirrored": options.Mirror.MIRRORED,
@@ -215,9 +230,8 @@ def config_to_cma_parameters(config, dim, budget):
 
 
 def run_cma(func, config, budget, dim, *args, seed=0, **kwargs):
-
     utils.set_seed(seed)
-    #print(seed)
+    # print(seed)
 
     par = config_to_cma_parameters(config, dim, int(budget))
     if par == False:

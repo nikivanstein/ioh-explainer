@@ -17,6 +17,7 @@ shap = "^0.43.0"
 catboost = "^1.2.2"
 configspace = "^0.7.1"
 dtreeviz = "^2.2.2"
+modcma = "1.0.4"
 
 [tool.poetry.dev-dependencies]
 black = "^23.11.0"
@@ -31,7 +32,7 @@ codecov = "^2.1.13"
 
 [tool.poetry.group.extra.dependencies]
 seaborn = "^0.13.0"
-modcma = "^1.0.3"
+modcma = "^1.0.4"
 modde = "^0.0.1"
 salib = "^1.4.7"
 

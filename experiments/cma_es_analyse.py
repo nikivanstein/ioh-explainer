@@ -14,5 +14,11 @@ cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30, "auc"] = cmaes_explainer
     cmaes_explainer.df["dim"] == 30, "aucLarge"
 ]
 
-df = cmaes_explainer.performance_stats()
-cmaes_explainer.to_latex_report(filename="../output/cma_es-report", img_dir="../output/cma_img_new/")
+# df = cmaes_explainer.performance_stats()
+# just for the image coloring we will change lambda from 200 to 30 and mu from 100 to 30 (used for the paper)
+# cmaes_explainer.df.loc[cmaes_explainer.df["lambda_"] == 200, "lambda_"] =30
+# cmaes_explainer.df.loc[cmaes_explainer.df["mu"] == 100, "mu"] =30
+# cmaes_explainer.to_latex_report(False,True,False,False, filename=None, img_dir="../output/cma_img_new/")
+cmaes_explainer.to_latex_report(
+    filename="../output/cma_es-report", img_dir="../output/cma_img_new/"
+)

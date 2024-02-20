@@ -15,9 +15,28 @@ dfall.loc[dfall["mu"] == "nan", "mu"] = dfall.loc[dfall["mu"] == "nan", "lambda_
 dfall["mu"] = dfall["mu"].astype(float)
 
 dfall = dfall[dfall["mu"] <= dfall["lambda_"]]
-dfall = dfall.groupby(['fid', 'iid', 'dim', 'seed', 'active', 'base_sampler', 'covariance',
-       'elitist', 'lambda_', 'local_restart', 'mirrored', 'mu',
-       'step_size_adaptation', 'weights_option']).agg('mean').reset_index()
+dfall = (
+    dfall.groupby(
+        [
+            "fid",
+            "iid",
+            "dim",
+            "seed",
+            "active",
+            "base_sampler",
+            "covariance",
+            "elitist",
+            "lambda_",
+            "local_restart",
+            "mirrored",
+            "mu",
+            "step_size_adaptation",
+            "weights_option",
+        ]
+    )
+    .agg("mean")
+    .reset_index()
+)
 
 dfall.describe()
 dfall.to_pickle("cma_final_processed.pkl")

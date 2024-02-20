@@ -1,12 +1,15 @@
-import os
-import numpy as np
-import matplotlib.pyplot as plt
 import json
+import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 def get_json_files(path):
     items = os.listdir(path)
     json_files = [os.path.join(path, x) for x in items if x.endswith("json")]
     return json_files
+
 
 def get_run_data(scenario, budget=10000, target=0):
     runs = []
@@ -36,22 +39,25 @@ def get_run_data(scenario, budget=10000, target=0):
             run.append((ev, y))
     return t, runs
 
+
 def geo_mean_overflow(iterable):
     return np.exp(np.log(iterable).mean(axis=0))
+
 
 def plot_runs(t, runs, label, ax, color=None):
     data = geo_mean_overflow(runs.clip(1e-16))
     for run in runs:
-        #ax.loglog(t, data, color="white", linewidth=3)
+        # ax.loglog(t, data, color="white", linewidth=3)
         if color != None:
             ax.loglog(t, run, linewidth=1, color=color)
         else:
             ax.loglog(t, run, linewidth=1)
-    
+
     if color != None:
         ax.loglog(t, data, linewidth=2, color=color, label=label)
     else:
         ax.loglog(t, data, linewidth=2, label=label)
+
 
 def get_scenario(path, fid, dimension):
     json_files = get_json_files(path)
@@ -69,7 +75,8 @@ def get_scenario(path, fid, dimension):
     except Exception as e:
         return None, None
 
-dim = 5,30
+
+dim = 5, 30
 
 for framework in ["de", "cma"]:
     for fid in range(1, 25):
@@ -77,12 +84,12 @@ for framework in ["de", "cma"]:
         f.suptitle(f"F{fid}")
         for ax, d in zip(axes.ravel(), dim):
             path = f"/data/neocortex/{framework}_data/"
-            
-            for config in range(0,25):
+
+            for config in range(0, 25):
                 config_nr = config
-                if (d == 30):
+                if d == 30:
                     config_nr += 25
-                for iid in range(1,6):
+                for iid in range(1, 6):
                     iid_runs = []
                     folder = f"mod-{framework}-{config_nr}-{d}-{fid}-{iid}"
                     if os.path.isdir(os.path.join(path, folder)):
@@ -96,7 +103,7 @@ for framework in ["de", "cma"]:
                     plot_runs(t, np.array(iid_runs), "Average-best", ax, "green")
                 elif config == fid:
                     plot_runs(t, np.array(iid_runs), "Single-best", ax, "blue")
-                #else:
+                # else:
                 #    plot_runs(t, np.array(iid_runs), "Other", ax, "gray")
             ax.set_title(f"{d}D")
             ax.grid()

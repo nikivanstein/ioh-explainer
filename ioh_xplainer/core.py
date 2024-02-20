@@ -127,8 +127,8 @@ class explainer(object):
                 conf_to_send, f, dim, fid, iid
             )
             mean_other_aucs = np.array(res_others).mean()
-            #print(f, conf[f], (mean_auc - mean_other_aucs))
-            #conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
+            # print(f, conf[f], (mean_auc - mean_other_aucs))
+            # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
             conf[f"{f} effect"] = mean_auc - mean_other_aucs
         return conf
 
@@ -184,7 +184,7 @@ class explainer(object):
                 # get single best (average best over all instances)
                 conf, aucs = self._get_single_best(fid_df)
                 configs_to_rerun.append(conf.copy())
-                
+
                 if grid_effect:
                     conf = self.get_grid_effect(conf, aucs, dim, fid)
 
@@ -209,7 +209,7 @@ class explainer(object):
             if check_bias:
                 cols = ["dim", "fid", *self.config_space.keys(), "auc", "bias"]
             hall_of_fame[cols].to_latex(filename, index=False)
-        if full_run: #do as last step as it will take time
+        if full_run:  # do as last step as it will take time
             temp_reps = self.reps
             self.reps = reps
             self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
@@ -396,7 +396,15 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
-    def check_bias(self, config, dim, num_runs=100, method="both", return_preds=False, file_prefix=None):
+    def check_bias(
+        self,
+        config,
+        dim,
+        num_runs=100,
+        method="both",
+        return_preds=False,
+        file_prefix=None,
+    ):
         wrap_f0()
         """Runs the bias result on the given configuration .
 
@@ -408,7 +416,6 @@ class explainer(object):
             return_preds (boolean): To also return the predicted class probabilities or not.
             file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
-        
 
         samples = []
         if self.verbose:
@@ -423,6 +430,7 @@ class explainer(object):
         samples = np.array(samples)
         if self.biastest == None:
             from BIAS import BIAS
+
             self.biastest = BIAS()
         filename = None
         filename2 = None
@@ -432,12 +440,19 @@ class explainer(object):
             filename = f"{file_prefix}_bias_deep-{dim}.png"
             filename2 = f"{file_prefix}_bias-{dim}.png"
         y = ""
-        if (method == "stat" or method == "both"):
-            preds, y = self.biastest.predict(samples, show_figure=True, filename=filename2)
+        if method == "stat" or method == "both":
+            preds, y = self.biastest.predict(
+                samples, show_figure=True, filename=filename2
+            )
         if y != "none" and (method == "deep" or method == "both"):
             y, preds = self.biastest.predict_deep(samples)
 
-        if y != "unif" and y != "none" and (method == "deep" or method == "both") and file_prefix != None:
+        if (
+            y != "unif"
+            and y != "none"
+            and (method == "deep" or method == "both")
+            and file_prefix != None
+        ):
             if self.verbose:
                 print(f"Warning! Configuration shows structural bias of type {y}.")
             self.biastest.explain(samples, preds, filename=filename)

@@ -1946,24 +1946,20 @@ files = [
 
 [[package]]
 name = "modcma"
-version = "1.0.3"
+version = "1.0.4"
 description = "Package Containing Modular CMA-ES optimizer"
 optional = false
 python-versions = "*"
 files = [
-    {file = "modcma-1.0.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a78cca15136e507c8f89b456e9ba8500f6087d42a3c03295c8cd42f71628bc00"},
-    {file = "modcma-1.0.3-cp310-cp310-win_amd64.whl", hash = "sha256:1be1486a08c55ff8a1b1629fecff47bd6d319dad3720713e84a4c76dd66fbc03"},
-    {file = "modcma-1.0.3-cp311-cp311-win_amd64.whl", hash = "sha256:880e4702aa65b8447e7e9cc5d561dd4ff90609fbd7b2827d4ab6126f115a7bfc"},
-    {file = "modcma-1.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:408b2a58c48388c3cb95e557e0ffc22bf445313a77ad481cc4585344c8ea4686"},
-    {file = "modcma-1.0.3-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:497c530432514f665826d15a59c021d9fb1b0708ad1dba3b608323f2398317bc"},
-    {file = "modcma-1.0.3-cp36-cp36m-win_amd64.whl", hash = "sha256:0a29333b5e0186c6252af523100aa0288b4cb568bcbceab6e9df907ff8a75b11"},
-    {file = "modcma-1.0.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:862715db99ae0169b8a20ac20064006761d653b9b34b11e162248b7413958b12"},
-    {file = "modcma-1.0.3-cp37-cp37m-win_amd64.whl", hash = "sha256:5263baf7940c235597db947b2ac730ff9df37a4310d28efdab78b3bef1a2085a"},
-    {file = "modcma-1.0.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fbec6674f88def4fac5a90becacd197e60f7a23da3b97fdf94ddc4b2947aaae8"},
-    {file = "modcma-1.0.3-cp38-cp38-win_amd64.whl", hash = "sha256:078f85028762ae5242e0899cc9cab716b1c19bb1cd87fc7a0e66ac3ef8c3d2bd"},
-    {file = "modcma-1.0.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:298d93cb13d81cf4e59f48cf38cda5bccdb7f3b8c2bf1b11a6d44b8e869ba904"},
-    {file = "modcma-1.0.3-cp39-cp39-win_amd64.whl", hash = "sha256:b150b5e2d384bd9fe298ed668bdd2cf88fb96cdccaf388ffbd3aa224f3bbdf41"},
-    {file = "modcma-1.0.3.tar.gz", hash = "sha256:aa0be3000019062481065fab60ac5214700af1807daa7c3460ae843f7c61027e"},
+    {file = "modcma-1.0.4-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:04c76479af9e4f3c18a438cd7c5f16adfb8345ebce1edc97e8947caf260f45ab"},
+    {file = "modcma-1.0.4-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:915eb451ec998724e6fd7b52f4de249a6747985bbafe3a7c3fa703988c2e3ea0"},
+    {file = "modcma-1.0.4-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5ed487eb268eace57429890225634f9684c6f6f7bb81cb94347a510197f028d7"},
+    {file = "modcma-1.0.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:55a36ade6c533f62396bbcce33449197dce85f5f8af72ba94f7ce070dd91ef6f"},
+    {file = "modcma-1.0.4-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f5deb86f94e3160b111bb6674abfc5f11323a0dab40d3104953409a52b42db1e"},
+    {file = "modcma-1.0.4-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f7f5998d58f609f8ab84473a7b2d4295b64a4626f1347c6a034ac8872b1689d0"},
+    {file = "modcma-1.0.4-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2964eccb1449909eaef33ee090c99ac6b9bc38a56d6f6768d8c1cf7b634da6b6"},
+    {file = "modcma-1.0.4-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7e7ffcc75a59bd0fec1de321531f24fe65320190e472be6fccdd2bab3c0eca06"},
+    {file = "modcma-1.0.4.tar.gz", hash = "sha256:15a293c87487e48cd93b11601e53c61956a1100c7205c0a8e11e8e8b59631011"},
 ]
 
 [package.dependencies]
@@ -3683,4 +3679,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.0"
-content-hash = "3bfc76d05ed0536d23b22b404fba640e8c7c90d385f3b929201e87b5eba38039"
+content-hash = "8827e0717583de902fcfd746e2bd10970b5ffe46be92807afaf5cb5b4c772829"

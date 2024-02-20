@@ -38,15 +38,22 @@ cma_cs_bias = ConfigurationSpace(
         "elitist": [False, True],
         "orthogonal": [False, True],
         "sequential": [False, True],
-        "threshold":  [False, True],
-        "sigma":  [False, True],
+        "threshold": [False, True],
+        "sigma": [False, True],
         "mirrored": ["nan", "mirrored", "mirrored pairwise"],
         "base_sampler": ["sobol", "gaussian", "halton"],
         "weights_option": ["default", "equal", "1/2^lambda"],
         "local_restart": ["nan", "IPOP", "BIPOP"],
         "active": [False, True],
         "step_size_adaptation": ["csa", "psr", "tpa", "msr", "xnes", "mxnes", "lpxnes"],
-        "bound_correction": ["nan", "saturate", "mirror", "cotn", "toroidal", "uniform"],
+        "bound_correction": [
+            "nan",
+            "saturate",
+            "mirror",
+            "cotn",
+            "toroidal",
+            "uniform",
+        ],
         "lambda_": ["20"],
         "mu": ["5"],  # Uniform float
     }
@@ -132,17 +139,18 @@ def config_to_cma_parameters(config, dim, budget):
             threshold = True
         if config.get("threshold") == "False":
             threshold = False
-        modules.threshold_convergence  = threshold
+        modules.threshold_convergence = threshold
 
     if "bound_correction" in config.keys():
-        correction_mapping = {'cotn': options.CorrectionMethod.COTN,
-                                'mirror':  options.CorrectionMethod.MIRROR,
-                                'nan':  options.CorrectionMethod.NONE,
-                                'saturate':  options.CorrectionMethod.SATURATE,
-                                'toroidal':  options.CorrectionMethod.TOROIDAL,
-                                'uniform':  options.CorrectionMethod.UNIFORM_RESAMPLE
-                            }
-        modules.bound_correction  = correction_mapping[config.get("bound_correction")]
+        correction_mapping = {
+            "cotn": options.CorrectionMethod.COTN,
+            "mirror": options.CorrectionMethod.MIRROR,
+            "nan": options.CorrectionMethod.NONE,
+            "saturate": options.CorrectionMethod.SATURATE,
+            "toroidal": options.CorrectionMethod.TOROIDAL,
+            "uniform": options.CorrectionMethod.UNIFORM_RESAMPLE,
+        }
+        modules.bound_correction = correction_mapping[config.get("bound_correction")]
 
     mirrored_mapping = {
         "mirrored": options.Mirror.MIRRORED,
@@ -213,8 +221,8 @@ def config_to_cma_parameters(config, dim, budget):
     settings = parameters.Settings(dim, modules, budget=budget, lambda0=lam, mu0=mu)
     return Parameters(settings)
 
-def run_cma(func, config, budget, dim, *args, **kwargs):
 
+def run_cma(func, config, budget, dim, *args, **kwargs):
     par = config_to_cma_parameters(config, dim, int(budget))
     if par == False:
         return []  # wrong mu/lambda
