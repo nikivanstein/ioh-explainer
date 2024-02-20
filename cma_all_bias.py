@@ -12,7 +12,7 @@ logging.disable(logging.WARNING)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 from config import bias_cmaes_explainer, cma_features_bias
-from ioh_xplainer.utils import runParallelFunction
+from iohxplainer.utils import runParallelFunction
 
 # data_file = "cma_bias_processed.pkl"
 # df = pd.read_pickle(data_file)

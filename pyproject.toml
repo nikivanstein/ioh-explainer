@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "ioh-xplainer"
-version = "0.2.0"
+name = "iohxplainer"
+version = "0.9.0"
 description = "eXplainable Benchmarking for Iterative Optimization Heuristics"
 authors = ["Niki van Stein <n.van.stein@liacs.leidenuniv.nl>"]
 license = "MIT"

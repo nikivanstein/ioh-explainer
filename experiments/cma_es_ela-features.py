@@ -33,7 +33,7 @@ from pflacco.sampling import create_initial_sample
 from tqdm import tqdm
 
 from config import cma_features, cmaes_explainer
-from ioh_xplainer import explainer
+from iohxplainer import explainer
 
 data_file = "cma_final_processed.pkl"
 features = cma_features
