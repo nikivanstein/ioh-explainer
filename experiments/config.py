@@ -9,8 +9,15 @@ import pandas as pd
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from IPython.display import display
-from modcma.c_maes import (ModularCMAES, Parameters, Population, mutation,
-                           options, parameters)
+from modcma.c_maes import (
+    ModularCMAES,
+    Parameters,
+    Population,
+    mutation,
+    options,
+    parameters,
+    utils,
+)
 from modde import ModularDE
 from tqdm import tqdm
 
@@ -21,7 +28,7 @@ cma_cs = ConfigurationSpace(
         "covariance": [False, True],
         "elitist": [False, True],
         "mirrored": ["nan", "mirrored", "mirrored pairwise"],
-        "base_sampler": ["sobol", "gaussian", "halton"],
+        "base_sampler": ["halton", "sobol", "gaussian"],
         "weights_option": ["default", "equal", "1/2^lambda"],
         "local_restart": ["nan", "IPOP", "BIPOP"],
         "active": [False, True],
@@ -30,10 +37,57 @@ cma_cs = ConfigurationSpace(
         "mu": ["nan", "5", "10", "20"],  # Uniform float
     }
 )  # 20k+
+
+
+cma_cs_bias = ConfigurationSpace(
+    {
+        "covariance": [False, True],
+        "elitist": [False, True],
+        "orthogonal": [False, True],
+        "sequential": [False, True],
+        "threshold": [False, True],
+        "sigma": [False, True],
+        "mirrored": ["nan", "mirrored", "mirrored pairwise"],
+        "base_sampler": ["sobol", "gaussian", "halton"],
+        "weights_option": ["default", "equal", "1/2^lambda"],
+        "local_restart": ["nan", "IPOP", "BIPOP"],
+        "active": [False, True],
+        "step_size_adaptation": ["csa", "psr", "tpa", "msr", "xnes", "mxnes", "lpxnes"],
+        "bound_correction": [
+            "nan",
+            "saturate",
+            "mirror",
+            "cotn",
+            "toroidal",
+            "uniform",
+        ],
+        "lambda_": ["20"],
+        "mu": ["5"],  # Uniform float
+    }
+)  # 20k+
+
 cma_features = [
     "active",
     "covariance",
     "elitist",
+    "mirrored",
+    "base_sampler",
+    "weights_option",
+    "local_restart",
+    "step_size_adaptation",
+    "lambda_",
+    "mu",
+]
+
+cma_features_bias = [
+    "active",
+    "covariance",
+    "elitist",
+    "orthogonal",
+    "sequential",
+    "threshold",
+    "sigma",
+    "bound_correction",
     "mirrored",
     "base_sampler",
     "weights_option",
@@ -61,19 +115,50 @@ def config_to_cma_parameters(config, dim, budget):
     if config.get("elitist") == "False":
         elitist = False
     modules.elitist = elitist
-    # modules.orthogonal = config.get('orthogonal') #Not in use for me
-    # modules.sample_sigma = config.get('sample_sigma') #Not in use for me
-    # modules.sequential_selection  = config.get('sequential_selection') #Not in use for me
-    # modules.threshold_convergence  = config.get('threshold_convergence') #Not in use for me
-    # bound_correction_mapping = {'COTN': options.CorrectionMethod.COTN,
-    #                             'count': options.CorrectionMethod.COUNT,
-    #                             'mirror':  options.CorrectionMethod.MIRROR,
-    #                             'nan':  options.CorrectionMethod.NONE,
-    #                             'saturate':  options.CorrectionMethod.SATURATE,
-    #                             'toroidal':  options.CorrectionMethod.TOROIDAL,
-    #                             'uniform resample':  options.CorrectionMethod.UNIFORM_RESAMPLE
-    #                             } #Not used for me.
-    # modules.bound_correction = bound_correction_mapping[config.get('bound_correction')]
+
+    if "orthogonal" in config.keys():
+        orthogonal = bool(config.get("orthogonal"))
+        if config.get("orthogonal") == "True":
+            orthogonal = True
+        if config.get("orthogonal") == "False":
+            orthogonal = False
+        modules.orthogonal = orthogonal
+
+    if "sigma" in config.keys():
+        sigma = bool(config.get("sigma"))
+        if config.get("sigma") == "True":
+            sigma = True
+        if config.get("sigma") == "False":
+            sigma = False
+        modules.sample_sigma = sigma
+
+    if "sequential" in config.keys():
+        sequential = bool(config.get("sequential"))
+        if config.get("sequential") == "True":
+            sequential = True
+        if config.get("sequential") == "False":
+            sequential = False
+        modules.sequential_selection = sequential
+
+    if "threshold" in config.keys():
+        threshold = bool(config.get("threshold"))
+        if config.get("threshold") == "True":
+            threshold = True
+        if config.get("threshold") == "False":
+            threshold = False
+        modules.threshold_convergence = threshold
+
+    if "bound_correction" in config.keys():
+        correction_mapping = {
+            "cotn": options.CorrectionMethod.COTN,
+            "mirror": options.CorrectionMethod.MIRROR,
+            "nan": options.CorrectionMethod.NONE,
+            "saturate": options.CorrectionMethod.SATURATE,
+            "toroidal": options.CorrectionMethod.TOROIDAL,
+            "uniform": options.CorrectionMethod.UNIFORM_RESAMPLE,
+        }
+        modules.bound_correction = correction_mapping[config.get("bound_correction")]
+
     mirrored_mapping = {
         "mirrored": options.Mirror.MIRRORED,
         "nan": options.Mirror.NONE,
@@ -104,6 +189,7 @@ def config_to_cma_parameters(config, dim, budget):
         "tpa": options.StepSizeAdaptation.TPA,
         "xnes": options.StepSizeAdaptation.XNES,
     }
+
     modules.ssa = ssa_mapping[config.get("step_size_adaptation")]
 
     weights_mapping = {
@@ -143,7 +229,9 @@ def config_to_cma_parameters(config, dim, budget):
     return Parameters(settings)
 
 
-def run_cma(func, config, budget, dim, *args, **kwargs):
+def run_cma(func, config, budget, dim, *args, seed=0, **kwargs):
+    utils.set_seed(seed)
+    # print(seed)
 
     par = config_to_cma_parameters(config, dim, int(budget))
     if par == False:
@@ -153,10 +241,10 @@ def run_cma(func, config, budget, dim, *args, **kwargs):
     # settings = parameters.Settings(2, modules)
     # par = Parameters(settings)
     c = ModularCMAES(par)
-
     try:
         # print(config)
-        c(func)
+        c.run(func)
+
         return []
     except Exception as e:
         print(
@@ -176,6 +264,22 @@ cmaes_explainer = explainer(
     fids=np.arange(1, 25),  # ,5
     iids=[1, 2, 3, 4, 5],
     reps=3,
+    sampling_method="grid",  # or random
+    grid_steps_dict={},
+    sample_size=None,  # only used with random method
+    budget=10000,  # 10000
+    seed=1,
+    verbose=True,
+)
+
+bias_cmaes_explainer = explainer(
+    run_cma,
+    cma_cs_bias,
+    algname="mod-CMA",
+    dims=[30],  # , 10, 20, 40
+    fids=[0],  # ,5
+    iids=[1],
+    reps=1,
     sampling_method="grid",  # or random
     grid_steps_dict={},
     sample_size=None,  # only used with random method

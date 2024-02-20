@@ -92,6 +92,7 @@ class explainer(object):
         self.verbose = verbose
         self.budget = budget
         self.models = {}
+        self.biastest = None
         self.df = pd.DataFrame(
             columns=[
                 "fid",
@@ -119,17 +120,16 @@ class explainer(object):
         Returns:
             dict: Dictionary with added feature results.
         """
-        if self.sampling_method == "grid":
-            mean_auc = aucs["auc"].mean()
-            conf_to_send = conf.copy()
-            for f in self.config_space.keys():
-                res_others = self.get_results_for_other_configs(
-                    conf_to_send, f, dim, fid, iid
-                )
-                mean_other_aucs = np.array(res_others).mean()
-                print(f, conf[f], (mean_auc - mean_other_aucs))
-                # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
-                conf[f"{f} effect"] = mean_auc - mean_other_aucs
+        mean_auc = aucs["auc"].mean()
+        conf_to_send = conf.copy()
+        for f in self.config_space.keys():
+            res_others = self.get_results_for_other_configs(
+                conf_to_send, f, dim, fid, iid
+            )
+            mean_other_aucs = np.array(res_others).mean()
+            # print(f, conf[f], (mean_auc - mean_other_aucs))
+            # conf[f] = f"{conf[f]} ({(mean_auc - mean_other_aucs):.2f})"
+            conf[f"{f} effect"] = mean_auc - mean_other_aucs
         return conf
 
     def analyse_best(
@@ -140,6 +140,7 @@ class explainer(object):
         full_run=False,
         full_run_folder="/data/",
         reps=10,
+        grid_effect=False,
     ):
         """Analyse the best configurations (single best and average best) per dim and fid in more detail.
         Optionally also checks the configurations for structural bias, and performs a full re-run with more random seeds with ioh analyser.
@@ -150,8 +151,9 @@ class explainer(object):
             bias_folder (string, optional): The folder to store the bias visualisations. Defaults to "bias_folder"
             full_run (bool, optional): Perform a re-run with ioh analyser attached. Defaults to False.
             full_run_folder (string, optional): The folder to store the IOH logs. Defaults to "/data/".
-            reps (integer, optional): number of random runs. Defaults to 10.\
-        
+            reps (integer, optional): number of random runs. Defaults to 10.
+            grid_effect (bool, optional): to include the effect of turning modules off or not. Defaults to False.\
+            
         Returns:
             DataFrame
         """
@@ -164,7 +166,8 @@ class explainer(object):
             configs_to_rerun.append(conf.copy())
 
             # check effect of each configuration option (if grid was used)
-            conf = self.get_grid_effect(conf, aucs, dim)
+            if grid_effect:
+                conf = self.get_grid_effect(conf, aucs, dim)
 
             if check_bias:
                 conf["bias"] = self.check_bias(
@@ -181,25 +184,22 @@ class explainer(object):
                 # get single best (average best over all instances)
                 conf, aucs = self._get_single_best(fid_df)
                 configs_to_rerun.append(conf.copy())
-                conf = self.get_grid_effect(conf, aucs, dim, fid)
+
+                if grid_effect:
+                    conf = self.get_grid_effect(conf, aucs, dim, fid)
 
                 if check_bias:
                     conf["bias"] = self.check_bias(
                         conf,
                         dim,
                         num_runs=100,
-                        file_prefix=f"{bias_folder}{fid}_{self.algname}",
+                        file_prefix=f"{bias_folder}{fid}_{dim}",
                     )
                 conf["dim"] = dim
                 conf["fid"] = fid
                 conf["auc"] = aucs["auc"].mean()
 
                 hall_of_fame.append(conf)
-        if full_run:
-            temp_reps = self.reps
-            self.reps = reps
-            self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
-            self.reps = temp_reps
         # now replace fid, iid with features instead,
         # build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
@@ -209,6 +209,11 @@ class explainer(object):
             if check_bias:
                 cols = ["dim", "fid", *self.config_space.keys(), "auc", "bias"]
             hall_of_fame[cols].to_latex(filename, index=False)
+        if full_run:  # do as last step as it will take time
+            temp_reps = self.reps
+            self.reps = reps
+            self.run(True, 0, None, True, full_run_folder, configs_to_rerun)
+            self.reps = temp_reps
         return hall_of_fame
 
     def _create_grid(self):
@@ -391,7 +396,15 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
-    def check_bias(self, config, dim, num_runs=100, file_prefix=None):
+    def check_bias(
+        self,
+        config,
+        dim,
+        num_runs=100,
+        method="both",
+        return_preds=False,
+        file_prefix=None,
+    ):
         wrap_f0()
         """Runs the bias result on the given configuration .
 
@@ -399,9 +412,10 @@ class explainer(object):
             config (dict): Configuration of an optimzer.
             dim (int): Dimensionality
             num_runs (int): number of runs on f0, should be either 30,50,100,200,500 or 600 (600 gives highest precision)
+            method (string): either "deep", "stat" or "both" to use the deep extension or not. Defautls to deep.
+            return_preds (boolean): To also return the predicted class probabilities or not.
             file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
-        from BIAS import BIAS
 
         samples = []
         if self.verbose:
@@ -414,21 +428,36 @@ class explainer(object):
             f0.reset()
 
         samples = np.array(samples)
-        test = BIAS()
+        if self.biastest == None:
+            from BIAS import BIAS
+
+            self.biastest = BIAS()
         filename = None
+        filename2 = None
         if file_prefix != None:
             config_str = "_".join(f"{value}" for value in config.values())
             config_str = config_str.replace("1/2^lambda", "hp-lambda")
-            filename = f"{file_prefix}_bias_deep_{config_str}-{dim}.png"
-            filename2 = f"{file_prefix}_bias_{config_str}-{dim}.png"
-        preds, y = test.predict(samples, show_figure=True, filename=filename2)
-        if y != "none":
-            y, preds = test.predict_deep(samples)
+            filename = f"{file_prefix}_bias_deep-{dim}.png"
+            filename2 = f"{file_prefix}_bias-{dim}.png"
+        y = ""
+        if method == "stat" or method == "both":
+            preds, y = self.biastest.predict(
+                samples, show_figure=True, filename=filename2
+            )
+        if y != "none" and (method == "deep" or method == "both"):
+            y, preds = self.biastest.predict_deep(samples)
 
-        if y != "unif" and y != "none":
+        if (
+            y != "unif"
+            and y != "none"
+            and (method == "deep" or method == "both")
+            and file_prefix != None
+        ):
             if self.verbose:
                 print(f"Warning! Configuration shows structural bias of type {y}.")
-            test.explain(samples, preds, filename=filename)
+            self.biastest.explain(samples, preds, filename=filename)
+        if return_preds:
+            return y, preds
         return y
 
     def behaviour_stats(self, fids=None, per_fid=False):

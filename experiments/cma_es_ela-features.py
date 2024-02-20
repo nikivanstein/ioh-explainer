@@ -11,18 +11,23 @@ To be used with cma_es_AAC (auto algorithm configuration)
 
 import ioh
 import numpy as np
+
 # first collect all the data
 import pandas as pd
 from ConfigSpace import ConfigurationSpace
-from pflacco.classical_ela_features import (calculate_cm_grad,
-                                            calculate_dispersion,
-                                            calculate_ela_distribution,
-                                            calculate_ela_level,
-                                            calculate_ela_meta,
-                                            calculate_information_content,
-                                            calculate_nbc)
+from pflacco.classical_ela_features import (
+    calculate_cm_grad,
+    calculate_dispersion,
+    calculate_ela_distribution,
+    calculate_ela_level,
+    calculate_ela_meta,
+    calculate_information_content,
+    calculate_nbc,
+)
 from pflacco.local_optima_network_features import (
-    calculate_lon_features, compute_local_optima_network)
+    calculate_lon_features,
+    compute_local_optima_network,
+)
 from pflacco.misc_features import calculate_fitness_distance_correlation
 from pflacco.sampling import create_initial_sample
 from tqdm import tqdm

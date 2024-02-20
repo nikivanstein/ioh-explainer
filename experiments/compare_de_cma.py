@@ -170,7 +170,7 @@ de_explainer.df.loc[de_explainer.df["dim"] == 30, "auc"] = de_explainer.df.loc[
 
 dffinal = compare(de_explainer, cmaes_explainer)
 
-with open(f"../output/compare-new.tex", "w") as fh:
+with open(f"../output/compare.tex", "w") as fh:
     for dim in ["d=5", "d=30"]:
         dffinal[dim].to_latex(
             buf=fh,

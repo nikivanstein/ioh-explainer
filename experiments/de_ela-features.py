@@ -3,13 +3,15 @@
 import ioh
 import numpy as np
 import pandas as pd
-from pflacco.classical_ela_features import (calculate_cm_grad,
-                                            calculate_dispersion,
-                                            calculate_ela_distribution,
-                                            calculate_ela_level,
-                                            calculate_ela_meta,
-                                            calculate_information_content,
-                                            calculate_nbc)
+from pflacco.classical_ela_features import (
+    calculate_cm_grad,
+    calculate_dispersion,
+    calculate_ela_distribution,
+    calculate_ela_level,
+    calculate_ela_meta,
+    calculate_information_content,
+    calculate_nbc,
+)
 from pflacco.sampling import create_initial_sample
 from tqdm import tqdm
 

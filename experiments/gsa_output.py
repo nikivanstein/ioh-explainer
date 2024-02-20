@@ -11,7 +11,7 @@ The reports will be in the output directories.
 import numpy as np
 import json
 from sklearn.ensemble import RandomForestRegressor
-from SALib.sample import latin, saltelli 
+from SALib.sample import latin, saltelli
 from SALib.sample.morris import sample
 from sklearn.model_selection import cross_val_score
 
@@ -19,23 +19,22 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
+
 def generateSamples(sample_size=10000, problem={}):
-        if sample_size > 50 or problem < 64:
-            x_lhs = latin.sample(
-                problem, sample_size * problem["num_vars"]
-            )
-        else:
-            x_lhs = None
-        x_morris = sample(problem, sample_size)
-        if problem["num_vars"] < 64:
-            x_sobol = saltelli.sample(problem, sample_size)
-        else:
-            x_sobol = None
-        return x_lhs, x_morris, x_sobol
+    if sample_size > 50 or problem < 64:
+        x_lhs = latin.sample(problem, sample_size * problem["num_vars"])
+    else:
+        x_lhs = None
+    x_morris = sample(problem, sample_size)
+    if problem["num_vars"] < 64:
+        x_sobol = saltelli.sample(problem, sample_size)
+    else:
+        x_sobol = None
+    return x_lhs, x_morris, x_sobol
 
-for folder in ["cma-d5", "cma-d30" ,"de-d5", "de-d30"]: #"cma-d5", "cma-d30"
 
-    #folder = "d30"
+for folder in ["cma-d5", "cma-d30", "de-d5", "de-d30"]:  # "cma-d5", "cma-d30"
+    # folder = "d30"
 
     with open(f"{folder}/problem.json") as json_file:
         problem = json.load(json_file)
@@ -47,19 +46,16 @@ for folder in ["cma-d5", "cma-d30" ,"de-d5", "de-d30"]: #"cma-d5", "cma-d30"
     y = np.loadtxt(f"{folder}/y-space.csv")
     print("y shape", y.shape)
 
-
-    regr = RandomForestRegressor( n_estimators=20, max_depth=9 )
+    regr = RandomForestRegressor(n_estimators=20, max_depth=9)
     model_score = cross_val_score(regr, X, y, cv=3)
 
-    #regr = make_pipeline(StandardScaler(), MLPRegressor(random_state=1, max_iter=50))
-    #model_score = cross_val_score(regr, X, y, cv=3)
+    # regr = make_pipeline(StandardScaler(), MLPRegressor(random_state=1, max_iter=50))
+    # model_score = cross_val_score(regr, X, y, cv=3)
     print(model_score)
 
-    regr.fit(X,y)
+    regr.fit(X, y)
 
-    x_lhs, x_morris, x_sobol = generateSamples(
-        10000, problem
-    )
+    x_lhs, x_morris, x_sobol = generateSamples(10000, problem)
     y_lhs = regr.predict(x_lhs)
     y_morris = regr.predict(x_morris)
     y_sobol = regr.predict(x_sobol)
