@@ -21,7 +21,7 @@ from modcma.c_maes import (
 from modde import ModularDE
 from tqdm import tqdm
 
-from ioh_xplainer import explainer
+from iohxplainer import explainer
 
 cma_cs = ConfigurationSpace(
     {
