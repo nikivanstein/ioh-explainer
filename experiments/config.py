@@ -214,13 +214,15 @@ def config_to_cma_parameters(config, dim, budget):
     if config.get("lambda_") == "nan":
         lam = None
     else:
-        lam = int(config.get("lambda_"))
+        lam = int(config.get("lambda_")) * dim
 
     mu = config.get("mu")
     if config.get("mu") == "nan":
         mu = None
     else:
-        mu = int(config.get("mu"))
+        mu = int(float(config.get("mu")) * lam)
+    if mu == 0:
+        mu = 1
 
     if mu != None and lam != None and mu > lam:
         # do not run, instead return

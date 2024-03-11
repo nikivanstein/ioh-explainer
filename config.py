@@ -10,7 +10,7 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
 from IPython.display import display
 from modcma.c_maes import (ModularCMAES, Parameters, Population, mutation,
-                           options, parameters)
+                           options, parameters, utils)
 from modde import ModularDE
 from tqdm import tqdm
 
@@ -222,7 +222,8 @@ def config_to_cma_parameters(config, dim, budget):
     return Parameters(settings)
 
 
-def run_cma(func, config, budget, dim, *args, **kwargs):
+def run_cma(func, config, budget, dim, *args, seed=0, **kwargs):
+    utils.set_seed(seed)
     par = config_to_cma_parameters(config, dim, int(budget))
     if par == False:
         return []  # wrong mu/lambda
