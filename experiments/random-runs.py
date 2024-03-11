@@ -8,6 +8,8 @@ from tqdm import tqdm
 
 from iohxplainer import explainer
 
+#Note that the run_cma should be changed such that mu can be a float and should be multiplied by dim (also lamda should be multiplied by dim).
+
 cma_cs = ConfigurationSpace(
     {
         "covariance": [False, True],

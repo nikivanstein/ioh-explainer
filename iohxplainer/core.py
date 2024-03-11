@@ -403,16 +403,6 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
-    def to_polar(self, z):
-        import n_sphere
-        return n_sphere.convert_spherical(z)
-        # x, y = z[:, 0], z[:, 1]
-        # newz = np.zeros(z.shape)
-        # # Calculating the Euclidean distance (r) using the formula sqrt(x^2 + y^2)
-        # newz[:, 0] = np.sqrt(x**2 + y**2)
-        # # Calculating the angles (t) using arctan2() function, which returns the arctangent of y/x in radians
-        # newz[:, 1] = np.arctan2(y, x)
-        # return newz
 
     def get_bias_samples(self, config, dim, num_runs=100):
         wrap_f0()
@@ -465,7 +455,6 @@ class explainer(object):
         samples = np.array(samples)
         if self.biastest == None:
             from BIAS import BIAS
-
             self.biastest = BIAS()
         filename = None
         filename2 = None
