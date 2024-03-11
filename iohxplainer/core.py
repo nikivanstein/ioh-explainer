@@ -204,7 +204,7 @@ class explainer(object):
         # build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
         hall_of_fame = pd.DataFrame.from_records(hall_of_fame)
-        
+
         if filename != None:
             cols = ["dim", "fid", *self.config_space.keys(), "auc"]
             if check_bias:
@@ -214,7 +214,9 @@ class explainer(object):
                 for f in self.config_space.keys():
                     # reorder to get a nice looking table for latex
                     feffect = f"{f} effect"
-                    hall_of_fame[f] = hall_of_fame[f].astype(str) + hall_of_fame[feffect].map(" ({0:.2f})".format).astype(str)
+                    hall_of_fame[f] = hall_of_fame[f].astype(str) + hall_of_fame[
+                        feffect
+                    ].map(" ({0:.2f})".format).astype(str)
             hall_of_fame[cols].to_latex(filename, index=False)
         if full_run:  # do as last step as it will take time
             temp_reps = self.reps
@@ -403,7 +405,6 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
-
     def get_bias_samples(self, config, dim, num_runs=100):
         wrap_f0()
         samples = []
@@ -455,6 +456,7 @@ class explainer(object):
         samples = np.array(samples)
         if self.biastest == None:
             from BIAS import BIAS
+
             self.biastest = BIAS()
         filename = None
         filename2 = None
