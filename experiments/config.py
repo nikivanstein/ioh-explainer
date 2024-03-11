@@ -214,13 +214,13 @@ def config_to_cma_parameters(config, dim, budget):
     if config.get("lambda_") == "nan":
         lam = None
     else:
-        lam = int(config.get("lambda_")) * dim
+        lam = int(config.get("lambda_"))
 
     mu = config.get("mu")
     if config.get("mu") == "nan":
         mu = None
     else:
-        mu = int(float(config.get("mu")) * lam)
+        mu = int(config.get("mu"))
     if mu == 0:
         mu = 1
 
@@ -234,7 +234,6 @@ def config_to_cma_parameters(config, dim, budget):
 def run_cma(func, config, budget, dim, *args, seed=0, **kwargs):
     utils.set_seed(seed)
     # print(seed)
-
     par = config_to_cma_parameters(config, dim, int(budget))
     if par == False:
         return []  # wrong mu/lambda
@@ -244,7 +243,6 @@ def run_cma(func, config, budget, dim, *args, seed=0, **kwargs):
     # par = Parameters(settings)
     c = ModularCMAES(par)
     try:
-        # print(config)
         c.run(func)
 
         return []

@@ -214,7 +214,7 @@ class explainer(object):
                 for f in self.config_space.keys():
                     # reorder to get a nice looking table for latex
                     feffect = f"{f} effect"
-                    hall_of_fame[f] = f"{hall_of_fame[f]} ({hall_of_fame[feffect]:.2f})"
+                    hall_of_fame[f] = hall_of_fame[f].astype(str) + hall_of_fame[feffect].map(" ({0:.2f})".format).astype(str)
             hall_of_fame[cols].to_latex(filename, index=False)
         if full_run:  # do as last step as it will take time
             temp_reps = self.reps
