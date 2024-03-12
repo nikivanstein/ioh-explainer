@@ -1,0 +1,51 @@
+,active,base_sampler,covariance,elitist,lambda_,local_restart,mirrored,mu,step_size_adaptation,weights_option,dim,fid,auc
+0,True (0.05),halton (0.01),True (0.11),False (0.29),20.0 (0.42),IPOP (0.03),mirrored (0.02),10.0 (0.26),csa (0.06),default (0.08),5,All,0.6765526290460728
+1,False (0.00),halton (0.00),True (0.84),True (0.01),5.0 (0.05),BIPOP (0.00),mirrored (0.00),5.0 (0.00),csa (0.02),1/2^lambda (0.45),5,1,0.9844951383092477
+2,True (0.03),sobol (0.02),False (0.01),False (0.91),8.0 (0.11),IPOP (0.00),mirrored (0.02),5.0 (0.00),csa (0.03),1/2^lambda (0.46),5,2,0.9071901970501332
+3,True (0.33),halton (0.29),False (0.31),False (0.43),8.0 (nan),BIPOP (-0.00),mirrored (0.35),3.0 (0.23),csa (0.37),default (0.34),5,3,0.4727806530967531
+4,False (0.17),halton (0.17),True (0.26),True (0.16),8.0 (nan),IPOP (0.02),mirrored pairwise (0.17),3.0 (0.11),csa (0.19),1/2^lambda (0.17),5,4,0.2872259474757632
+5,True (0.00),gaussian (0.00),True (0.01),False (0.00),5.0 (0.01),IPOP (0.00),mirrored (0.00),5.0 (0.00),psr (0.00),default (0.03),5,5,0.9980511050949701
+6,True (0.01),halton (0.02),True (0.91),True (0.18),5.0 (0.12),BIPOP (0.00),mirrored pairwise (0.89),5.0 (0.01),csa (0.16),default (0.69),5,6,0.9530623121681592
+7,True (0.15),halton (0.37),False (0.00),False (0.77),20.0 (0.68),BIPOP (0.00),mirrored (0.28),10.0 (0.43),psr (0.28),default (0.22),5,7,0.9620047580672569
+8,True (0.07),halton (0.09),True (0.92),True (0.09),8.0 (0.28),BIPOP (-0.00),mirrored pairwise (0.11),5.0 (0.07),csa (0.36),default (0.42),5,8,0.9226992657242707
+9,False (0.02),sobol (0.03),False (0.06),False (0.84),5.0 (nan),IPOP (0.03),mirrored (0.03),2.0 (0.72),csa (0.11),default (0.06),5,9,0.9152342290097416
+10,False (0.00),halton (0.01),True (0.02),True (0.91),5.0 (0.17),BIPOP (0.00),mirrored (0.01),5.0 (0.08),psr (0.06),equal (0.47),5,10,0.9063373644308631
+11,True (0.10),sobol (0.01),True (0.02),False (0.63),20.0 (0.77),IPOP (0.00),mirrored (0.05),10.0 (0.47),csa (0.02),default (0.05),5,11,0.9178678985178679
+12,True (0.06),halton (0.04),False (0.02),False (0.87),8.0 (nan),BIPOP (0.00),mirrored (0.08),3.0 (0.02),csa (0.13),default (0.16),5,12,0.8705082413943356
+13,False (0.00),halton (0.02),True (0.02),True (0.91),5.0 (0.20),BIPOP (-0.00),mirrored (0.02),5.0 (0.32),psr (0.14),equal (0.48),5,13,0.9052520187407936
+14,False (0.30),sobol (0.01),True (0.77),True (0.78),5.0 (0.07),IPOP (0.00),mirrored pairwise (0.01),5.0 (0.02),csa (0.01),equal (0.03),5,14,0.9544504357343142
+15,True (0.29),halton (0.10),True (0.33),False (0.35),20.0 (0.35),IPOP (0.12),mirrored (0.15),10.0 (0.31),csa (0.32),default (0.27),5,15,0.492283610197437
+16,True (0.13),halton (0.14),True (0.06),False (0.29),20.0 (0.44),BIPOP (0.04),mirrored (0.13),5.0 (0.31),csa (0.49),default (0.42),5,16,0.866221680065014
+17,False (0.01),halton (0.02),True (0.05),False (0.11),20.0 (0.51),BIPOP (0.00),mirrored (0.03),10.0 (0.19),csa (0.07),default (0.13),5,17,0.9049063890546204
+18,True (0.15),halton (0.14),True (0.22),False (0.41),20.0 (0.56),BIPOP (-0.00),mirrored (0.31),5.0 (0.21),psr (0.09),default (0.45),5,18,0.8506117964587544
+19,False (0.16),halton (0.15),True (0.16),False (0.10),20.0 (0.10),BIPOP (0.03),mirrored (0.16),5.0 (0.16),csa (0.17),1/2^lambda (0.11),5,19,0.4124410059212289
+20,False (0.24),halton (0.26),True (0.30),True (0.27),8.0 (0.22),IPOP (0.15),mirrored pairwise (0.26),5.0 (0.16),csa (0.27),default (0.28),5,20,0.46304099567518936
+21,False (0.21),halton (0.31),True (0.84),True (0.26),5.0 (nan),IPOP (0.16),mirrored (0.32),2.0 (0.84),csa (0.66),default (0.30),5,21,0.951148078102989
+22,True (0.11),halton (0.14),True (0.75),True (0.46),5.0 (nan),IPOP (0.21),mirrored pairwise (0.30),2.0 (0.16),csa (0.52),1/2^lambda (0.21),5,22,0.8124437882343656
+23,False (0.23),halton (0.37),False (0.22),False (0.51),20.0 (0.44),BIPOP (-0.00),mirrored (0.32),5.0 (0.28),psr (0.44),default (0.32),5,23,0.6748473325332619
+24,False (0.00),halton (0.02),True (0.01),False (0.03),8.0 (nan),IPOP (0.02),mirrored (0.01),3.0 (0.02),csa (0.04),1/2^lambda (0.02),5,24,0.1416599589064465
+25,True (0.01),sobol (0.05),False (0.00),False (0.16),14.0 (nan),IPOP (0.00),mirrored (0.01),4.0 (0.01),csa (0.01),default (0.01),30,All,0.4965975348169124
+26,False (0.00),sobol (0.12),False (0.01),False (0.06),5.0 (0.11),IPOP (-0.00),mirrored (0.01),5.0 (0.01),psr (0.01),1/2^lambda (0.34),30,1,0.9453238843001501
+27,True (0.00),sobol (0.06),False (0.01),True (0.22),10.0 (0.07),IPOP (0.00),mirrored pairwise (0.01),10.0 (0.04),psr (0.21),equal (0.10),30,2,0.29440814230949436
+28,False (0.00),sobol (0.04),False (0.00),False (0.07),20.0 (0.04),BIPOP (0.00),mirrored (0.01),10.0 (0.02),csa (0.00),default (0.01),30,3,0.39662696956245236
+29,False (0.00),sobol (0.04),False (0.00),False (0.06),20.0 (0.03),BIPOP (0.00),mirrored (0.00),10.0 (0.01),csa (0.01),default (0.01),30,4,0.3826588863275112
+30,False (0.06),sobol (0.02),True (0.06),True (0.01),5.0 (0.03),IPOP (0.00),mirrored (0.01),5.0 (0.01),psr (0.58),default (0.01),30,5,0.992649287161539
+31,True (0.02),sobol (0.14),False (0.03),False (0.38),14.0 (nan),BIPOP (0.00),mirrored (0.03),4.0 (0.01),csa (0.10),default (0.07),30,6,0.583743679059224
+32,True (0.00),sobol (0.04),False (0.01),False (0.12),14.0 (0.02),IPOP (0.01),mirrored pairwise (0.00),5.0 (0.00),csa (0.04),default (0.01),30,7,0.44799125653722194
+33,True (0.01),sobol (0.01),False (0.01),False (0.22),5.0 (0.02),IPOP (0.01),mirrored (0.01),5.0 (0.01),csa (0.02),1/2^lambda (0.13),30,8,0.4094908758126979
+34,False (0.01),sobol (0.02),True (0.16),True (0.06),5.0 (0.01),IPOP (0.01),mirrored (0.00),5.0 (0.01),csa (0.00),equal (0.07),30,9,0.40981029243395356
+35,True (0.00),sobol (0.03),False (0.01),True (0.20),10.0 (0.06),IPOP (0.00),mirrored pairwise (0.00),10.0 (0.03),psr (0.19),equal (0.09),30,10,0.2895729438154569
+36,True (0.01),sobol (0.03),True (0.04),False (0.05),14.0 (nan),BIPOP (0.00),mirrored (0.02),4.0 (0.00),psr (0.01),default (0.01),30,11,0.4087625302406753
+37,False (0.03),sobol (0.11),True (0.51),True (0.04),5.0 (0.13),BIPOP (0.05),mirrored (0.05),5.0 (0.05),csa (0.11),1/2^lambda (0.22),30,12,0.5054647506019125
+38,True (0.03),sobol (0.06),False (0.04),False (0.07),14.0 (nan),BIPOP (0.03),mirrored (0.04),4.0 (0.02),psr (0.03),default (0.05),30,13,0.5111172618719477
+39,False (0.00),gaussian (0.03),True (0.31),True (0.02),5.0 (0.06),BIPOP (0.00),mirrored (0.01),5.0 (0.01),csa (0.03),1/2^lambda (0.14),30,14,0.7046310366392935
+40,True (0.00),sobol (0.01),False (0.01),False (0.03),20.0 (0.04),IPOP (0.00),mirrored (0.01),10.0 (0.02),psr (0.00),default (0.01),30,15,0.3986818757437898
+41,True (0.00),sobol (0.03),False (0.01),False (0.10),20.0 (0.06),IPOP (0.00),mirrored (0.02),10.0 (0.02),csa (0.01),default (0.03),30,16,0.4999245775205913
+42,True (0.00),sobol (0.08),False (0.02),False (0.20),20.0 (0.11),BIPOP (-0.00),mirrored (0.01),10.0 (0.03),csa (0.02),default (0.06),30,17,0.6351002155631152
+43,True (0.00),sobol (0.07),False (0.00),False (0.15),20.0 (0.09),BIPOP (-0.00),mirrored pairwise (0.01),10.0 (0.03),csa (0.03),default (0.02),30,18,0.5498176153818305
+44,True (0.00),gaussian (0.01),True (0.10),True (0.03),5.0 (0.03),BIPOP (0.09),mirrored (0.01),5.0 (0.00),csa (0.10),equal (0.04),30,19,0.5486072339435285
+45,True (0.00),sobol (0.01),True (0.26),True (0.00),5.0 (0.01),IPOP (0.00),mirrored (0.00),5.0 (0.00),csa (0.00),1/2^lambda (0.04),30,20,0.48144794671948105
+46,True (0.12),sobol (0.17),True (0.28),True (0.18),14.0 (nan),IPOP (0.19),mirrored (0.15),4.0 (0.09),csa (0.15),1/2^lambda (0.14),30,21,0.6640944509551959
+47,False (0.05),halton (0.04),True (0.05),False (0.05),10.0 (0.05),BIPOP (0.00),mirrored (0.06),5.0 (0.05),psr (0.06),1/2^lambda (0.05),30,22,0.48507362939611837
+48,False (0.01),sobol (0.01),True (0.00),False (0.09),20.0 (0.05),IPOP (0.00),mirrored pairwise (0.01),10.0 (0.01),psr (0.09),default (0.01),30,23,0.5495989861616402
+49,True (0.00),sobol (0.01),False (0.00),False (0.03),20.0 (0.03),IPOP (0.00),mirrored (0.00),10.0 (0.01),psr (0.01),default (0.01),30,24,0.3842989287923434

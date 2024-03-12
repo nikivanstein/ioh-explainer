@@ -204,10 +204,19 @@ class explainer(object):
         # build multiple decision trees .. visualise -- multi-output tree vs single output trees
 
         hall_of_fame = pd.DataFrame.from_records(hall_of_fame)
+
         if filename != None:
             cols = ["dim", "fid", *self.config_space.keys(), "auc"]
             if check_bias:
                 cols = ["dim", "fid", *self.config_space.keys(), "auc", "bias"]
+
+            if grid_effect:
+                for f in self.config_space.keys():
+                    # reorder to get a nice looking table for latex
+                    feffect = f"{f} effect"
+                    hall_of_fame[f] = hall_of_fame[f].astype(str) + hall_of_fame[
+                        feffect
+                    ].map(" ({0:.2f})".format).astype(str)
             hall_of_fame[cols].to_latex(filename, index=False)
         if full_run:  # do as last step as it will take time
             temp_reps = self.reps
@@ -396,6 +405,21 @@ class explainer(object):
         """
         self.df = pd.read_pickle(filename)
 
+    def get_bias_samples(self, config, dim, num_runs=100):
+        wrap_f0()
+        samples = []
+        if self.verbose:
+            print(f"Running {num_runs} evaluations on f0 for bias detection..")
+        f0 = get_f0(dim)
+        for i in np.arange(num_runs):
+            self.optimizer(f0, config, budget=self.budget, dim=dim, seed=i)
+            scaled_x = (f0.state.current_best.x + 5) / 10.0
+            samples.append(scaled_x)
+            f0.reset()
+
+        samples = np.array(samples)
+        return samples
+
     def check_bias(
         self,
         config,
@@ -403,6 +427,7 @@ class explainer(object):
         num_runs=100,
         method="both",
         return_preds=False,
+        return_samples=False,
         file_prefix=None,
     ):
         wrap_f0()
@@ -414,6 +439,7 @@ class explainer(object):
             num_runs (int): number of runs on f0, should be either 30,50,100,200,500 or 600 (600 gives highest precision)
             method (string): either "deep", "stat" or "both" to use the deep extension or not. Defautls to deep.
             return_preds (boolean): To also return the predicted class probabilities or not.
+            return_samples (boolean): To also return the sample distribution or not.
             file_prefix (string): prefix to store the image, if None it will show instead of save. Defaults to None.
         """
 
@@ -457,6 +483,8 @@ class explainer(object):
                 print(f"Warning! Configuration shows structural bias of type {y}.")
             self.biastest.explain(samples, preds, filename=filename)
         if return_preds:
+            if return_samples:
+                return y, preds, samples
             return y, preds
         return y
 

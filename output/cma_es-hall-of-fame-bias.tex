@@ -1,56 +1,56 @@
-\begin{tabular}{rlrlrrrllrllrl}
+\begin{tabular}{rlllllllllllrl}
 \toprule
 dim & fid & active & base_sampler & covariance & elitist & lambda_ & local_restart & mirrored & mu & step_size_adaptation & weights_option & auc & bias \\
 \midrule
-5 & All & True & gaussian & True & False & 20.000000 & IPOP & mirrored & 10.000000 & csa & default & 0.666806 & centre \\
-5 & 1 & False & halton & True & True & 5.000000 & BIPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.983122 & gaps/clusters \\
-5 & 2 & True & sobol & False & False & 8.000000 & IPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.907190 & gaps/clusters \\
-5 & 3 & True & sobol & True & False & 20.000000 & BIPOP & mirrored pairwise & 5.000000 & csa & equal & 0.378857 & centre \\
-5 & 4 & False & gaussian & True & False & 10.000000 & BIPOP & mirrored & 10.000000 & csa & 1/2^lambda & 0.168084 & gaps/clusters \\
-5 & 5 & True & gaussian & True & False & 5.000000 & IPOP & mirrored & 5.000000 & psr & default & 0.998051 & gaps/clusters \\
-5 & 6 & False & halton & True & True & 5.000000 & BIPOP & mirrored pairwise & 2.000000 & csa & 1/2^lambda & 0.952707 & centre \\
-5 & 7 & False & halton & True & True & 20.000000 & BIPOP & mirrored pairwise & 10.000000 & csa & equal & 0.951310 & centre \\
-5 & 8 & True & sobol & True & False & 8.000000 & IPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.909659 & gaps/clusters \\
-5 & 9 & False & sobol & False & False & 5.000000 & IPOP & mirrored & 2.000000 & csa & default & 0.915234 & gaps/clusters \\
-5 & 10 & False & sobol & True & True & 5.000000 & IPOP & mirrored & 5.000000 & psr & equal & 0.903269 & centre \\
-5 & 11 & True & sobol & True & False & 20.000000 & IPOP & mirrored & 10.000000 & csa & default & 0.917868 & centre \\
-5 & 12 & True & halton & False & False & 8.000000 & BIPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.859747 & centre \\
-5 & 13 & True & sobol & True & True & 5.000000 & IPOP & mirrored & 5.000000 & psr & equal & 0.895403 & centre \\
-5 & 14 & False & sobol & True & True & 5.000000 & IPOP & mirrored pairwise & 5.000000 & csa & equal & 0.954450 & gaps/clusters \\
-5 & 15 & False & halton & True & False & 200.000000 & BIPOP & mirrored & 100.000000 & psr & default & 0.481335 & centre \\
-5 & 16 & True & sobol & True & False & 20.000000 & BIPOP & mirrored & 5.000000 & csa & default & 0.809630 & centre \\
-5 & 17 & False & sobol & True & False & 20.000000 & BIPOP & mirrored & 10.000000 & csa & default & 0.897028 & centre \\
-5 & 18 & True & sobol & True & False & 20.000000 & BIPOP & mirrored & 5.000000 & psr & default & 0.818370 & centre \\
-5 & 19 & True & halton & False & False & 20.000000 & IPOP & mirrored pairwise & 10.000000 & csa & default & 0.402468 & centre \\
-5 & 20 & True & sobol & True & False & 200.000000 & BIPOP & mirrored & 20.000000 & psr & default & 0.356620 & centre \\
-5 & 21 & False & halton & True & True & 10.000000 & IPOP & mirrored pairwise & 5.000000 & psr & default & 0.844145 & centre \\
-5 & 22 & False & halton & True & True & 5.000000 & BIPOP & mirrored pairwise & 5.000000 & psr & 1/2^lambda & 0.793936 & bounds \\
-5 & 23 & True & halton & True & False & 20.000000 & BIPOP & mirrored & 5.000000 & psr & default & 0.664302 & centre \\
-5 & 24 & False & sobol & True & False & 10.000000 & IPOP & mirrored & 5.000000 & csa & default & 0.141390 & centre \\
-30 & All & True & sobol & False & False & 14.000000 & IPOP & mirrored & 7.000000 & csa & default & 0.496598 & gaps/clusters \\
-30 & 1 & False & sobol & False & False & 5.000000 & IPOP & mirrored & 5.000000 & psr & 1/2^lambda & 0.945324 & centre \\
-30 & 2 & True & sobol & False & True & 10.000000 & IPOP & mirrored pairwise & 10.000000 & psr & equal & 0.294408 & gaps/clusters \\
-30 & 3 & False & sobol & False & False & 20.000000 & BIPOP & mirrored & 10.000000 & csa & default & 0.396627 & gaps/clusters \\
-30 & 4 & False & sobol & False & False & 20.000000 & BIPOP & mirrored & 10.000000 & csa & default & 0.382659 & gaps/clusters \\
-30 & 5 & False & sobol & True & True & 5.000000 & IPOP & mirrored & 5.000000 & psr & default & 0.992649 & bounds \\
-30 & 6 & True & sobol & False & False & 14.000000 & BIPOP & mirrored & 7.000000 & csa & default & 0.583744 & gaps/clusters \\
-30 & 7 & True & sobol & False & False & 14.000000 & IPOP & mirrored pairwise & 5.000000 & csa & default & 0.447991 & disc \\
-30 & 8 & True & sobol & False & False & 5.000000 & IPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.409491 & disc \\
-30 & 9 & False & sobol & True & True & 5.000000 & IPOP & mirrored & 5.000000 & csa & equal & 0.409810 & gaps/clusters \\
-30 & 10 & True & sobol & False & True & 10.000000 & IPOP & mirrored pairwise & 10.000000 & psr & equal & 0.289573 & gaps/clusters \\
-30 & 11 & True & sobol & True & False & 14.000000 & BIPOP & mirrored & 7.000000 & psr & default & 0.408763 & centre \\
-30 & 12 & False & sobol & True & True & 5.000000 & BIPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.505465 & gaps/clusters \\
-30 & 13 & True & sobol & False & False & 14.000000 & BIPOP & mirrored & 7.000000 & psr & default & 0.511117 & centre \\
-30 & 14 & False & gaussian & True & True & 5.000000 & BIPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.704631 & gaps/clusters \\
-30 & 15 & True & sobol & False & False & 20.000000 & IPOP & mirrored & 10.000000 & psr & default & 0.398682 & centre \\
-30 & 16 & True & sobol & False & False & 20.000000 & IPOP & mirrored & 10.000000 & csa & default & 0.499925 & centre \\
-30 & 17 & True & sobol & False & False & 20.000000 & BIPOP & mirrored & 10.000000 & csa & default & 0.635100 & centre \\
-30 & 18 & True & sobol & False & False & 20.000000 & BIPOP & mirrored pairwise & 10.000000 & csa & default & 0.549818 & gaps/clusters \\
-30 & 19 & True & gaussian & True & True & 5.000000 & BIPOP & mirrored & 5.000000 & csa & equal & 0.548607 & gaps/clusters \\
-30 & 20 & True & sobol & True & True & 5.000000 & IPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.481448 & gaps/clusters \\
-30 & 21 & True & sobol & True & True & 14.000000 & IPOP & mirrored & 7.000000 & csa & 1/2^lambda & 0.664094 & centre \\
-30 & 22 & True & gaussian & True & True & 5.000000 & BIPOP & mirrored & 5.000000 & csa & 1/2^lambda & 0.481261 & gaps/clusters \\
-30 & 23 & False & sobol & True & False & 20.000000 & IPOP & mirrored pairwise & 10.000000 & psr & default & 0.549599 & centre \\
-30 & 24 & True & sobol & False & False & 20.000000 & IPOP & mirrored & 10.000000 & psr & default & 0.384299 & centre \\
+5 & All & True (0.04) & gaussian (0.19) & True (0.13) & False (0.28) & 20.0 (0.38) & IPOP (0.04) & mirrored (0.04) & 10.0 (0.25) & csa (0.08) & default (0.09) & 0.666806 & centre \\
+5 & 1 & False (0.00) & halton (0.00) & True (0.81) & True (0.00) & 5.0 (0.10) & BIPOP (0.00) & nan (0.00) & 5.0 (0.00) & csa (0.09) & 1/2^lambda (0.37) & 0.984278 & gaps/clusters \\
+5 & 2 & True (0.04) & sobol (0.02) & False (0.01) & False (0.92) & 8.0 (0.20) & nan (0.00) & nan (0.03) & 5.0 (0.01) & csa (0.02) & 1/2^lambda (0.46) & 0.915621 & gaps/clusters \\
+5 & 3 & True (0.11) & sobol (0.18) & True (0.19) & False (0.16) & 20.0 (0.27) & BIPOP (0.19) & mirrored pairwise (0.20) & 5.0 (0.30) & csa (0.19) & equal (0.19) & 0.378857 & centre \\
+5 & 4 & False (0.00) & gaussian (0.04) & True (0.06) & False (0.05) & 10.0 (0.05) & BIPOP (0.04) & mirrored (0.04) & 10.0 (0.04) & csa (0.08) & 1/2^lambda (0.10) & 0.168084 & gaps/clusters \\
+5 & 5 & False (0.00) & sobol (0.00) & False (0.00) & False (0.01) & 5.0 (0.01) & nan (0.00) & nan (0.00) & 5.0 (0.00) & psr (0.00) & default (0.06) & 0.998245 & gaps/clusters \\
+5 & 6 & False (0.02) & sobol (0.01) & True (0.92) & True (0.02) & 5.0 (nan) & nan (0.00) & nan (0.01) & 2.0 (0.89) & csa (0.02) & default (0.01) & 0.953810 & gaps/clusters \\
+5 & 7 & True (0.15) & sobol (0.17) & True (0.05) & False (0.67) & 20.0 (0.55) & IPOP (0.05) & nan (0.34) & 10.0 (0.44) & psr (0.01) & default (0.29) & 0.960225 & centre \\
+5 & 8 & True (0.02) & sobol (0.07) & False (0.06) & False (0.90) & 8.0 (0.18) & BIPOP (0.00) & nan (0.07) & 5.0 (0.06) & csa (0.02) & 1/2^lambda (0.38) & 0.919709 & centre \\
+5 & 9 & False (0.02) & sobol (0.05) & False (0.06) & False (0.84) & 5.0 (nan) & IPOP (0.03) & mirrored (0.03) & 2.0 (0.72) & csa (0.11) & default (0.06) & 0.915234 & gaps/clusters \\
+5 & 10 & True (0.04) & sobol (0.01) & False (0.01) & False (0.91) & 8.0 (0.21) & nan (0.00) & nan (0.03) & 5.0 (0.01) & csa (0.02) & 1/2^lambda (0.44) & 0.910923 & gaps/clusters \\
+5 & 11 & True (0.09) & sobol (0.02) & True (0.01) & False (0.79) & 20.0 (0.72) & nan (0.00) & nan (0.05) & 10.0 (0.47) & csa (0.02) & default (0.05) & 0.922024 & centre \\
+5 & 12 & False (0.54) & halton (0.07) & True (0.86) & True (0.22) & 8.0 (0.28) & BIPOP (0.00) & nan (0.03) & 5.0 (0.03) & csa (0.24) & equal (0.05) & 0.864129 & gaps/clusters \\
+5 & 13 & False (0.00) & halton (0.03) & True (0.83) & True (0.90) & 10.0 (0.34) & BIPOP (0.00) & nan (0.02) & 10.0 (0.02) & csa (0.24) & equal (0.26) & 0.902403 & gaps/clusters \\
+5 & 14 & True (0.02) & halton (0.01) & False (0.00) & False (0.74) & 8.0 (0.11) & BIPOP (0.00) & nan (0.03) & 5.0 (0.00) & csa (0.01) & 1/2^lambda (0.24) & 0.956878 & centre \\
+5 & 15 & False (0.00) & sobol (0.09) & True (0.14) & False (0.26) & 200.0 (nan) & nan (0.03) & mirrored (0.20) & 100.0 (0.29) & csa (0.04) & default (0.32) & 0.485520 & centre \\
+5 & 16 & True (0.18) & sobol (0.11) & True (0.37) & False (0.38) & 20.0 (0.43) & BIPOP (0.18) & mirrored (0.09) & 5.0 (0.43) & csa (0.31) & default (0.22) & 0.809630 & gaps/clusters \\
+5 & 17 & False (0.15) & halton (0.07) & True (0.00) & False (0.08) & 20.0 (0.44) & BIPOP (0.00) & nan (0.02) & 10.0 (0.21) & csa (0.05) & default (0.09) & 0.900129 & gaps/clusters \\
+5 & 18 & True (0.08) & sobol (0.15) & True (0.21) & False (0.37) & 20.0 (0.56) & BIPOP (0.13) & mirrored (0.18) & 5.0 (0.31) & psr (0.14) & default (0.31) & 0.818370 & centre \\
+5 & 19 & True (0.10) & gaussian (0.11) & False (0.12) & False (0.30) & 5.0 (nan) & BIPOP (0.16) & nan (0.08) & 2.0 (0.11) & csa (0.22) & 1/2^lambda (0.10) & 0.429715 & gaps/clusters \\
+5 & 20 & False (0.27) & sobol (0.24) & False (0.26) & True (0.27) & 20.0 (0.27) & nan (0.24) & nan (0.26) & 5.0 (0.27) & psr (0.30) & equal (0.25) & 0.441992 & gaps/clusters \\
+5 & 21 & False (0.30) & sobol (0.45) & False (0.49) & True (0.53) & 20.0 (0.58) & nan (0.32) & mirrored (0.37) & 5.0 (0.42) & psr (0.78) & default (0.40) & 0.915051 & gaps/clusters \\
+5 & 22 & False (0.58) & halton (0.34) & True (0.43) & True (0.21) & 5.0 (0.28) & BIPOP (0.04) & mirrored pairwise (0.16) & 5.0 (0.17) & psr (0.03) & 1/2^lambda (0.28) & 0.793936 & gaps/clusters \\
+5 & 23 & True (0.22) & halton (0.14) & True (0.18) & False (0.48) & 20.0 (0.42) & BIPOP (0.03) & mirrored (0.22) & 5.0 (0.42) & psr (0.22) & default (0.21) & 0.664302 & centre \\
+5 & 24 & True (0.02) & sobol (0.03) & True (0.03) & False (0.02) & 20.0 (0.03) & nan (0.02) & mirrored pairwise (0.02) & 10.0 (0.03) & csa (0.03) & 1/2^lambda (0.03) & 0.141393 & gaps/clusters \\
+30 & All & True (0.01) & sobol (0.05) & False (0.00) & False (0.16) & 14.0 (nan) & IPOP (0.00) & mirrored (0.01) & 7.0 (0.01) & csa (0.01) & default (0.01) & 0.496598 & gaps/clusters \\
+30 & 1 & False (0.00) & sobol (0.29) & False (0.02) & False (0.07) & 5.0 (0.18) & BIPOP (0.00) & nan (0.02) & 5.0 (0.01) & psr (0.00) & 1/2^lambda (0.32) & 0.951189 & centre \\
+30 & 2 & True (0.00) & sobol (0.07) & False (0.01) & True (0.22) & 10.0 (0.08) & IPOP (0.00) & mirrored pairwise (0.01) & 10.0 (0.04) & psr (0.21) & equal (0.10) & 0.294408 & gaps/clusters \\
+30 & 3 & False (0.00) & sobol (0.05) & False (0.01) & False (0.08) & 20.0 (0.06) & nan (0.00) & mirrored (0.02) & 10.0 (0.05) & csa (0.00) & equal (0.01) & 0.397499 & centre \\
+30 & 4 & False (0.00) & sobol (0.04) & False (0.00) & False (0.06) & 20.0 (0.03) & BIPOP (0.00) & mirrored (0.00) & 10.0 (0.01) & csa (0.01) & default (0.01) & 0.382659 & gaps/clusters \\
+30 & 5 & False (0.06) & sobol (0.32) & True (0.06) & True (0.00) & 5.0 (0.04) & BIPOP (0.00) & nan (0.01) & 5.0 (0.01) & psr (0.59) & default (0.01) & 0.992651 & bounds \\
+30 & 6 & True (0.01) & sobol (0.18) & False (0.03) & False (0.38) & 14.0 (0.13) & nan (0.00) & nan (0.04) & 5.0 (0.01) & csa (0.10) & default (0.04) & 0.590334 & disc \\
+30 & 7 & True (0.00) & sobol (0.03) & False (0.01) & False (0.12) & 14.0 (0.02) & IPOP (0.01) & mirrored pairwise (0.00) & 5.0 (0.01) & csa (0.04) & default (0.01) & 0.447991 & disc \\
+30 & 8 & True (0.01) & sobol (0.03) & False (0.01) & False (0.22) & 5.0 (0.03) & IPOP (0.01) & mirrored (0.01) & 5.0 (0.01) & csa (0.02) & 1/2^lambda (0.13) & 0.409491 & disc \\
+30 & 9 & True (0.00) & sobol (0.02) & True (0.21) & True (0.01) & 5.0 (nan) & IPOP (0.01) & nan (0.01) & 2.0 (0.06) & csa (0.01) & default (0.01) & 0.411272 & gaps/clusters \\
+30 & 10 & False (0.00) & sobol (0.06) & False (0.01) & True (0.22) & 5.0 (0.07) & BIPOP (0.00) & nan (0.01) & 5.0 (0.03) & psr (0.19) & equal (0.12) & 0.291968 & gaps/clusters \\
+30 & 11 & True (0.01) & sobol (0.02) & True (0.04) & False (0.04) & 10.0 (0.05) & nan (0.00) & mirrored (0.02) & 5.0 (0.08) & psr (0.02) & default (0.01) & 0.408969 & gaps/clusters \\
+30 & 12 & False (0.03) & sobol (0.08) & True (0.51) & True (0.04) & 5.0 (0.17) & BIPOP (0.05) & mirrored (0.05) & 5.0 (0.05) & csa (0.11) & 1/2^lambda (0.22) & 0.505465 & gaps/clusters \\
+30 & 13 & False (0.02) & sobol (0.11) & False (0.04) & False (0.22) & 14.0 (0.08) & nan (0.03) & nan (0.04) & 5.0 (0.04) & csa (0.03) & default (0.04) & 0.515965 & disc \\
+30 & 14 & False (0.00) & sobol (0.05) & True (0.31) & True (0.02) & 5.0 (0.09) & BIPOP (0.00) & nan (0.01) & 5.0 (0.01) & csa (0.03) & 1/2^lambda (0.16) & 0.707186 & gaps/clusters \\
+30 & 15 & False (0.01) & sobol (0.03) & False (0.01) & False (0.03) & 20.0 (0.03) & nan (0.00) & nan (0.01) & 10.0 (0.01) & psr (0.00) & default (0.01) & 0.400281 & centre \\
+30 & 16 & True (0.00) & sobol (0.03) & False (0.01) & False (0.10) & 20.0 (0.06) & IPOP (0.00) & mirrored (0.02) & 10.0 (0.02) & csa (0.01) & default (0.03) & 0.499925 & centre \\
+30 & 17 & False (0.01) & sobol (0.12) & False (0.03) & False (0.20) & 20.0 (0.10) & IPOP (0.01) & nan (0.01) & 10.0 (0.03) & csa (0.03) & default (0.06) & 0.640506 & gaps/clusters \\
+30 & 18 & False (0.00) & sobol (0.08) & False (0.02) & False (0.16) & 20.0 (0.08) & nan (0.01) & mirrored pairwise (0.01) & 10.0 (0.04) & csa (0.03) & default (0.03) & 0.554057 & bounds \\
+30 & 19 & True (0.00) & gaussian (0.01) & True (0.10) & True (0.03) & 5.0 (0.04) & BIPOP (0.09) & mirrored (0.01) & 5.0 (0.00) & csa (0.10) & equal (0.04) & 0.548607 & gaps/clusters \\
+30 & 20 & True (0.00) & sobol (0.01) & True (0.26) & True (0.00) & 5.0 (0.02) & IPOP (0.00) & mirrored (0.00) & 5.0 (0.00) & csa (0.00) & 1/2^lambda (0.04) & 0.481448 & gaps/clusters \\
+30 & 21 & True (0.12) & sobol (0.16) & True (0.28) & True (0.18) & 14.0 (nan) & IPOP (0.19) & mirrored (0.15) & 7.0 (0.12) & csa (0.15) & 1/2^lambda (0.14) & 0.664094 & gaps/clusters \\
+30 & 22 & False (0.02) & sobol (0.04) & True (0.11) & True (0.06) & 5.0 (nan) & nan (0.03) & mirrored pairwise (0.04) & 2.0 (0.05) & csa (0.05) & equal (0.05) & 0.488304 & gaps/clusters \\
+30 & 23 & True (0.00) & sobol (0.01) & False (0.01) & False (0.09) & 20.0 (0.05) & nan (0.00) & mirrored pairwise (0.01) & 10.0 (0.01) & psr (0.09) & default (0.02) & 0.549650 & centre \\
+30 & 24 & False (0.00) & sobol (0.01) & False (0.00) & False (0.03) & 20.0 (0.03) & BIPOP (0.00) & nan (0.01) & 10.0 (0.01) & psr (0.01) & default (0.01) & 0.387424 & centre \\
 \bottomrule
 \end{tabular}
