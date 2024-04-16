@@ -1,0 +1,26 @@
+\begin{tabular}{lllllllllllllr}
+\toprule
+active & covariance & elitist & orthogonal & sequential & threshold & sigma & bound_correction & mirrored & base_sampler & weights_option & local_restart & step_size_adaptation & unif \\
+\midrule
+False (0.98) & False (0.08) & False (0.98) & False (0.98) & False (0.41) & False (0.85) & True (0.29) & saturate (0.85) & mirrored pairwise (0.27) & gaussian (0.12) & 1/2^lambda (0.39) & IPOP (0.21) & msr (0.60) & 0.980819 \\
+True (0.08) & True (0.97) & False (0.97) & True (0.06) & True (0.05) & True (0.97) & False (0.17) & saturate (0.91) & mirrored pairwise (0.08) & sobol (0.02) & 1/2^lambda (0.28) & nan (0.69) & csa (0.37) & 0.970955 \\
+False (0.04) & True (0.97) & False (0.97) & False (0.44) & True (0.12) & True (0.10) & False (0.19) & saturate (0.82) & nan (0.17) & gaussian (0.12) & 1/2^lambda (0.25) & BIPOP (0.09) & csa (0.61) & 0.970824 \\
+False (0.17) & True (0.97) & False (0.79) & True (0.36) & True (0.03) & True (0.97) & True (0.08) & saturate (0.88) & mirrored pairwise (0.11) & sobol (0.04) & 1/2^lambda (0.16) & nan (0.68) & csa (0.36) & 0.969839 \\
+False (0.82) & True (0.38) & False (0.68) & False (0.97) & False (0.27) & False (0.97) & False (0.02) & saturate (0.92) & mirrored pairwise (0.22) & halton (0.16) & 1/2^lambda (0.74) & nan (0.18) & xnes (0.42) & 0.969486 \\
+True (0.22) & True (0.97) & False (0.97) & True (0.33) & False (0.04) & True (0.97) & False (0.22) & saturate (0.88) & nan (0.15) & gaussian (0.23) & 1/2^lambda (0.38) & nan (0.73) & csa (0.46) & 0.969103 \\
+False (0.20) & True (0.37) & False (0.96) & False (0.31) & False (0.09) & True (0.18) & True (0.14) & saturate (0.80) & mirrored pairwise (0.14) & sobol (0.10) & 1/2^lambda (0.37) & BIPOP (0.23) & msr (0.65) & 0.968564 \\
+False (0.25) & True (0.37) & False (0.96) & False (0.16) & True (0.14) & True (0.06) & True (0.01) & saturate (0.89) & nan (0.07) & gaussian (0.16) & 1/2^lambda (0.33) & BIPOP (0.11) & msr (0.57) & 0.968428 \\
+False (0.09) & True (0.97) & False (0.97) & False (0.77) & True (0.09) & True (0.11) & True (0.13) & saturate (0.78) & mirrored (0.09) & sobol (0.02) & 1/2^lambda (0.47) & BIPOP (0.11) & csa (0.59) & 0.968169 \\
+False (0.12) & True (0.57) & False (0.19) & False (0.04) & False (0.12) & True (0.08) & True (0.00) & saturate (0.75) & nan (0.10) & sobol (0.02) & 1/2^lambda (0.61) & nan (0.14) & lpxnes (0.49) & 0.967892 \\
+False (0.12) & True (0.57) & False (0.19) & False (0.04) & False (0.12) & True (0.08) & False (0.00) & saturate (0.75) & nan (0.10) & sobol (0.02) & 1/2^lambda (0.61) & nan (0.14) & lpxnes (0.46) & 0.967892 \\
+False (0.21) & True (0.33) & False (0.97) & False (0.96) & True (0.25) & False (0.02) & True (0.03) & saturate (0.89) & mirrored (0.15) & sobol (0.16) & 1/2^lambda (0.77) & BIPOP (0.07) & msr (0.43) & 0.967823 \\
+True (0.25) & True (0.97) & False (0.94) & False (0.03) & False (0.04) & True (0.57) & True (0.01) & saturate (0.91) & mirrored pairwise (0.12) & gaussian (0.14) & 1/2^lambda (0.25) & nan (0.32) & csa (0.51) & 0.967787 \\
+True (0.12) & True (0.43) & False (0.96) & False (0.23) & False (0.02) & True (0.66) & True (0.20) & saturate (0.95) & nan (0.09) & sobol (0.11) & 1/2^lambda (0.64) & nan (0.20) & csa (0.55) & 0.967778 \\
+False (0.04) & True (0.97) & False (0.96) & False (0.42) & True (0.09) & True (0.30) & False (0.29) & saturate (0.80) & mirrored (0.08) & gaussian (0.27) & 1/2^lambda (0.82) & IPOP (0.15) & csa (0.56) & 0.967537 \\
+False (0.97) & False (0.85) & False (0.97) & True (0.12) & True (0.51) & True (0.97) & True (0.19) & saturate (0.86) & mirrored pairwise (0.33) & sobol (0.24) & 1/2^lambda (0.20) & BIPOP (0.18) & psr (0.86) & 0.966705 \\
+False (0.97) & False (0.78) & False (0.97) & True (0.32) & True (0.04) & True (0.97) & False (0.20) & saturate (0.91) & nan (0.17) & sobol (0.18) & 1/2^lambda (0.68) & IPOP (0.39) & psr (0.89) & 0.966698 \\
+True (0.06) & True (0.87) & False (0.96) & False (0.30) & True (0.14) & True (0.17) & True (0.50) & saturate (0.92) & nan (0.33) & gaussian (0.28) & 1/2^lambda (0.52) & IPOP (0.05) & csa (0.49) & 0.966110 \\
+False (0.10) & True (0.25) & False (0.25) & False (0.22) & False (0.02) & True (0.22) & False (0.15) & saturate (0.89) & mirrored (0.14) & sobol (0.11) & 1/2^lambda (0.43) & nan (0.05) & msr (0.37) & 0.965801 \\
+False (0.02) & True (0.16) & False (0.97) & False (0.25) & False (0.35) & True (0.14) & True (0.00) & saturate (0.87) & mirrored (0.10) & sobol (0.12) & 1/2^lambda (0.96) & BIPOP (0.11) & lpxnes (0.47) & 0.965727 \\
+\bottomrule
+\end{tabular}

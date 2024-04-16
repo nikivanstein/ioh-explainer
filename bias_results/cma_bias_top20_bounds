@@ -1,0 +1,26 @@
+\begin{tabular}{lllllllllllllr}
+\toprule
+active & covariance & elitist & orthogonal & sequential & threshold & sigma & bound_correction & mirrored & base_sampler & weights_option & local_restart & step_size_adaptation & bounds \\
+\midrule
+False (0.03) & True (1.00) & False (0.00) & True (0.00) & True (0.00) & True (1.00) & False (0.00) & nan (1.00) & nan (0.02) & sobol (0.00) & 1/2^lambda (0.10) & nan (0.10) & msr (0.73) & 1.000000 \\
+False (1.00) & True (0.40) & False (1.00) & False (0.20) & True (0.60) & True (1.00) & False (0.80) & nan (1.00) & mirrored (0.70) & halton (0.70) & equal (0.20) & nan (1.00) & csa (0.77) & 1.000000 \\
+False (1.00) & True (0.80) & False (0.40) & True (0.20) & False (0.00) & True (1.00) & True (0.00) & nan (1.00) & nan (0.00) & sobol (0.00) & equal (0.00) & nan (0.20) & msr (0.80) & 1.000000 \\
+False (1.00) & True (0.40) & False (0.00) & False (0.00) & False (0.20) & True (1.00) & False (0.40) & nan (1.00) & mirrored (0.10) & halton (0.20) & 1/2^lambda (0.51) & nan (0.63) & msr (0.90) & 1.000000 \\
+False (0.00) & False (0.89) & False (0.00) & False (0.00) & False (0.00) & True (0.91) & False (0.00) & saturate (0.96) & nan (0.09) & gaussian (0.10) & 1/2^lambda (0.00) & nan (0.17) & csa (0.56) & 1.000000 \\
+False (0.76) & True (1.00) & False (0.00) & True (0.00) & False (0.00) & True (1.00) & True (0.00) & nan (1.00) & nan (0.00) & sobol (0.00) & 1/2^lambda (0.00) & nan (1.00) & msr (0.73) & 1.000000 \\
+False (1.00) & True (0.60) & False (1.00) & False (1.00) & True (0.60) & False (0.20) & True (0.00) & nan (1.00) & mirrored pairwise (0.80) & halton (0.60) & 1/2^lambda (1.00) & BIPOP (0.46) & lpxnes (1.00) & 1.000000 \\
+False (0.00) & True (0.00) & False (0.60) & True (0.60) & True (0.00) & True (1.00) & True (0.00) & nan (1.00) & nan (0.50) & gaussian (0.60) & 1/2^lambda (0.60) & nan (0.80) & lpxnes (0.67) & 1.000000 \\
+False (0.00) & True (0.60) & False (0.00) & True (0.00) & True (0.00) & True (1.00) & True (0.00) & nan (1.00) & nan (0.00) & gaussian (0.00) & 1/2^lambda (0.00) & nan (0.10) & msr (0.67) & 1.000000 \\
+False (0.00) & False (0.90) & False (0.00) & False (0.00) & False (0.00) & True (0.57) & True (0.00) & saturate (1.00) & nan (0.11) & gaussian (0.11) & 1/2^lambda (0.18) & nan (0.66) & csa (0.54) & 1.000000 \\
+False (0.99) & True (0.80) & False (0.00) & True (0.00) & True (0.00) & True (1.00) & True (0.00) & nan (1.00) & nan (0.00) & gaussian (0.00) & equal (0.00) & nan (0.00) & msr (0.73) & 1.000000 \\
+False (0.20) & True (1.00) & False (1.00) & True (0.80) & True (0.20) & True (1.00) & False (0.00) & nan (1.00) & nan (0.60) & sobol (0.40) & default (0.40) & nan (0.90) & csa (0.83) & 1.000000 \\
+False (1.00) & True (1.00) & False (1.00) & True (1.00) & True (0.60) & True (1.00) & False (0.00) & nan (1.00) & nan (0.90) & sobol (0.21) & equal (0.10) & IPOP (0.00) & msr (0.97) & 1.000000 \\
+False (0.00) & True (0.80) & False (1.00) & True (0.80) & True (0.20) & True (1.00) & False (0.40) & nan (1.00) & nan (0.00) & gaussian (0.40) & equal (0.20) & nan (1.00) & csa (0.60) & 1.000000 \\
+False (0.20) & True (1.00) & False (0.00) & True (0.20) & True (0.00) & True (1.00) & True (0.00) & nan (1.00) & nan (0.00) & gaussian (0.00) & default (0.00) & nan (0.00) & msr (0.95) & 1.000000 \\
+False (0.00) & True (0.00) & False (0.60) & True (0.60) & True (0.00) & True (1.00) & False (0.00) & nan (1.00) & nan (0.50) & gaussian (0.60) & 1/2^lambda (0.60) & nan (0.80) & lpxnes (0.53) & 1.000000 \\
+False (0.19) & False (0.89) & False (0.00) & False (0.04) & True (0.00) & True (0.99) & False (0.00) & saturate (1.00) & nan (0.08) & gaussian (0.10) & 1/2^lambda (0.08) & nan (0.10) & csa (0.39) & 1.000000 \\
+False (1.00) & True (0.80) & False (1.00) & True (0.20) & True (0.81) & True (1.00) & False (0.20) & nan (1.00) & nan (0.90) & sobol (0.25) & 1/2^lambda (0.10) & IPOP (0.10) & msr (0.83) & 1.000000 \\
+False (0.99) & True (0.40) & False (0.20) & False (0.00) & True (0.20) & True (1.00) & False (0.00) & nan (1.00) & mirrored (0.40) & halton (0.10) & default (0.10) & nan (0.97) & msr (0.77) & 1.000000 \\
+False (1.00) & False (1.00) & False (1.00) & False (1.00) & False (0.20) & True (1.00) & True (1.00) & nan (1.00) & mirrored (0.90) & sobol (0.17) & default (0.50) & IPOP (0.80) & msr (0.97) & 1.000000 \\
+\bottomrule
+\end{tabular}

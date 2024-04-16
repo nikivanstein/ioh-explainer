@@ -1,0 +1,26 @@
+\begin{tabular}{lllllllllllllr}
+\toprule
+active & covariance & elitist & orthogonal & sequential & threshold & sigma & bound_correction & mirrored & base_sampler & weights_option & local_restart & step_size_adaptation & centre \\
+\midrule
+False (0.01) & False (0.69) & False (0.08) & True (0.08) & True (0.02) & False (0.02) & True (0.00) & cotn (0.41) & mirrored (0.01) & gaussian (0.02) & default (0.03) & BIPOP (0.00) & lpxnes (0.30) & 0.996644 \\
+False (0.01) & False (0.69) & False (0.30) & True (0.08) & True (0.02) & False (0.02) & True (0.00) & cotn (0.41) & mirrored (0.01) & gaussian (0.02) & default (0.04) & IPOP (0.00) & lpxnes (0.33) & 0.996644 \\
+False (0.01) & False (0.69) & False (0.22) & True (0.08) & True (0.02) & False (0.02) & True (0.00) & cotn (0.41) & mirrored (0.01) & gaussian (0.02) & default (0.10) & nan (0.00) & lpxnes (0.35) & 0.996644 \\
+False (0.01) & False (0.69) & False (0.30) & True (0.08) & True (0.02) & False (0.02) & False (0.00) & cotn (0.41) & mirrored (0.01) & gaussian (0.02) & default (0.04) & IPOP (0.00) & lpxnes (0.31) & 0.996644 \\
+False (0.01) & False (0.69) & False (0.22) & True (0.08) & True (0.02) & False (0.02) & False (0.00) & cotn (0.41) & mirrored (0.01) & gaussian (0.02) & default (0.10) & nan (0.00) & lpxnes (0.36) & 0.996644 \\
+False (0.01) & False (0.69) & False (0.08) & True (0.08) & True (0.02) & False (0.02) & False (0.00) & cotn (0.41) & mirrored (0.01) & gaussian (0.02) & default (0.03) & BIPOP (0.00) & lpxnes (0.30) & 0.996644 \\
+True (0.01) & False (0.07) & False (0.05) & True (0.07) & True (0.03) & True (0.99) & False (0.02) & cotn (0.24) & mirrored (0.02) & gaussian (0.01) & equal (0.03) & nan (0.09) & mxnes (0.15) & 0.995886 \\
+True (0.01) & True (0.04) & False (0.07) & True (0.36) & False (0.03) & True (0.72) & True (0.03) & cotn (0.41) & mirrored pairwise (0.02) & sobol (0.01) & default (0.04) & IPOP (0.07) & xnes (0.21) & 0.995879 \\
+True (0.01) & False (0.02) & False (0.10) & True (0.00) & False (0.01) & True (0.98) & True (0.01) & cotn (0.42) & mirrored pairwise (0.11) & sobol (0.04) & equal (0.07) & nan (0.01) & xnes (0.18) & 0.995696 \\
+False (0.00) & True (0.01) & False (0.16) & True (0.65) & True (0.16) & True (1.00) & True (0.02) & mirror (0.41) & nan (0.01) & halton (0.02) & equal (0.02) & IPOP (0.05) & xnes (0.05) & 0.995632 \\
+True (0.05) & False (0.18) & False (0.65) & False (0.00) & False (0.00) & True (0.04) & False (0.00) & uniform (0.40) & nan (0.12) & gaussian (0.01) & equal (0.06) & BIPOP (0.00) & xnes (0.05) & 0.995590 \\
+False (0.04) & False (0.49) & False (0.44) & True (0.01) & True (0.00) & False (0.02) & False (0.00) & mirror (0.40) & mirrored (0.04) & halton (0.03) & default (0.31) & IPOP (0.00) & lpxnes (0.32) & 0.995442 \\
+False (0.04) & False (0.49) & False (0.60) & True (0.01) & True (0.00) & False (0.02) & False (0.00) & mirror (0.40) & mirrored (0.04) & halton (0.03) & default (0.49) & nan (0.00) & lpxnes (0.34) & 0.995442 \\
+False (0.04) & False (0.49) & False (0.29) & True (0.01) & True (0.00) & False (0.02) & False (0.00) & mirror (0.40) & mirrored (0.04) & halton (0.03) & default (0.32) & BIPOP (0.00) & lpxnes (0.32) & 0.995442 \\
+False (0.04) & False (0.49) & False (0.44) & True (0.01) & True (0.00) & False (0.02) & True (0.00) & mirror (0.40) & mirrored (0.04) & halton (0.03) & default (0.31) & IPOP (0.00) & lpxnes (0.35) & 0.995442 \\
+False (0.04) & False (0.49) & False (0.60) & True (0.01) & True (0.00) & False (0.02) & True (0.00) & mirror (0.40) & mirrored (0.04) & halton (0.03) & default (0.49) & nan (0.00) & lpxnes (0.38) & 0.995442 \\
+False (0.04) & False (0.49) & False (0.29) & True (0.01) & True (0.00) & False (0.02) & True (0.00) & mirror (0.40) & mirrored (0.04) & halton (0.03) & default (0.32) & BIPOP (0.00) & lpxnes (0.32) & 0.995442 \\
+False (0.02) & False (0.06) & False (0.91) & False (0.01) & False (0.01) & True (0.04) & True (0.07) & toroidal (0.42) & nan (0.02) & halton (0.10) & default (0.12) & IPOP (0.10) & xnes (0.09) & 0.995344 \\
+False (0.01) & True (0.01) & False (0.01) & True (0.50) & True (0.00) & True (0.99) & False (0.01) & uniform (0.42) & nan (0.01) & sobol (0.01) & default (0.03) & IPOP (0.02) & xnes (0.13) & 0.995296 \\
+False (0.05) & True (0.46) & False (0.16) & True (0.05) & False (0.66) & False (0.87) & False (0.16) & saturate (0.39) & mirrored (0.03) & gaussian (0.75) & equal (0.24) & BIPOP (0.40) & mxnes (0.16) & 0.995294 \\
+\bottomrule
+\end{tabular}

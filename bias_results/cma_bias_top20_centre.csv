@@ -1,0 +1,21 @@
+active,covariance,elitist,orthogonal,sequential,threshold,sigma,bound_correction,mirrored,base_sampler,weights_option,local_restart,step_size_adaptation,centre
+True (0.02),False (0.02),True (0.01),True (0.04),False (0.04),True (0.88),True (0.04),mirror (0.41),mirrored pairwise (0.02),halton (0.02),equal (0.08),IPOP (0.04),mxnes (0.60),0.9978727
+False (0.04),False (0.02),False (1.00),True (0.07),False (0.01),True (0.07),True (0.02),toroidal (0.40),mirrored (0.12),gaussian (0.01),equal (0.02),BIPOP (0.05),csa (0.12),0.997591
+True (0.02),False (0.05),False (0.41),False (0.02),False (0.01),True (0.13),True (0.02),uniform (0.43),mirrored pairwise (0.01),halton (0.02),equal (0.21),nan (0.05),xnes (0.12),0.9975483
+False (0.04),False (0.02),False (0.59),True (0.11),False (0.02),True (0.07),True (0.02),toroidal (0.40),mirrored (0.12),gaussian (0.01),equal (0.02),IPOP (0.05),csa (0.13),0.99750787
+True (0.01),False (0.06),True (0.87),True (0.04),True (0.01),False (0.09),True (0.19),uniform (0.42),mirrored (0.01),sobol (0.01),equal (0.02),BIPOP (0.26),mxnes (0.28),0.9972521
+True (0.02),False (0.08),True (0.01),False (0.87),False (0.02),False (0.01),False (0.00),toroidal (0.37),mirrored pairwise (0.02),halton (0.01),equal (0.04),IPOP (0.09),mxnes (0.33),0.99713707
+True (0.00),False (0.03),True (0.07),True (0.99),True (0.01),False (0.99),False (0.02),cotn (0.22),nan (0.04),sobol (0.01),default (0.05),IPOP (0.78),msr (0.41),0.99707776
+False (0.01),False (0.22),True (0.05),True (0.85),True (0.01),False (0.82),True (0.01),mirror (0.26),mirrored (0.06),halton (0.01),default (0.04),IPOP (0.77),csa (0.09),0.99707663
+False (0.01),False (0.02),True (0.03),True (0.99),True (0.06),False (1.00),False (0.02),cotn (0.41),mirrored pairwise (0.02),sobol (0.02),equal (0.34),IPOP (0.97),msr (0.18),0.99697715
+True (0.01),False (0.08),True (0.01),False (0.01),False (0.01),True (0.01),True (0.02),mirror (0.38),mirrored (0.01),sobol (0.01),equal (0.25),IPOP (0.10),mxnes (0.62),0.99677515
+False (0.01),False (0.00),True (0.04),True (0.05),True (0.01),True (0.46),True (0.01),uniform (0.41),mirrored (0.04),halton (0.01),equal (0.15),IPOP (0.11),mxnes (0.59),0.9967207
+False (0.02),False (0.02),True (0.02),True (0.07),True (0.01),True (0.29),False (0.03),toroidal (0.44),mirrored (0.01),sobol (0.01),default (0.06),IPOP (0.32),mxnes (0.78),0.996703
+True (0.01),False (0.04),True (0.02),False (0.03),False (0.01),True (0.02),False (0.02),uniform (0.39),mirrored (0.01),halton (0.01),equal (0.14),IPOP (0.12),mxnes (0.57),0.99669534
+True (0.07),True (0.05),True (0.01),True (0.10),False (0.05),True (0.89),False (0.00),toroidal (0.40),nan (0.01),sobol (0.01),equal (0.01),nan (0.01),xnes (0.03),0.99661577
+True (0.01),False (0.03),True (0.04),True (0.90),False (0.01),False (0.93),True (0.02),mirror (0.38),mirrored (0.05),sobol (0.00),equal (0.18),IPOP (1.00),msr (0.44),0.99656725
+True (0.01),False (0.08),True (0.13),True (0.94),True (0.05),False (0.99),False (0.01),cotn (0.20),nan (0.04),sobol (0.03),equal (0.05),IPOP (0.39),msr (0.51),0.9964382
+False (0.01),False (0.24),True (0.97),True (0.39),False (0.01),False (0.80),False (0.04),cotn (0.79),mirrored (0.46),gaussian (0.01),equal (0.22),BIPOP (0.19),xnes (0.39),0.9964131
+True (0.00),False (0.07),True (0.14),True (1.00),False (0.02),False (1.00),True (0.01),saturate (0.22),mirrored (0.15),gaussian (0.01),default (0.04),nan (0.70),mxnes (0.81),0.9964129
+False (0.01),True (0.01),False (0.01),True (0.23),False (0.02),True (0.99),False (0.10),uniform (0.40),nan (0.02),sobol (0.05),default (0.06),IPOP (0.05),xnes (0.11),0.9963466
+False (0.16),True (1.00),True (0.03),True (1.00),True (0.01),False (1.00),False (0.02),saturate (0.15),mirrored (0.02),sobol (0.05),default (0.29),IPOP (0.30),msr (0.50),0.9963188

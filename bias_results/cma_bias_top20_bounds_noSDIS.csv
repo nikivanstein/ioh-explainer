@@ -1,0 +1,21 @@
+active,covariance,elitist,orthogonal,sequential,threshold,sigma,bound_correction,mirrored,base_sampler,weights_option,local_restart,step_size_adaptation,bounds
+False (1.00),False (0.00),False (1.00),True (0.60),True (0.40),True (1.00),False (0.60),nan (1.00),mirrored (0.60),gaussian (0.40),equal (0.50),nan (0.40),msr (0.93),1.0
+False (1.00),True (1.00),True (0.38),True (0.00),True (0.00),True (1.00),False (0.00),nan (1.00),mirrored pairwise (0.10),gaussian (0.40),equal (0.10),nan (0.90),msr (1.00),1.0
+True (0.00),True (0.60),False (1.00),True (0.60),True (0.00),True (1.00),True (0.80),nan (1.00),mirrored pairwise (0.60),sobol (0.10),default (0.20),nan (0.80),csa (0.97),1.0
+False (0.00),True (0.80),False (1.00),True (0.80),False (0.20),True (1.00),False (0.00),nan (1.00),mirrored pairwise (0.20),sobol (0.60),default (0.30),nan (1.00),csa (0.83),1.0
+False (0.60),True (0.60),False (0.40),True (0.47),False (0.00),True (1.00),False (0.20),nan (1.00),mirrored (0.00),halton (0.10),1/2^lambda (0.00),nan (1.00),msr (0.87),1.0
+False (1.00),True (0.40),False (0.80),True (0.40),False (0.00),True (1.00),False (0.20),nan (1.00),mirrored (0.00),halton (0.00),equal (0.00),nan (0.80),msr (0.83),1.0
+False (1.00),True (0.20),False (0.60),True (0.60),False (0.00),True (1.00),False (0.00),nan (1.00),mirrored (0.00),halton (0.00),default (0.00),nan (0.78),msr (0.87),1.0
+False (0.80),True (1.00),True (0.80),False (0.60),False (0.20),True (0.20),False (0.20),nan (0.80),mirrored pairwise (0.50),sobol (0.20),1/2^lambda (0.10),IPOP (0.50),msr (1.00),1.0
+True (0.20),True (0.20),False (1.00),True (0.80),True (0.40),True (1.00),False (0.40),nan (1.00),mirrored pairwise (0.60),halton (0.30),equal (0.30),nan (1.00),csa (1.00),1.0
+False (0.20),True (0.20),False (1.00),True (1.00),True (0.40),True (1.00),False (0.00),nan (1.00),mirrored pairwise (0.70),gaussian (0.20),equal (0.40),nan (1.00),csa (0.73),1.0
+False (1.00),True (1.00),True (0.00),True (0.60),False (0.00),True (1.00),True (0.40),nan (0.85),nan (0.50),halton (0.00),1/2^lambda (0.20),nan (0.81),msr (0.97),1.0
+False (1.00),True (0.40),False (0.80),True (0.97),True (0.00),True (1.00),False (0.00),nan (1.00),mirrored pairwise (0.00),sobol (0.19),equal (0.10),nan (1.00),msr (0.77),1.0
+False (0.40),True (0.40),False (0.00),False (0.00),True (0.20),True (0.40),True (0.00),nan (1.00),mirrored (0.20),halton (0.00),1/2^lambda (0.00),nan (0.00),msr (0.93),1.0
+False (1.00),True (1.00),True (0.80),False (0.80),False (0.40),True (0.20),False (0.20),nan (0.80),mirrored pairwise (0.30),gaussian (0.10),equal (0.10),IPOP (0.50),msr (1.00),1.0
+False (0.80),True (0.60),False (0.60),True (0.61),True (0.00),True (1.00),False (0.20),nan (1.00),mirrored pairwise (0.00),sobol (0.10),1/2^lambda (0.10),nan (1.00),msr (0.73),1.0
+False (1.00),True (1.00),True (0.13),True (0.00),True (0.00),True (1.00),False (0.00),nan (0.92),mirrored pairwise (0.10),gaussian (0.40),default (0.10),nan (0.80),msr (0.90),1.0
+False (1.00),True (1.00),True (0.80),False (0.00),False (0.00),True (0.80),False (0.60),nan (1.00),mirrored (0.10),gaussian (0.30),default (0.30),nan (0.50),msr (1.00),1.0
+False (1.00),True (0.00),False (0.00),False (0.00),True (0.47),True (1.00),True (0.00),nan (1.00),mirrored (0.39),halton (0.10),equal (0.00),nan (0.95),msr (0.97),1.0
+False (1.00),True (1.00),True (1.00),False (0.40),True (0.40),True (1.00),True (0.46),nan (1.00),mirrored pairwise (0.00),sobol (0.20),equal (0.50),nan (0.50),msr (1.00),1.0
+False (0.80),True (0.20),False (0.20),False (0.00),True (0.40),True (0.80),True (0.00),nan (1.00),mirrored (0.30),halton (0.00),default (0.00),nan (0.60),msr (0.93),1.0

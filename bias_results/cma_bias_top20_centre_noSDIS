@@ -1,0 +1,26 @@
+\begin{tabular}{lllllllllllllr}
+\toprule
+active & covariance & elitist & orthogonal & sequential & threshold & sigma & bound_correction & mirrored & base_sampler & weights_option & local_restart & step_size_adaptation & centre \\
+\midrule
+True (0.41) & False (0.06) & False (0.99) & False (0.03) & False (0.04) & False (0.42) & True (0.01) & nan (0.02) & mirrored pairwise (0.04) & halton (0.02) & default (0.09) & BIPOP (0.05) & psr (0.99) & 0.992584 \\
+True (0.05) & False (0.08) & False (0.99) & True (0.99) & True (0.15) & False (0.99) & False (0.02) & nan (0.01) & mirrored pairwise (0.07) & gaussian (0.01) & 1/2^lambda (0.05) & BIPOP (0.53) & csa (0.45) & 0.989424 \\
+True (0.99) & False (0.16) & False (0.99) & False (0.52) & False (0.41) & True (0.01) & True (0.01) & nan (0.02) & mirrored pairwise (0.18) & halton (0.02) & equal (0.67) & BIPOP (0.21) & psr (0.94) & 0.989276 \\
+True (0.79) & False (0.04) & False (0.99) & False (0.66) & False (0.14) & False (0.99) & True (0.56) & nan (0.05) & mirrored (0.71) & sobol (0.42) & equal (0.99) & BIPOP (0.24) & mxnes (0.36) & 0.989140 \\
+False (0.01) & False (0.12) & False (0.99) & True (0.98) & False (0.01) & False (0.99) & False (0.06) & nan (0.01) & mirrored pairwise (0.05) & sobol (0.10) & 1/2^lambda (0.03) & BIPOP (0.05) & psr (0.51) & 0.988224 \\
+True (0.00) & False (0.05) & False (0.99) & True (0.99) & False (0.03) & False (0.99) & True (0.00) & nan (0.02) & mirrored pairwise (0.13) & sobol (0.18) & 1/2^lambda (0.05) & IPOP (0.24) & csa (0.45) & 0.988160 \\
+True (0.18) & False (0.26) & False (0.99) & True (0.99) & False (0.83) & False (0.99) & False (0.39) & nan (0.00) & mirrored (0.17) & gaussian (0.20) & 1/2^lambda (0.02) & BIPOP (0.49) & msr (0.45) & 0.987990 \\
+True (0.01) & False (0.10) & False (0.99) & True (0.96) & True (0.56) & False (0.99) & False (0.23) & nan (0.02) & mirrored pairwise (0.50) & sobol (0.17) & 1/2^lambda (0.02) & BIPOP (0.36) & msr (0.39) & 0.987931 \\
+True (0.99) & False (0.11) & False (0.99) & False (0.37) & False (0.01) & False (0.99) & True (0.20) & nan (0.02) & nan (0.40) & sobol (0.56) & equal (0.91) & BIPOP (0.23) & csa (0.42) & 0.987559 \\
+False (0.01) & False (0.06) & False (0.99) & True (0.99) & False (0.01) & False (0.99) & True (0.01) & nan (0.01) & mirrored pairwise (0.12) & halton (0.01) & equal (0.20) & IPOP (0.08) & msr (0.38) & 0.987442 \\
+True (0.85) & False (0.45) & False (0.99) & False (0.02) & False (0.74) & False (0.76) & False (0.00) & nan (0.01) & mirrored pairwise (0.03) & sobol (0.07) & 1/2^lambda (0.02) & IPOP (0.38) & psr (0.99) & 0.987372 \\
+False (0.01) & False (0.23) & False (0.99) & True (0.99) & False (0.20) & False (0.99) & True (0.02) & nan (0.01) & mirrored pairwise (0.02) & sobol (0.10) & 1/2^lambda (0.02) & BIPOP (0.32) & csa (0.58) & 0.987309 \\
+True (0.76) & False (0.52) & False (0.99) & False (0.06) & False (0.81) & False (0.56) & True (0.01) & nan (0.01) & nan (0.05) & sobol (0.33) & 1/2^lambda (0.02) & IPOP (0.31) & psr (0.99) & 0.987159 \\
+True (0.47) & False (0.13) & False (0.99) & False (0.02) & False (0.02) & False (0.27) & True (0.00) & nan (0.01) & mirrored pairwise (0.06) & halton (0.01) & default (0.21) & IPOP (0.04) & psr (0.99) & 0.986953 \\
+True (0.93) & False (0.14) & False (0.99) & False (0.03) & False (0.38) & False (0.48) & False (0.00) & nan (0.00) & mirrored pairwise (0.04) & gaussian (0.00) & default (0.02) & IPOP (0.23) & psr (0.99) & 0.986793 \\
+False (0.01) & False (0.02) & False (0.99) & True (0.99) & False (0.00) & False (0.99) & True (0.01) & nan (0.01) & mirrored pairwise (0.02) & sobol (0.10) & equal (0.49) & BIPOP (0.16) & msr (0.42) & 0.986679 \\
+False (0.02) & False (0.02) & False (0.99) & True (0.99) & False (0.22) & False (0.99) & True (0.01) & nan (0.03) & mirrored (0.20) & gaussian (0.02) & equal (0.23) & BIPOP (0.07) & msr (0.38) & 0.986653 \\
+True (0.22) & False (0.07) & False (0.99) & False (0.05) & False (0.04) & False (0.42) & True (0.03) & nan (0.01) & mirrored (0.01) & gaussian (0.01) & default (0.10) & IPOP (0.10) & psr (0.95) & 0.986132 \\
+False (-0.00) & False (0.06) & False (0.99) & True (0.99) & False (0.02) & False (0.99) & True (0.00) & nan (0.02) & mirrored pairwise (0.11) & sobol (0.20) & 1/2^lambda (0.03) & IPOP (0.32) & csa (0.55) & 0.986026 \\
+True (0.44) & False (0.13) & False (0.99) & False (0.02) & False (0.02) & False (0.26) & False (-0.01) & nan (0.03) & mirrored pairwise (0.04) & halton (0.01) & default (0.07) & BIPOP (0.05) & psr (0.99) & 0.985940 \\
+\bottomrule
+\end{tabular}
