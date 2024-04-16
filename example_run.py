@@ -1,9 +1,3 @@
-"""
-Configuration of the CMA space
-"""
-
-import traceback
-
 import numpy as np
 from ConfigSpace import ConfigurationSpace
 from ConfigSpace.util import generate_grid
@@ -13,21 +7,6 @@ from modcma.c_maes import (ModularCMAES, Parameters, Population, mutation,
 from modde import ModularDE
 
 from iohxplainer import explainer
-
-cma_cs = ConfigurationSpace(
-    {
-        "covariance": [False, True],
-        "elitist": [False, True],
-        "mirrored": ["nan", "mirrored", "mirrored pairwise"],
-        "base_sampler": ["sobol", "gaussian", "halton"],
-        "weights_option": ["default", "equal", "1/2^lambda"],
-        "local_restart": ["nan", "IPOP", "BIPOP"],
-        "active": [False, True],
-        "step_size_adaptation": ["csa", "psr"],
-        "lambda_": ["nan", "5", "10", "20", "200"],
-        "mu": ["nan", "5", "10", "20"],  # Uniform float
-    }
-)  # 20k+
 
 
 cma_cs_bias = ConfigurationSpace(
@@ -57,18 +36,6 @@ cma_cs_bias = ConfigurationSpace(
     }
 )  # 20k+
 
-cma_features = [
-    "active",
-    "covariance",
-    "elitist",
-    "mirrored",
-    "base_sampler",
-    "weights_option",
-    "local_restart",
-    "step_size_adaptation",
-    "lambda_",
-    "mu",
-]
 
 cma_features_bias = [
     "active",
@@ -239,145 +206,5 @@ def run_cma(func, config, budget, dim, *args, seed=0, **kwargs):
         print(
             f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed"
         )
-        traceback.print_exc()
         print(config)
         return []
-
-
-# The main explainer object for modular CMA
-cmaes_explainer = explainer(
-    run_cma,
-    cma_cs,
-    algname="mod-CMA",
-    dims=[5, 30],  # , 10, 20, 40
-    fids=np.arange(1, 25),  # ,5
-    iids=[1, 2, 3, 4, 5],
-    reps=3,
-    sampling_method="grid",  # or random
-    grid_steps_dict={},
-    sample_size=None,  # only used with random method
-    budget=10000,  # 10000
-    seed=1,
-    verbose=True,
-)
-
-bias_cmaes_explainer = explainer(
-    run_cma,
-    cma_cs_bias,
-    algname="mod-CMA",
-    dims=[30],  # , 10, 20, 40
-    fids=[0],  # ,5
-    iids=[1],
-    reps=1,
-    sampling_method="grid",  # or random
-    grid_steps_dict={},
-    sample_size=None,  # only used with random method
-    budget=10000,  # 10000
-    seed=1,
-    verbose=True,
-)
-
-de_cs = ConfigurationSpace(
-    {
-        "F": [0.25, 0.5, 0.75, 1.25, 1.75],
-        "CR": [0.05, 0.25, 0.5, 0.75, 1.0],
-        "lambda_": ["nan", "2", "10"],
-        "mutation_base": ["target", "best", "rand"],
-        "mutation_reference": ["pbest", "rand", "nan", "best"],
-        "mutation_n_comps": [1, 2],
-        "use_archive": [False, True],
-        "crossover": ["exp", "bin"],
-        "adaptation_method": ["nan", "jDE", "shade"],
-        "lpsr": [False, True],
-    }
-)
-
-de_features = [
-    "F",
-    "CR",
-    "lambda_",
-    "mutation_base",
-    "mutation_reference",
-    "mutation_n_comps",
-    "use_archive",
-    "crossover",
-    "adaptation_method",
-    "lpsr",
-]
-
-
-def run_de(func, config, budget, dim, *args, **kwargs):
-    """Run Modular Differential evolution with the given config and budget."""
-    lam = config.get("lambda_")
-    if config.get("lambda_") == "nan":
-        lam = None
-    else:
-        lam = int(config.get("lambda_")) * dim
-
-    mut = config.get("mutation_reference")
-    if config.get("mutation_reference") == "nan":
-        mut = None
-
-    archive = config.get("use_archive")
-    if config.get("use_archive") == "False":
-        archive = False
-    elif config.get("use_archive") == "True":
-        archive = True
-
-    lpsr = config.get("lpsr")
-    if config.get("lpsr") == "False":
-        lpsr = False
-    elif config.get("lpsr") == "True":
-        lpsr = True
-
-    cross = config.get("crossover")
-    if config.get("crossover") == "nan":
-        cross = None
-
-    adaptation_method = config.get("adaptation_method")
-    if config.get("adaptation_method") == "nan":
-        adaptation_method = None
-
-    item = {
-        "F": np.array([float(config.get("F"))]),
-        "CR": np.array([float(config.get("CR"))]),
-        "lambda_": lam,
-        "mutation_base": config.get("mutation_base"),
-        "mutation_reference": mut,
-        "mutation_n_comps": int(config.get("mutation_n_comps")),
-        "use_archive": archive,
-        "crossover": cross,
-        "adaptation_method_F": adaptation_method,
-        "adaptation_method_CR": adaptation_method,
-        "lpsr": lpsr,
-    }
-    item["budget"] = int(budget)
-    c = ModularDE(func, **item)
-    try:
-        c.run()
-        return []
-    except Exception as e:
-        print(
-            f"Found target {func.state.current_best.y} target, but exception ({e}), so run failed"
-        )
-        traceback.print_exc()
-        print(item)
-        return []
-
-
-# The main explainer object for DE
-de_explainer = explainer(
-    run_de,
-    de_cs,
-    algname="mod-de",
-    dims=[5, 30],  # ,10,40],#, 10, 20, 40  ,15,30
-    fids=np.arange(1, 25),  # ,5
-    iids=[1, 2, 3, 4, 5],  # ,5
-    reps=3,  # maybe later 10? = 11 days processing time
-    sampling_method="grid",  # or random
-    grid_steps_dict=steps_dict,
-    sample_size=None,  # only used with random method
-    budget=10000,  # 10000
-    seed=1,
-    verbose=False,
-)
