@@ -111,27 +111,27 @@ def compare(alg1, alg2, normalize=False):
             if res.pvalue < 0.05:
                 single_sig = True
                 if avg_single1 > avg_single2:
-                    single_best1 = "\\textbf{" + single_best1 + "}"
+                    single_best1 = "\\textbf{" + single_best1 + f"}} ({res.pvalue:.3f})"
                 else:
-                    single_best2 = "\\textbf{" + single_best2 + "}"
+                    single_best2 = "\\textbf{" + single_best2 + f"}} ({res.pvalue:.3f})"
 
             # avg best significance
             res = stats.ttest_ind(fid_df1["auc"].values, fid_df2["auc"].values)
             if res.pvalue < 0.05:
                 avg_sig = True
                 if avg_best1 > avg_best2:
-                    avg_best1 = "\\textbf{" + avg_best1 + "}"
+                    avg_best1 = "\\textbf{" + avg_best1 + f"}} ({res.pvalue:.3f})"
                 else:
-                    avg_best2 = "\\textbf{" + avg_best2 + "}"
+                    avg_best2 = "\\textbf{" + avg_best2 + f"}} ({res.pvalue:.3f})"
 
             # avg significance
             res = stats.ttest_ind(dim_df1["auc"].values, dim_df2["auc"].values)
             if res.pvalue < 0.05:
                 avg_sig = True
                 if avg1 > avg2:
-                    avg1 = "\\textbf{" + avg1 + "}"
+                    avg1 = "\\textbf{" + avg1 + f"}} ({res.pvalue:.3f})"
                 else:
-                    avg2 = "\\textbf{" + avg2 + "}"
+                    avg2 = "\\textbf{" + avg2 + f"}} ({res.pvalue:.3f})"
 
             new_row = {
                 "Function": f"f{fid} {func.meta_data.name}",
@@ -170,7 +170,7 @@ de_explainer.df.loc[de_explainer.df["dim"] == 30, "auc"] = de_explainer.df.loc[
 
 dffinal = compare(de_explainer, cmaes_explainer)
 
-with open(f"../output/compare.tex", "w") as fh:
+with open(f"../output/compare-p.tex", "w") as fh:
     for dim in ["d=5", "d=30"]:
         dffinal[dim].to_latex(
             buf=fh,

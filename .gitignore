@@ -25,6 +25,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+bias_videos/
+output/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -166,4 +168,3 @@ catboost_info/
 experiments/cma-d*
 experiments/de-d*
 
-bias_results/

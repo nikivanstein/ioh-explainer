@@ -742,13 +742,16 @@ class explainer(object):
 
                 # single best significance
                 single_sig = False
+                single_sig_p = 0
                 avg_sig = False
+                avg_sig_p = 0
                 res = stats.ttest_ind(
                     df_single_best["auc"].values,
                     df_best_mean[df_best_mean["fid"] == fid]["auc"].values,
                 )
                 if res.pvalue < 0.05:
                     single_sig = True
+                    single_sig_p = res.pvalue
                 # avg best significance
                 res = stats.ttest_ind(
                     df_best_mean[df_best_mean["fid"] == fid]["auc"].values,
@@ -756,6 +759,7 @@ class explainer(object):
                 )
                 if res.pvalue < 0.05:
                     avg_sig = True
+                    avg_sig_p = res.pvalu
 
                 if latex:
                     if include_function_name:
@@ -908,6 +912,7 @@ class explainer(object):
         check_bias=False,
         keep_order=False,
         catboost_params=None,
+        store_csv=True,
     ):
         """Plots the explainations for the evaluated algorithm and set of hyper-parameters.
 
@@ -917,6 +922,7 @@ class explainer(object):
             file_prefix (str, optional): Prefix for the file-name when saving figures. Defaults to None, meaning figures are not saved.
             check_bias (bool, optional): Check the best configuration for structural bias. Defaults to False.
             keep_order (bool, optional): Uses a fixed order for the features, handy if you want to plot multiple next to each other.
+            store_csv (bool, optional): Store shap values as csv file.
         """
         use_matplotlib = True
         if file_prefix == None and hasattr(sys, "ps1"):
@@ -991,6 +997,26 @@ class explainer(object):
                     explainer = shap.TreeExplainer(bst)
 
                 shap_values = explainer.shap_values(X)
+
+                #store as csv
+                if (store_csv):
+                    sv = explainer(X)
+                    csv = pd.DataFrame(
+                        np.c_[sv.base_values, sv.values],
+                        columns = ["bv"] + list(X.columns)
+                    )
+                    
+                    csv.to_csv(f"{file_prefix}shap_f{fid}_d{dim}.csv")
+                    #store single effects
+                    clustering = shap.utils.hclust(X, y)
+                    shap.plots.bar(sv, clustering=clustering, show=False)
+                    plt.tight_layout()
+                    if file_prefix != None:
+                        plt.savefig(f"{file_prefix}means_f{fid}_d{dim}.png")
+                    else:
+                        plt.show()
+
+                    plt.clf()
 
                 if keep_order:
                     order = list(X.columns.values)
@@ -1192,25 +1218,25 @@ def compare(alg1, alg2, normalize=False):
 
             if res.pvalue < 0.05:
                 if avg_single1 > avg_single2:
-                    single_best1 = "\\textbf{" + single_best1 + "}"
+                    single_best1 = "\\textbf{" + single_best1 + f"}} ({res.pvalue:.3f})"
                 else:
-                    single_best2 = "\\textbf{" + single_best2 + "}"
+                    single_best2 = "\\textbf{" + single_best2 + f"}} ({res.pvalue:.3f})"
 
             # avg best significance
             res = stats.ttest_ind(fid_df1["auc"].values, fid_df2["auc"].values)
             if res.pvalue < 0.05:
                 if avg_best1 > avg_best2:
-                    avg_best1 = "\\textbf{" + avg_best1 + "}"
+                    avg_best1 = "\\textbf{" + avg_best1 + f"}} ({res.pvalue:.3f})"
                 else:
-                    avg_best2 = "\\textbf{" + avg_best2 + "}"
+                    avg_best2 = "\\textbf{" + avg_best2 + f"}} ({res.pvalue:.3f})"
 
             # avg significance
             res = stats.ttest_ind(dim_df1["auc"].values, dim_df2["auc"].values)
             if res.pvalue < 0.05:
                 if avg1 > avg2:
-                    avg1 = "\\textbf{" + avg1 + "}"
+                    avg1 = "\\textbf{" + avg1 + f"}} ({res.pvalue:.3f})"
                 else:
-                    avg2 = "\\textbf{" + avg2 + "}"
+                    avg2 = "\\textbf{" + avg2 + f"}} ({res.pvalue:.3f})"
 
             new_row = {
                 "Function": f"f{fid} {func.meta_data.name}",
