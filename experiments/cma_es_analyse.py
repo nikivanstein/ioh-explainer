@@ -20,5 +20,5 @@ cmaes_explainer.df.loc[cmaes_explainer.df["dim"] == 30, "auc"] = cmaes_explainer
 # cmaes_explainer.df.loc[cmaes_explainer.df["mu"] == 100, "mu"] =30
 # cmaes_explainer.to_latex_report(False,True,False,False, filename=None, img_dir="../output/cma_img_new/")
 cmaes_explainer.to_latex_report(
-    filename="../output/cma_es-report", img_dir="../output/cma_img_new/"
+    filename="../output/cma_es-report3", img_dir="../output/cma_img_new2/"
 )

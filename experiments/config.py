@@ -260,14 +260,14 @@ cmaes_explainer = explainer(
     run_cma,
     cma_cs,
     algname="mod-CMA",
-    dims=[5, 30],  # , 10, 20, 40
+    dims=[30],  # 5 , 10, 20, 40
     fids=np.arange(1, 25),  # ,5
     iids=[1, 2, 3, 4, 5],
     reps=3,
     sampling_method="grid",  # or random
     grid_steps_dict={},
     sample_size=None,  # only used with random method
-    budget=10000,  # 10000
+    budget=60000,  # 10000
     seed=1,
     verbose=True,
 )
@@ -381,14 +381,14 @@ de_explainer = explainer(
     run_de,
     de_cs,
     algname="mod-de",
-    dims=[5, 30],  # ,10,40],#, 10, 20, 40  ,15,30
+    dims=[30],  # 5,30],#, 10, 20, 40  ,15,30
     fids=np.arange(1, 25),  # ,5
     iids=[1, 2, 3, 4, 5],  # ,5
     reps=3,  # maybe later 10? = 11 days processing time
     sampling_method="grid",  # or random
     grid_steps_dict=steps_dict,
     sample_size=None,  # only used with random method
-    budget=10000,  # 10000
+    budget=60000,  # 10000
     seed=1,
     verbose=False,
 )
