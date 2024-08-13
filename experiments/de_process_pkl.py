@@ -3,8 +3,12 @@
 import numpy as np
 import pandas as pd
 
-data_file = "de_final.pkl"
-df = pd.read_pickle(data_file)
+
+df = pd.read_pickle("de_final_30d.pkl")
+print(len(df))
+
+df5 = pd.read_pickle("de_final.pkl")
+print(len(df5))
 
 df = df.drop(columns=["Unnamed: 0"])
 
@@ -23,5 +27,8 @@ df.loc[(df["lambda_"] == 2.0) & (df["dim"] == 5), "lambda_"] = 10
 df.loc[(df["lambda_"] == "nan") & (df["dim"] == 5), "lambda_"] = 8
 df.loc[(df["lambda_"] == "nan") & (df["dim"] == 30), "lambda_"] = 14
 
-df.to_pickle("de_final_processed.pkl")
+
+df5.loc[df5["dim"] == 30] = df.loc[:]
+
+df5.to_pickle("de_final_processed_new.pkl")
 print(df["lambda_"].describe())

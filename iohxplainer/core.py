@@ -759,7 +759,7 @@ class explainer(object):
                 )
                 if res.pvalue < 0.05:
                     avg_sig = True
-                    avg_sig_p = res.pvalu
+                    avg_sig_p = res.pvalue
 
                 if latex:
                     if include_function_name:
