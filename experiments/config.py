@@ -38,6 +38,18 @@ cma_cs = ConfigurationSpace(
     }
 )  # 20k+
 
+cma_default_config = {
+    "covariance": False,
+    "elitist": False,
+    "mirrored": "nan",
+    "base_sampler": "gaussian",
+    "weights_option":"default",
+    "local_restart": "nan",
+    "active": False,
+    "step_size_adaptation": "csa",
+    "lambda_": 10.0,
+    "mu": 5.0,  # Uniform float
+}
 
 cma_cs_bias = ConfigurationSpace(
     {
@@ -260,7 +272,7 @@ cmaes_explainer = explainer(
     run_cma,
     cma_cs,
     algname="mod-CMA",
-    dims=[30],  # 5 , 10, 20, 40
+    dims=[5,30],  # 5 , 10, 20, 40
     fids=np.arange(1, 25),  # ,5
     iids=[1, 2, 3, 4, 5],
     reps=3,
@@ -381,7 +393,7 @@ de_explainer = explainer(
     run_de,
     de_cs,
     algname="mod-de",
-    dims=[30],  # 5,30],#, 10, 20, 40  ,15,30
+    dims=[5,30],  # 5,30],#, 10, 20, 40  ,15,30
     fids=np.arange(1, 25),  # ,5
     iids=[1, 2, 3, 4, 5],  # ,5
     reps=3,  # maybe later 10? = 11 days processing time

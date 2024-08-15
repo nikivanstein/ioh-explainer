@@ -3,7 +3,7 @@ Processes the CMA-ES data into images and tables using the ioh-xplain package.
 """
 import pandas as pd
 
-from config import cmaes_explainer
+from config import cmaes_explainer, cma_default_config
 
 data_file = "cma_final_processed_new.pkl"
 df = pd.read_pickle(data_file)
@@ -20,5 +20,10 @@ cmaes_explainer.load_results(data_file)
 # cmaes_explainer.df.loc[cmaes_explainer.df["mu"] == 100, "mu"] =30
 # cmaes_explainer.to_latex_report(False,True,False,False, filename=None, img_dir="../output/cma_img_new/")
 cmaes_explainer.to_latex_report(
-    filename="../output/cma_es-report3", img_dir="../output/cma_img_new3/"
+    include_behaviour=True,
+    include_explain=False,
+    include_hall_of_fame=False,
+    include_bias=False,
+    default_config=cma_default,
+    filename="../output/cma_es-report4", img_dir=None
 )

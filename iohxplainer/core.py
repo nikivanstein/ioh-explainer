@@ -488,7 +488,7 @@ class explainer(object):
             return y, preds
         return y
 
-    def behaviour_stats(self, fids=None, per_fid=False):
+    def behaviour_stats(self, default_config=None, fids=None, per_fid=False):
         behaviour = {}
         # Random Robustness single best = var / (a – b)**2/12
         # instance robustness single best
@@ -514,6 +514,14 @@ class explainer(object):
                 "Measure": "Algorithm stability",
                 "value": 1 - (var_all / uniform_std),
             }
+
+            #calculate default performance
+            if (default_config != None):
+                _, df_default_mean = self._get_default(dim_df, default_config=default_config)
+                df_default_mean = df_default_mean[
+                    df_default_mean["fid"].isin(fids)
+                ] 
+                mean_default_performance = df_default_mean["auc"].mean()
 
             # calculate statistics for avg best
             _, df_best_mean = self._get_average_best(dim_df)
@@ -603,20 +611,42 @@ class explainer(object):
                 "Measure": "Average norm. perf.",
                 "value": mean_performance,
             }
-            df.loc[len(df)] = {
-                "Measure": "Gain avg. best",
-                "value": (avg_best_performance - mean_performance),
-            }
-            df.loc[len(df)] = {
-                "Measure": "Gain single best",
-                "value": (single_best_performance - mean_performance),
-            }
-            sig_avg = 0
-            res = stats.ttest_ind(dim_df["auc"].values, df_best_mean["auc"].values)
-            if res.pvalue < 0.05:
-                sig_avg = 1
+            if default_config != None:
+                df.loc[len(df)] = {
+                    "Measure": "Average default perf.",
+                    "value": mean_default_performance,
+                }
+                df.loc[len(df)] = {
+                    "Measure": "Gain avg. best",
+                    "value": (avg_best_performance - mean_default_performance),
+                }
+                df.loc[len(df)] = {
+                    "Measure": "Gain single best",
+                    "value": (single_best_performance - mean_default_performance),
+                }
+            else:
+                df.loc[len(df)] = {
+                    "Measure": "Gain avg. best",
+                    "value": (avg_best_performance - mean_performance),
+                }
+                df.loc[len(df)] = {
+                    "Measure": "Gain single best",
+                    "value": (single_best_performance - mean_performance),
+                }
 
-            df.loc[len(df)] = {"Measure": "sig. impr. avg best", "value": sig_avg}
+            sig_avg = 0
+            if default_config != None:
+                
+                res = stats.ttest_ind(df_default_mean["auc"].values, df_best_mean["auc"].values)
+                if res.pvalue < 0.05:
+                    sig_avg = 1
+            else:
+                sig_avg = 0
+                res = stats.ttest_ind(dim_df["auc"].values, df_best_mean["auc"].values)
+                if res.pvalue < 0.05:
+                    sig_avg = 1
+
+            df.loc[len(df)] = {"Measure": "sig. impr. avg best", "value": res.pvalue}
             sig_single = 0
             res = stats.ttest_ind(
                 df_best_mean["auc"].values.flatten(), all_single_best_auc.flatten()
@@ -626,7 +656,7 @@ class explainer(object):
 
             df.loc[len(df)] = {
                 "Measure": "sig. impr. s. best vs avg best",
-                "value": sig_single,
+                "value": res.pvalue,
             }
             behaviour[stat_index] = df
 
@@ -680,8 +710,24 @@ class explainer(object):
         """Returns average best configuration for given dimensionality and the data belonging to it."""
         dim_df = self.df[self.df["dim"] == dim]
         return self._get_average_best(dim_df, use_median)
+    
+    def _get_default(self, dim_df, default_config, use_median=False):
+        name_list = [*self.config_space.keys()]
+        if use_median:
+            best_mean = dim_df.groupby(name_list)["auc"].median().idxmax()
+        else:  # use mean
+            best_mean = dim_df.groupby(name_list)["auc"].mean().idxmax()
+        df_best_mean = dim_df
+        average_best_conf = {}
+        for name in default_config:
+            df_best_mean = df_best_mean[df_best_mean[name] == default_config[name]]
+        return default_config, df_best_mean
 
-    def performance_stats(self, normalize=False, latex=False):
+    def get_default(self, dim, default_config, use_median=False):
+        dim_df = self.df[self.df["dim"] == dim]
+        return self._get_default(dim_df, default_config, use_median)
+
+    def performance_stats(self, normalize=False, latex=False, default_config=None):
         """Show the performance of the algorithm, average best per dimension and single-best per fid.
 
         Args:
@@ -720,6 +766,9 @@ class explainer(object):
             # split df per function
             # get avg best config
             _, df_best_mean = self._get_average_best(dim_df)
+            df_default_mean = None
+            if (default_config != None):
+                _, df_default_mean = self.get_default(dim_df, default_config)
             for fid in self.fids:
                 func = ioh.get_problem(fid, dimension=dim, instance=1)
                 fid_df = dim_df[dim_df["fid"] == fid]
@@ -728,6 +777,10 @@ class explainer(object):
                 # Define the new row to be added
                 avg_best_avg = df_best_mean[df_best_mean["fid"] == fid]["auc"].mean()
                 avg_best_var = df_best_mean[df_best_mean["fid"] == fid]["auc"].std()
+                if (default_config != None):
+                    avg_default_avg = df_default_mean[df_default_mean["fid"] == fid]["auc"].mean()
+                    avg_default_var = df_default_mean[df_default_mean["fid"] == fid]["auc"].std()
+
                 avg_avg = fid_df["auc"].mean()
                 avg_var = fid_df["auc"].std()
                 avg_single = df_single_best["auc"].mean()
@@ -739,12 +792,16 @@ class explainer(object):
                     avg_best_var = avg_best_var / self.budget
                     avg_avg = avg_avg / self.budget
                     avg_var = avg_var / self.budget
+                    if (default_config != None):
+                        avg_default_avg = avg_default_avg / self.budget
+                        avg_default_var = avg_default_var / self.budget
 
                 # single best significance
                 single_sig = False
                 single_sig_p = 0
                 avg_sig = False
                 avg_sig_p = 0
+                
                 res = stats.ttest_ind(
                     df_single_best["auc"].values,
                     df_best_mean[df_best_mean["fid"] == fid]["auc"].values,
@@ -761,40 +818,60 @@ class explainer(object):
                     avg_sig = True
                     avg_sig_p = res.pvalue
 
+                #default versus avg best significance
+                if (default_config != None):
+                    res = stats.ttest_ind(
+                        df_best_mean[df_best_mean["fid"] == fid]["auc"].values,
+                        df_default_mean[df_default_mean["fid"] == fid]["auc"].values,
+                    )
+                    if res.pvalue < 0.05:
+                        avg_sig = True
+                        avg_sig_p = res.pvalue
+                    
                 if latex:
+                    
                     if include_function_name:
                         new_row = {
                             "Function": f"f{fid} {func.meta_data.name}",
-                            "single-best": f"{avg_single:.2f} ({var_single:.2f})",
-                            "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})",
-                            "all": f"{avg_avg:.2f} ({avg_var:.2f})",
                         }
-                    else:
-                        new_row = {
-                            "single-best": f"{avg_single:.2f} ({var_single:.2f})",
-                            "avg-best": f"{avg_best_avg:.2f} ({avg_best_var:.2f})",
-                            "all": f"{avg_avg:.2f} ({avg_var:.2f})",
-                        }
+                    new_row["single-best"] = f"{avg_single:.2f} ({var_single:.2f}) p={single_sig_p:.2f}"
+                    new_row["avg-best"] =  f"{avg_best_avg:.2f} ({avg_best_var:.2f}) p={avg_sig_p:.2f}"
+                    if (default_config != None):
+                        new_row["default"] = f"{avg_default_avg:.2f} ({avg_default_var:.2f})"
+                    new_row["all"] = f"{avg_avg:.2f} ({avg_var:.2f})"
                     if single_sig:
                         new_row["single-best"] = (
-                            "\\textbf{" + f"{avg_single:.2f} ({var_single:.2f})" + "}"
+                            "\\textbf{" + f"{avg_single:.2f} ({var_single:.2f})" + "}"+f" p={single_sig_p:.2f}"
                         )
                     if avg_sig:
                         new_row["avg-best"] = (
                             "\\textbf{"
                             + f"{avg_best_avg:.2f} ({avg_best_var:.2f})"
-                            + "}"
+                            + "}"+f" p={avg_sig_p:.2f}"
                         )
                 else:
-                    new_row = {
-                        "Function": f"f{fid} {func.meta_data.name}",
-                        "single-best mean": avg_single,
-                        "single-best std": var_single,
-                        "avg-best mean": avg_best_avg,
-                        "avg-best std": avg_best_var,
-                        "all mean": avg_avg,
-                        "all std": avg_var,
-                    }
+                    if (default_config != None):
+                        new_row = {
+                            "Function": f"f{fid} {func.meta_data.name}",
+                            "single-best mean": avg_single,
+                            "single-best std": var_single,
+                            "default-best mean": avg_default_avg,
+                            "default-best std": avg_default_var,
+                            "avg-best mean": avg_best_avg,
+                            "avg-best std": avg_best_var,
+                            "all mean": avg_avg,
+                            "all std": avg_var,
+                        }
+                    else:
+                        new_row = {
+                            "Function": f"f{fid} {func.meta_data.name}",
+                            "single-best mean": avg_single,
+                            "single-best std": var_single,
+                            "avg-best mean": avg_best_avg,
+                            "avg-best std": avg_best_var,
+                            "all mean": avg_avg,
+                            "all std": avg_var,
+                        }
                 # Use the loc method to add the new row to the DataFrame
                 self.stats[stat_index].loc[len(self.stats[stat_index])] = new_row
                 # check if the single best is significantly better than the avg best
@@ -808,6 +885,7 @@ class explainer(object):
         include_explain=True,
         include_hall_of_fame=True,
         include_bias=False,
+        default_config=None,
         filename=None,
         img_dir=None,
     ):
@@ -818,27 +896,38 @@ class explainer(object):
             include_explain (bool, optional): Include explainable images or not. Defaults to True.
             include_hall_of_fame (bool, optional): Include single best configurations and force plots. Defaults to True.
             include_bias (bool, optional): Include structural bias indicators for the single best solutions, can only be set to True if hall of fame is True. Defaults to False.
+            default_config (dict, optional): Dictionary of the default algorithm configuration. Compare the performance also against the default configuration if given.
             filename (string, optional): To store to file, when None returns string. Defaults to None.
             img_dir (string, optional): Where to store the images, if None it will store in the base directory. Defaults to None.
 
         Returns:
             string: Latex string or none when writing to a file.
         """
-        self.performance_stats(latex=True)
-        file_content = f"% Performance stats per dimension and function for {self.algname}. Boldface for the single-best configuration indicates a significant improvement over the average best configuration (for that dimension), Boldface for the average best configuration indicates a significant improvement over the average AUC of all configurations.\n"
+        self.performance_stats(latex=True, default_config=default_config)
 
-        concat_df = pd.concat(self.stats, axis=1)
-        file_content = file_content + concat_df.to_latex(
-            index=False,
-            multicolumn_format="c",
-            caption="Performance of single-best, average best and average algorithm performance over all configurations per function and dimension.",
-        )
+        file_content = ""
+        for dim in self.dims:
+            stat_index = f"d={dim}"
+
+            file_content = file_content + f"% Performance stats per function for {self.algname} and {stat_index}. Boldface for the single-best configuration indicates a significant improvement over the average best configuration (for that dimension), "
+            if default_config != None:
+                file_content = file_content + "Boldface for the average best configuration indicates a significant improvement over the default configuration.\n"
+            else:
+                file_content = file_content + "Boldface for the average best configuration indicates a significant improvement over the average AUC of all configurations.\n"
+            file_content = file_content + "P-values are provided behind each result for the single-best and average-best cases for the respective tests.\n"
+
+            concat_df = self.stats[stat_index]
+            file_content = file_content + concat_df.to_latex(
+                index=False,
+                multicolumn_format="c",
+                caption=f"Performance of single-best, average best and average algorithm performance over all configurations per function {stat_index}.",
+            )
 
         if include_behaviour:
             file_content += (
                 f"% Behaviour stats per dimension and function for {self.algname}\n"
             )
-            behaviour_df = self.behaviour_stats(per_fid=False)
+            behaviour_df = self.behaviour_stats(default_config=default_config, per_fid=False)
             file_content = file_content + behaviour_df.to_latex(
                 index=False,
                 multicolumn_format="c",
